@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/index.js"],"names":["Query"],"mappings":";;;;;;;;;kBAASA,K","file":"index.js","sourcesContent":["export { Query } from './query';\n"]}
