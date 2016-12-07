@@ -55,6 +55,13 @@ var ColumnFilter = function () {
     return this.value.indexOf(value) > -1;
   };
 
+  ColumnFilter.prototype.toJSON = function toJSON() {
+    return {
+      field: this._field,
+      value: this._value
+    };
+  };
+
   _createClass(ColumnFilter, [{
     key: 'value',
     get: function get() {

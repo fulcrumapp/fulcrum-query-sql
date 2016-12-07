@@ -73,4 +73,11 @@ export default class ColumnFilter {
 
     return this.value.indexOf(value) > -1;
   }
+
+  toJSON() {
+    return {
+      field: this._field,
+      value: this._value
+    };
+  }
 }
