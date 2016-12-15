@@ -1,12 +1,14 @@
 import ElementColumn from './schema/element-column';
 import SimpleColumn from './schema/simple-column';
-import RepeatableSchema from './repeatable-schema';
 
 const SYSTEM_COLUMNS = [
+  '_child_record_id',
   '_record_id',
-  '_project_id',
-  '_assigned_to_id',
-  '_status',
+  '_parent_id',
+  '_record_project_id',
+  '_record_assigned_to_id',
+  '_record_status',
+  '_index',
   '_latitude',
   '_longitude',
   '_created_at',
@@ -17,11 +19,6 @@ const SYSTEM_COLUMNS = [
   '_server_created_at',
   '_server_updated_at',
   '_geometry',
-  '_altitude',
-  '_speed',
-  '_course',
-  '_horizontal_accuracy',
-  '_vertical_accuracy',
   '_changeset_id',
   '_title',
   '_created_latitude',
@@ -39,9 +36,10 @@ const SYSTEM_COLUMNS = [
   '_edited_duration'
 ];
 
-export default class FormSchema {
-  constructor(form, rawColumns, repeatableColumns) {
-    this.form = form;
+export default class RepeatableSchema {
+  constructor(form, repeatable, rawColumns) {
+    this.form = this.form;
+    this.repeatable = repeatable;
 
     this._columns = [];
     this._rawColumns = rawColumns;
@@ -58,18 +56,6 @@ export default class FormSchema {
     }
 
     this.setupColumns();
-
-    this.repeatableSchemas = [];
-    this.repeatableSchemasByKey = {};
-
-    const repeatables = this.form.elementsOfType('Repeatable');
-
-    for (const repeatable of repeatables) {
-      const childSchema = new RepeatableSchema(this.form, repeatable, repeatableColumns[repeatable.key]);
-
-      this.repeatableSchemas.push(childSchema);
-      this.repeatableSchemasByKey[repeatable.key] = childSchema;
-    }
   }
 
   addSystemColumn(label, attribute, columnName) {
@@ -95,13 +81,13 @@ export default class FormSchema {
     this.addSystemColumn('Created By', 'createdBy', '_created_by_id');
     this.addSystemColumn('Updated By', 'updatedBy', '_updated_by_id');
 
-    if (this.form.isAssignmentEnabled) {
-      this.addSystemColumn('Assigned', 'assignedTo', '_assigned_to_id');
-    }
+    // if (this.form.isAssignmentEnabled) {
+    //   this.addSystemColumn('Assigned', 'assignedTo', '_assigned_to_id');
+    // }
 
-    if (this.form.isProjectEnabled) {
-      this.addSystemColumn('Project', 'project', '_project_id');
-    }
+    // if (this.form.isProjectEnabled) {
+    //   this.addSystemColumn('Project', 'project', '_project_id');
+    // }
 
     for (const element of this.elementsForColumns) {
       if (element.isHidden || element.hasHiddenParent) {
