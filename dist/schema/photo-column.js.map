@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/schema/photo-column.js"],"names":["PhotoColumn"],"mappings":";;;;AAAA;;;;;;;;;;;;;;IAEqBA,W;;;;;;;;;;;;kBAAAA,W","file":"photo-column.js","sourcesContent":["import ElementColumn from './element-column';\n\nexport default class PhotoColumn extends ElementColumn {\n}\n"]}

@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/schema/column.js"],"names":["Column"],"mappings":";;;;;;IAAqBA,M;;;;kBAAAA,M","file":"column.js","sourcesContent":["export default class Column {\n}\n"]}
