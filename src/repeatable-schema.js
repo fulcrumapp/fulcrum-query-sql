@@ -38,7 +38,7 @@ const SYSTEM_COLUMNS = [
 
 export default class RepeatableSchema {
   constructor(form, repeatable, rawColumns) {
-    this.form = this.form;
+    this.form = form;
     this.repeatable = repeatable;
 
     this._columns = [];
@@ -122,7 +122,7 @@ export default class RepeatableSchema {
 
   get allElements() {
     if (!this._allElements) {
-      this._allElements = this.form.flattenElements(false);
+      this._allElements = this.repeatable.flattenElements(false);
     }
     return this._allElements;
   }

@@ -22,7 +22,7 @@ var RepeatableSchema = function () {
   function RepeatableSchema(form, repeatable, rawColumns) {
     _classCallCheck(this, RepeatableSchema);
 
-    this.form = this.form;
+    this.form = form;
     this.repeatable = repeatable;
 
     this._columns = [];
@@ -135,7 +135,7 @@ var RepeatableSchema = function () {
     key: 'allElements',
     get: function get() {
       if (!this._allElements) {
-        this._allElements = this.form.flattenElements(false);
+        this._allElements = this.repeatable.flattenElements(false);
       }
       return this._allElements;
     }
