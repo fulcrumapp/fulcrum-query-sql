@@ -8,66 +8,95 @@ var _elementColumn = require('./schema/element-column');
 
 var _elementColumn2 = _interopRequireDefault(_elementColumn);
 
-var _simpleColumn = require('./schema/simple-column');
+var _formFieldSchema = require('./form-field-schema');
 
-var _simpleColumn2 = _interopRequireDefault(_simpleColumn);
+var _formFieldSchema2 = _interopRequireDefault(_formFieldSchema);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defaults(obj, defaults) { var keys = Object.getOwnPropertyNames(defaults); for (var i = 0; i < keys.length; i++) { var key = keys[i]; var value = Object.getOwnPropertyDescriptor(defaults, key); if (value && value.configurable && obj[key] === undefined) { Object.defineProperty(obj, key, value); } } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : _defaults(subClass, superClass); }
+// import SimpleColumn from './schema/simple-column';
+
 
 var SYSTEM_COLUMNS = ['_child_record_id', '_record_id', '_parent_id', '_record_project_id', '_record_assigned_to_id', '_record_status', '_index', '_latitude', '_longitude', '_created_at', '_updated_at', '_version', '_created_by_id', '_updated_by_id', '_server_created_at', '_server_updated_at', '_geometry', '_changeset_id', '_title', '_created_latitude', '_created_longitude', '_created_geometry', '_created_altitude', '_created_horizontal_accuracy', '_updated_latitude', '_updated_longitude', '_updated_geometry', '_updated_altitude', '_updated_horizontal_accuracy', '_created_duration', '_updated_duration', '_edited_duration'];
 
-var RepeatableSchema = function () {
-  function RepeatableSchema(form, repeatable, rawColumns) {
+var RepeatableSchema = function (_FormFieldSchema) {
+  _inherits(RepeatableSchema, _FormFieldSchema);
+
+  function RepeatableSchema(formSchema, repeatable, rawColumns, _ref) {
+    var _ref$fullSchema = _ref.fullSchema,
+        fullSchema = _ref$fullSchema === undefined ? false : _ref$fullSchema;
+
     _classCallCheck(this, RepeatableSchema);
 
-    this.form = form;
-    this.repeatable = repeatable;
+    var _this = _possibleConstructorReturn(this, _FormFieldSchema.call(this, { fullSchema: fullSchema }));
 
-    this._columns = [];
-    this._rawColumns = rawColumns;
+    _this.formSchema = formSchema;
+    _this.repeatable = repeatable;
+    _this.container = repeatable;
 
-    this._rawColumnsByKey = {};
-    this._columnsByKey = {};
+    _this._columns = [];
+    _this._rawColumns = rawColumns;
+
+    _this._rawColumnsByKey = {};
+    _this._columnsByKey = {};
 
     for (var _iterator = rawColumns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-      var _ref;
+      var _ref2;
 
       if (_isArray) {
         if (_i >= _iterator.length) break;
-        _ref = _iterator[_i++];
+        _ref2 = _iterator[_i++];
       } else {
         _i = _iterator.next();
         if (_i.done) break;
-        _ref = _i.value;
+        _ref2 = _i.value;
       }
 
-      var column = _ref;
+      var column = _ref2;
 
       if (SYSTEM_COLUMNS.indexOf(column.name) !== -1) {
-        this._rawColumnsByKey[column.name] = column;
+        _this._rawColumnsByKey[column.name] = column;
       } else if (column.field) {
-        this._rawColumnsByKey[column.field] = column;
+        var key = column.part ? column.field + '_' + column.part : column.field;
+        _this._rawColumnsByKey[key] = column;
       }
     }
 
-    this.setupColumns();
+    _this.setupColumns();
+    return _this;
   }
 
-  RepeatableSchema.prototype.addSystemColumn = function addSystemColumn(label, attribute, columnName) {
-    var column = new _simpleColumn2.default(label, attribute, columnName);
-    this._columns.push(column);
-    this._columnsByKey[columnName] = column;
-  };
-
   RepeatableSchema.prototype.setupColumns = function setupColumns() {
+    if (this.fullSchema) {
+      this.addSystemColumn('Child ID', 'id', '_child_record_id');
+      this.addSystemColumn('Record ID', 'id', '_record_id');
+      this.addSystemColumn('Parent ID', 'id', '_parent_id');
+    }
+
     if (this.form.statusField.isEnabled) {
-      var columnObject = new _elementColumn2.default(this.form.statusField, this._rawColumnsByKey._status, '_status');
+      var columnObject = new _elementColumn2.default(this.form.statusField, this._rawColumnsByKey._record_status, '_record_status');
 
       this._columns.push(columnObject);
 
-      this._columnsByKey._status = columnObject;
+      this._columnsByKey._record_status = columnObject;
+    }
+
+    if (this.fullSchema) {
+      this.addSystemColumn('Latitude', 'latitude', '_latitude');
+      this.addSystemColumn('Longitude', 'longitude', '_longitude');
+
+      this.addSystemColumn('Changeset', 'changesetID', '_changeset_id');
+
+      this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration');
+      this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration');
+      this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration');
     }
 
     this.addSystemColumn('Version', 'version', '_version');
@@ -84,97 +113,18 @@ var RepeatableSchema = function () {
     //   this.addSystemColumn('Project', 'project', '_project_id');
     // }
 
-    for (var _iterator2 = this.elementsForColumns, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
-      var _ref2;
-
-      if (_isArray2) {
-        if (_i2 >= _iterator2.length) break;
-        _ref2 = _iterator2[_i2++];
-      } else {
-        _i2 = _iterator2.next();
-        if (_i2.done) break;
-        _ref2 = _i2.value;
-      }
-
-      var element = _ref2;
-
-      if (element.isHidden || element.hasHiddenParent) {
-        continue;
-      }
-
-      var column = this._rawColumnsByKey[element.key];
-
-      if (column == null) {
-        throw new Error('Column not found for element ' + element.key);
-      }
-
-      var _columnObject = new _elementColumn2.default(element, column);
-
-      this._columns.push(_columnObject);
-
-      this._columnsByKey[element.key] = _columnObject;
-    }
-  };
-
-  RepeatableSchema.prototype.findColumnByID = function findColumnByID(id) {
-    return this.columns.find(function (e) {
-      return e.id === id;
-    });
-  };
-
-  RepeatableSchema.prototype.columnForFieldKey = function columnForFieldKey(fieldKey) {
-    return this._columnsByKey[fieldKey];
+    this.setupElementColumns();
   };
 
   _createClass(RepeatableSchema, [{
-    key: 'columns',
+    key: 'tableName',
     get: function get() {
-      return this._columns;
-    }
-  }, {
-    key: 'allElements',
-    get: function get() {
-      if (!this._allElements) {
-        this._allElements = this.repeatable.flattenElements(false);
-      }
-      return this._allElements;
-    }
-  }, {
-    key: 'elementsForColumns',
-    get: function get() {
-      if (!this._elementsForColumns) {
-        this._elementsForColumns = [];
-
-        var elements = this.allElements;
-
-        for (var _iterator3 = elements, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator]();;) {
-          var _ref3;
-
-          if (_isArray3) {
-            if (_i3 >= _iterator3.length) break;
-            _ref3 = _iterator3[_i3++];
-          } else {
-            _i3 = _iterator3.next();
-            if (_i3.done) break;
-            _ref3 = _i3.value;
-          }
-
-          var element = _ref3;
-
-          var skip = element.isSectionElement || element.isRepeatableElement || element.isLabelElement || element.isHidden;
-
-          if (!skip) {
-            this._elementsForColumns.push(element);
-          }
-        }
-      }
-
-      return this._elementsForColumns;
+      return this.formSchema.tableName + '_' + this.repeatable.dataName;
     }
   }]);
 
   return RepeatableSchema;
-}();
+}(_formFieldSchema2.default);
 
 exports.default = RepeatableSchema;
 //# sourceMappingURL=repeatable-schema.js.map

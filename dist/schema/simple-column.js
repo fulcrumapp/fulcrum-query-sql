@@ -22,10 +22,13 @@ var SimpleColumn = function (_Column) {
   _inherits(SimpleColumn, _Column);
 
   function SimpleColumn(name, attributeName, columnName) {
+    var type = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
     _classCallCheck(this, SimpleColumn);
 
     var _this = _possibleConstructorReturn(this, _Column.call(this));
 
+    _this._type = type || 'string';
     _this._name = name;
     _this._attributeName = attributeName;
     _this._columnName = columnName;
@@ -36,7 +39,18 @@ var SimpleColumn = function (_Column) {
     return row[this.attributeName];
   };
 
+  SimpleColumn.prototype.exportValue = function exportValue(row) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    return this.valueFrom(row);
+  };
+
   _createClass(SimpleColumn, [{
+    key: 'type',
+    get: function get() {
+      return this._type;
+    }
+  }, {
     key: 'id',
     get: function get() {
       return this._columnName;

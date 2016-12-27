@@ -2,6 +2,8 @@
 
 exports.__esModule = true;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _column = require('./column');
@@ -21,7 +23,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ElementColumn = function (_Column) {
   _inherits(ElementColumn, _Column);
 
-  function ElementColumn(element, rawColumn, id) {
+  function ElementColumn(element, rawColumn, id, part) {
     _classCallCheck(this, ElementColumn);
 
     var _this = _possibleConstructorReturn(this, _Column.call(this));
@@ -29,18 +31,38 @@ var ElementColumn = function (_Column) {
     _this._element = element;
     _this._rawColumn = rawColumn;
     _this._id = id || element.key;
+    _this._part = part;
+
+    if (part) {
+      _this._id += '_' + part;
+    }
     return _this;
   }
 
-  ElementColumn.prototype.valueFrom = function valueFrom(row) {
+  ElementColumn.prototype.valueFrom = function valueFrom(feature) {
     if (this.element.isStatusElement) {
-      return row.statusValue;
+      return feature.statusValue;
     }
 
-    return row.formValues.get(this.element.key);
+    return feature.formValues.get(this.element.key);
+  };
+
+  ElementColumn.prototype.exportValue = function exportValue(feature, options) {
+    var value = this.valueFrom(feature);
+
+    if (value) {
+      return value.format(_extends({ part: this.part }, options));
+    }
+
+    return null;
   };
 
   _createClass(ElementColumn, [{
+    key: 'type',
+    get: function get() {
+      return 'string';
+    }
+  }, {
     key: 'name',
     get: function get() {
       return this.element.label;
@@ -58,12 +80,25 @@ var ElementColumn = function (_Column) {
   }, {
     key: 'columnName',
     get: function get() {
-      return this.rawColumn.name;
+      if (this.rawColumn) {
+        return this.rawColumn.name;
+      }
+
+      if (this.part) {
+        return this.element.dataName + '_' + this.part;
+      }
+
+      return this.element.dataName;
     }
   }, {
     key: 'id',
     get: function get() {
       return this._id;
+    }
+  }, {
+    key: 'part',
+    get: function get() {
+      return this._part;
     }
   }]);
 
