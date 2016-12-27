@@ -1,6 +1,6 @@
 import ElementColumn from './schema/element-column';
-import SimpleColumn from './schema/simple-column';
 import RepeatableSchema from './repeatable-schema';
+import FormFieldSchema from './form-field-schema';
 
 const SYSTEM_COLUMNS = [
   '_record_id',
@@ -39,9 +39,12 @@ const SYSTEM_COLUMNS = [
   '_edited_duration'
 ];
 
-export default class FormSchema {
-  constructor(form, rawColumns, repeatableColumns) {
+export default class FormSchema extends FormFieldSchema {
+  constructor(form, rawColumns, repeatableColumns, {fullSchema = false}) {
+    super({fullSchema});
+
     this.form = form;
+    this.container = form;
 
     this._columns = [];
     this._rawColumns = rawColumns;
@@ -53,7 +56,8 @@ export default class FormSchema {
       if (SYSTEM_COLUMNS.indexOf(column.name) !== -1) {
         this._rawColumnsByKey[column.name] = column;
       } else if (column.field) {
-        this._rawColumnsByKey[column.field] = column;
+        const key = column.part ? column.field + '_' + column.part : column.field;
+        this._rawColumnsByKey[key] = column;
       }
     }
 
@@ -65,20 +69,18 @@ export default class FormSchema {
     const repeatables = this.form.elementsOfType('Repeatable');
 
     for (const repeatable of repeatables) {
-      const childSchema = new RepeatableSchema(this.form, repeatable, repeatableColumns[repeatable.key]);
+      const childSchema = new RepeatableSchema(this, repeatable, repeatableColumns[repeatable.key], {fullSchema});
 
       this.repeatableSchemas.push(childSchema);
       this.repeatableSchemasByKey[repeatable.key] = childSchema;
     }
   }
 
-  addSystemColumn(label, attribute, columnName) {
-    const column = new SimpleColumn(label, attribute, columnName);
-    this._columns.push(column);
-    this._columnsByKey[columnName] = column;
-  }
-
   setupColumns() {
+    if (this.fullSchema) {
+      this.addSystemColumn('Record ID', 'id', '_record_id');
+    }
+
     if (this.form.statusField.isEnabled) {
       const columnObject = new ElementColumn(this.form.statusField,
                                              this._rawColumnsByKey._status,
@@ -89,11 +91,27 @@ export default class FormSchema {
       this._columnsByKey._status = columnObject;
     }
 
+    if (this.fullSchema) {
+      this.addSystemColumn('Latitude', 'latitude', '_latitude');
+      this.addSystemColumn('Longitude', 'longitude', '_longitude');
+
+      this.addSystemColumn('Client Created', 'clientCreatedAt', '_created_at');
+      this.addSystemColumn('Client Updated', 'clientUpdatedAt', '_updated_at');
+
+      this.addSystemColumn('Altitude', 'altitude', '_altitude');
+      this.addSystemColumn('Accuracy', 'horizontalAccuracy', '_accuracy');
+      this.addSystemColumn('Changeset', 'changesetID', '_changeset_id');
+
+      this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration');
+      this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration');
+      this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration');
+    }
+
     this.addSystemColumn('Version', 'version', '_version');
     this.addSystemColumn('Created', 'createdAt', '_server_created_at');
     this.addSystemColumn('Updated', 'updatedAt', '_server_updated_at');
-    this.addSystemColumn('Created By', 'createdBy', '_created_by_id');
-    this.addSystemColumn('Updated By', 'updatedBy', '_updated_by_id');
+    this.addSystemColumn('Created By', 'createdByName', '_created_by');
+    this.addSystemColumn('Updated By', 'updatedByName', '_updated_by');
 
     if (this.form.isAssignmentEnabled) {
       this.addSystemColumn('Assigned', 'assignedTo', '_assigned_to_id');
@@ -103,62 +121,10 @@ export default class FormSchema {
       this.addSystemColumn('Project', 'project', '_project_id');
     }
 
-    for (const element of this.elementsForColumns) {
-      if (element.isHidden || element.hasHiddenParent) {
-        continue;
-      }
-
-      const column = this._rawColumnsByKey[element.key];
-
-      if (column == null) {
-        throw new Error('Column not found for element ' + element.key);
-      }
-
-      const columnObject = new ElementColumn(element, column);
-
-      this._columns.push(columnObject);
-
-      this._columnsByKey[element.key] = columnObject;
-    }
+    this.setupElementColumns();
   }
 
-  findColumnByID(id) {
-    return this.columns.find(e => e.id === id);
-  }
-
-  columnForFieldKey(fieldKey) {
-    return this._columnsByKey[fieldKey];
-  }
-
-  get columns() {
-    return this._columns;
-  }
-
-  get allElements() {
-    if (!this._allElements) {
-      this._allElements = this.form.flattenElements(false);
-    }
-    return this._allElements;
-  }
-
-  get elementsForColumns() {
-    if (!this._elementsForColumns) {
-      this._elementsForColumns = [];
-
-      const elements = this.allElements;
-
-      for (const element of elements) {
-        const skip = element.isSectionElement ||
-                     element.isRepeatableElement ||
-                     element.isLabelElement ||
-                     element.isHidden;
-
-        if (!skip) {
-          this._elementsForColumns.push(element);
-        }
-      }
-    }
-
-    return this._elementsForColumns;
+  get tableName() {
+    return this.form.name.toLowerCase().replace(/ /g, '_');
   }
 }

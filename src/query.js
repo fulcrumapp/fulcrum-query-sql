@@ -180,7 +180,10 @@ export default class Query {
       ResTarget(ColumnRef('_speed'), 'speed'),
       ResTarget(ColumnRef('_course'), 'course'),
       ResTarget(ColumnRef('_horizontal_accuracy'), 'horizontal_accuracy'),
-      ResTarget(ColumnRef('_vertical_accuracy'), 'vertical_accuracy')
+      ResTarget(ColumnRef('_vertical_accuracy'), 'vertical_accuracy'),
+      ResTarget(ColumnRef('_edited_duration'), 'edited_duration'),
+      ResTarget(ColumnRef('_updated_duration'), 'updated_duration'),
+      ResTarget(ColumnRef('_created_duration'), 'created_duration')
     ];
   }
 

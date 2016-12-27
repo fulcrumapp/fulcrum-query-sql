@@ -1,12 +1,21 @@
 import Column from './column';
 
 export default class ElementColumn extends Column {
-  constructor(element, rawColumn, id) {
+  constructor(element, rawColumn, id, part) {
     super();
 
     this._element = element;
     this._rawColumn = rawColumn;
     this._id = id || element.key;
+    this._part = part;
+
+    if (part) {
+      this._id += '_' + part;
+    }
+  }
+
+  get type() {
+    return 'string';
   }
 
   get name() {
@@ -22,18 +31,40 @@ export default class ElementColumn extends Column {
   }
 
   get columnName() {
-    return this.rawColumn.name;
+    if (this.rawColumn) {
+      return this.rawColumn.name;
+    }
+
+    if (this.part) {
+      return this.element.dataName + '_' + this.part;
+    }
+
+    return this.element.dataName;
   }
 
   get id() {
     return this._id;
   }
 
-  valueFrom(row) {
+  get part() {
+    return this._part;
+  }
+
+  valueFrom(feature) {
     if (this.element.isStatusElement) {
-      return row.statusValue;
+      return feature.statusValue;
     }
 
-    return row.formValues.get(this.element.key);
+    return feature.formValues.get(this.element.key);
+  }
+
+  exportValue(feature, options) {
+    const value = this.valueFrom(feature);
+
+    if (value) {
+      return value.format({part: this.part, ...options});
+    }
+
+    return null;
   }
 }

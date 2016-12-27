@@ -1,5 +1,6 @@
 import ElementColumn from './schema/element-column';
-import SimpleColumn from './schema/simple-column';
+// import SimpleColumn from './schema/simple-column';
+import FormFieldSchema from './form-field-schema';
 
 const SYSTEM_COLUMNS = [
   '_child_record_id',
@@ -36,10 +37,13 @@ const SYSTEM_COLUMNS = [
   '_edited_duration'
 ];
 
-export default class RepeatableSchema {
-  constructor(form, repeatable, rawColumns) {
-    this.form = form;
+export default class RepeatableSchema extends FormFieldSchema {
+  constructor(formSchema, repeatable, rawColumns, {fullSchema = false}) {
+    super({fullSchema});
+
+    this.formSchema = formSchema;
     this.repeatable = repeatable;
+    this.container = repeatable;
 
     this._columns = [];
     this._rawColumns = rawColumns;
@@ -51,28 +55,40 @@ export default class RepeatableSchema {
       if (SYSTEM_COLUMNS.indexOf(column.name) !== -1) {
         this._rawColumnsByKey[column.name] = column;
       } else if (column.field) {
-        this._rawColumnsByKey[column.field] = column;
+        const key = column.part ? column.field + '_' + column.part : column.field;
+        this._rawColumnsByKey[key] = column;
       }
     }
 
     this.setupColumns();
   }
 
-  addSystemColumn(label, attribute, columnName) {
-    const column = new SimpleColumn(label, attribute, columnName);
-    this._columns.push(column);
-    this._columnsByKey[columnName] = column;
-  }
-
   setupColumns() {
+    if (this.fullSchema) {
+      this.addSystemColumn('Child ID', 'id', '_child_record_id');
+      this.addSystemColumn('Record ID', 'id', '_record_id');
+      this.addSystemColumn('Parent ID', 'id', '_parent_id');
+    }
+
     if (this.form.statusField.isEnabled) {
       const columnObject = new ElementColumn(this.form.statusField,
-                                             this._rawColumnsByKey._status,
-                                             '_status');
+                                             this._rawColumnsByKey._record_status,
+                                             '_record_status');
 
       this._columns.push(columnObject);
 
-      this._columnsByKey._status = columnObject;
+      this._columnsByKey._record_status = columnObject;
+    }
+
+    if (this.fullSchema) {
+      this.addSystemColumn('Latitude', 'latitude', '_latitude');
+      this.addSystemColumn('Longitude', 'longitude', '_longitude');
+
+      this.addSystemColumn('Changeset', 'changesetID', '_changeset_id');
+
+      this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration');
+      this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration');
+      this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration');
     }
 
     this.addSystemColumn('Version', 'version', '_version');
@@ -89,62 +105,10 @@ export default class RepeatableSchema {
     //   this.addSystemColumn('Project', 'project', '_project_id');
     // }
 
-    for (const element of this.elementsForColumns) {
-      if (element.isHidden || element.hasHiddenParent) {
-        continue;
-      }
-
-      const column = this._rawColumnsByKey[element.key];
-
-      if (column == null) {
-        throw new Error('Column not found for element ' + element.key);
-      }
-
-      const columnObject = new ElementColumn(element, column);
-
-      this._columns.push(columnObject);
-
-      this._columnsByKey[element.key] = columnObject;
-    }
+    this.setupElementColumns();
   }
 
-  findColumnByID(id) {
-    return this.columns.find(e => e.id === id);
-  }
-
-  columnForFieldKey(fieldKey) {
-    return this._columnsByKey[fieldKey];
-  }
-
-  get columns() {
-    return this._columns;
-  }
-
-  get allElements() {
-    if (!this._allElements) {
-      this._allElements = this.repeatable.flattenElements(false);
-    }
-    return this._allElements;
-  }
-
-  get elementsForColumns() {
-    if (!this._elementsForColumns) {
-      this._elementsForColumns = [];
-
-      const elements = this.allElements;
-
-      for (const element of elements) {
-        const skip = element.isSectionElement ||
-                     element.isRepeatableElement ||
-                     element.isLabelElement ||
-                     element.isHidden;
-
-        if (!skip) {
-          this._elementsForColumns.push(element);
-        }
-      }
-    }
-
-    return this._elementsForColumns;
+  get tableName() {
+    return this.formSchema.tableName + '_' + this.repeatable.dataName;
   }
 }
