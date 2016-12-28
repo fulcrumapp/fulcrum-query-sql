@@ -1,13 +1,14 @@
 import Column from './column';
 
 export default class SimpleColumn extends Column {
-  constructor(name, attributeName, columnName, type = null) {
+  constructor({name, attributeName, columnName, type = null, accessor = null}) {
     super();
 
     this._type = type || 'string';
     this._name = name;
     this._attributeName = attributeName;
     this._columnName = columnName;
+    this._accessor = accessor || this.defaultAccessor;
   }
 
   get type() {
@@ -30,11 +31,15 @@ export default class SimpleColumn extends Column {
     return this._attributeName;
   }
 
-  valueFrom(row) {
-    return row[this.attributeName];
+  defaultAccessor = (object) => {
+    return object[this.attributeName];
   }
 
-  exportValue(row, options = {}) {
-    return this.valueFrom(row);
+  valueFrom(object) {
+    return this._accessor(object);
+  }
+
+  exportValue(object, options = {}) {
+    return this._accessor(object, options);
   }
 }

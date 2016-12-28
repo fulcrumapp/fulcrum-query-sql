@@ -1,7 +1,7 @@
 import Column from './column';
 
 export default class ElementColumn extends Column {
-  constructor(element, rawColumn, id, part) {
+  constructor({element, rawColumn, id, part}) {
     super();
 
     this._element = element;

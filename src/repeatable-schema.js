@@ -1,5 +1,3 @@
-import ElementColumn from './schema/element-column';
-// import SimpleColumn from './schema/simple-column';
 import FormFieldSchema from './form-field-schema';
 
 const SYSTEM_COLUMNS = [
@@ -66,21 +64,26 @@ export default class RepeatableSchema extends FormFieldSchema {
   setupColumns() {
     if (this.fullSchema) {
       this.addSystemColumn('Child ID', 'id', '_child_record_id');
-      this.addSystemColumn('Record ID', 'id', '_record_id');
-      this.addSystemColumn('Parent ID', 'id', '_parent_id');
+
+      this.addSystemColumn('Record ID', null, '_record_id', (feature, options) => {
+        return options.record.id;
+      });
+
+      this.addSystemColumn('Parent ID', null, '_parent_id', (feature, options) => {
+        return options.parent.id;
+      });
     }
 
-    if (this.form.statusField.isEnabled) {
-      const columnObject = new ElementColumn(this.form.statusField,
-                                             this._rawColumnsByKey._record_status,
-                                             '_record_status');
-
-      this._columns.push(columnObject);
-
-      this._columnsByKey._record_status = columnObject;
+    if (this.formSchema.form.statusField.isEnabled) {
+      this.addRawElementColumn(this.formSchema.form.statusField,
+                               this._rawColumnsByKey._record_status,
+                               '_record_status',
+                               null,
+                               '_record_status');
     }
 
     if (this.fullSchema) {
+      this.addSystemColumn('Geometry', 'geometryAsGeoJSON', '_geometry');
       this.addSystemColumn('Latitude', 'latitude', '_latitude');
       this.addSystemColumn('Longitude', 'longitude', '_longitude');
 

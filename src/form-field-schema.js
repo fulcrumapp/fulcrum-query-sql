@@ -6,8 +6,11 @@ export default class FormFieldSchema {
     this.fullSchema = fullSchema;
   }
 
-  addSystemColumn(label, attribute, columnName) {
-    const column = new SimpleColumn(label, attribute, columnName);
+  addSystemColumn(label, attribute, columnName, accessor) {
+    const column = new SimpleColumn({name: label,
+                                     attributeName: attribute,
+                                     columnName: columnName,
+                                     accessor: accessor});
     this._columns.push(column);
     this._columnsByKey[columnName] = column;
   }
@@ -15,14 +18,18 @@ export default class FormFieldSchema {
   addElementColumn(element, part) {
     const columnKey = part ? element.key + '_' + part : element.key;
 
-    const column = this._rawColumnsByKey[columnKey];
+    const rawColumn = this._rawColumnsByKey[columnKey];
 
     // if (column == null) {
     //   if the column is null, that means it's a materialized column
     //   throw new Error('Column not found for element ' + columnKey + Object.keys(this._rawColumnsByKey));
     // }
 
-    const columnObject = new ElementColumn(element, column, null, part);
+    this.addRawElementColumn(element, rawColumn, null, part, columnKey);
+  }
+
+  addRawElementColumn(element, rawColumn, id, part, columnKey) {
+    const columnObject = new ElementColumn({element, rawColumn, id, part});
 
     this._columns.push(columnObject);
     this._columnsByKey[columnKey] = columnObject;
