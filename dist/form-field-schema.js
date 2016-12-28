@@ -26,8 +26,11 @@ var FormFieldSchema = function () {
     this.fullSchema = fullSchema;
   }
 
-  FormFieldSchema.prototype.addSystemColumn = function addSystemColumn(label, attribute, columnName) {
-    var column = new _simpleColumn2.default(label, attribute, columnName);
+  FormFieldSchema.prototype.addSystemColumn = function addSystemColumn(label, attribute, columnName, accessor) {
+    var column = new _simpleColumn2.default({ name: label,
+      attributeName: attribute,
+      columnName: columnName,
+      accessor: accessor });
     this._columns.push(column);
     this._columnsByKey[columnName] = column;
   };
@@ -35,14 +38,18 @@ var FormFieldSchema = function () {
   FormFieldSchema.prototype.addElementColumn = function addElementColumn(element, part) {
     var columnKey = part ? element.key + '_' + part : element.key;
 
-    var column = this._rawColumnsByKey[columnKey];
+    var rawColumn = this._rawColumnsByKey[columnKey];
 
     // if (column == null) {
     //   if the column is null, that means it's a materialized column
     //   throw new Error('Column not found for element ' + columnKey + Object.keys(this._rawColumnsByKey));
     // }
 
-    var columnObject = new _elementColumn2.default(element, column, null, part);
+    this.addRawElementColumn(element, rawColumn, null, part, columnKey);
+  };
+
+  FormFieldSchema.prototype.addRawElementColumn = function addRawElementColumn(element, rawColumn, id, part, columnKey) {
+    var columnObject = new _elementColumn2.default({ element: element, rawColumn: rawColumn, id: id, part: part });
 
     this._columns.push(columnObject);
     this._columnsByKey[columnKey] = columnObject;

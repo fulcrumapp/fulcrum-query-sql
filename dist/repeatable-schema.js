@@ -4,10 +4,6 @@ exports.__esModule = true;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _elementColumn = require('./schema/element-column');
-
-var _elementColumn2 = _interopRequireDefault(_elementColumn);
-
 var _formFieldSchema = require('./form-field-schema');
 
 var _formFieldSchema2 = _interopRequireDefault(_formFieldSchema);
@@ -21,8 +17,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : _defaults(subClass, superClass); }
-// import SimpleColumn from './schema/simple-column';
-
 
 var SYSTEM_COLUMNS = ['_child_record_id', '_record_id', '_parent_id', '_record_project_id', '_record_assigned_to_id', '_record_status', '_index', '_latitude', '_longitude', '_created_at', '_updated_at', '_version', '_created_by_id', '_updated_by_id', '_server_created_at', '_server_updated_at', '_geometry', '_changeset_id', '_title', '_created_latitude', '_created_longitude', '_created_geometry', '_created_altitude', '_created_horizontal_accuracy', '_updated_latitude', '_updated_longitude', '_updated_geometry', '_updated_altitude', '_updated_horizontal_accuracy', '_created_duration', '_updated_duration', '_edited_duration'];
 
@@ -76,19 +70,22 @@ var RepeatableSchema = function (_FormFieldSchema) {
   RepeatableSchema.prototype.setupColumns = function setupColumns() {
     if (this.fullSchema) {
       this.addSystemColumn('Child ID', 'id', '_child_record_id');
-      this.addSystemColumn('Record ID', 'id', '_record_id');
-      this.addSystemColumn('Parent ID', 'id', '_parent_id');
+
+      this.addSystemColumn('Record ID', null, '_record_id', function (feature, options) {
+        return options.record.id;
+      });
+
+      this.addSystemColumn('Parent ID', null, '_parent_id', function (feature, options) {
+        return options.parent.id;
+      });
     }
 
-    if (this.form.statusField.isEnabled) {
-      var columnObject = new _elementColumn2.default(this.form.statusField, this._rawColumnsByKey._record_status, '_record_status');
-
-      this._columns.push(columnObject);
-
-      this._columnsByKey._record_status = columnObject;
+    if (this.formSchema.form.statusField.isEnabled) {
+      this.addRawElementColumn(this.formSchema.form.statusField, this._rawColumnsByKey._record_status, '_record_status', null, '_record_status');
     }
 
     if (this.fullSchema) {
+      this.addSystemColumn('Geometry', 'geometryAsGeoJSON', '_geometry');
       this.addSystemColumn('Latitude', 'latitude', '_latitude');
       this.addSystemColumn('Longitude', 'longitude', '_longitude');
 

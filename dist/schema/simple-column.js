@@ -21,28 +21,39 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var SimpleColumn = function (_Column) {
   _inherits(SimpleColumn, _Column);
 
-  function SimpleColumn(name, attributeName, columnName) {
-    var type = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  function SimpleColumn(_ref) {
+    var name = _ref.name,
+        attributeName = _ref.attributeName,
+        columnName = _ref.columnName,
+        _ref$type = _ref.type,
+        type = _ref$type === undefined ? null : _ref$type,
+        _ref$accessor = _ref.accessor,
+        accessor = _ref$accessor === undefined ? null : _ref$accessor;
 
     _classCallCheck(this, SimpleColumn);
 
     var _this = _possibleConstructorReturn(this, _Column.call(this));
 
+    _this.defaultAccessor = function (object) {
+      return object[_this.attributeName];
+    };
+
     _this._type = type || 'string';
     _this._name = name;
     _this._attributeName = attributeName;
     _this._columnName = columnName;
+    _this._accessor = accessor || _this.defaultAccessor;
     return _this;
   }
 
-  SimpleColumn.prototype.valueFrom = function valueFrom(row) {
-    return row[this.attributeName];
+  SimpleColumn.prototype.valueFrom = function valueFrom(object) {
+    return this._accessor(object);
   };
 
-  SimpleColumn.prototype.exportValue = function exportValue(row) {
+  SimpleColumn.prototype.exportValue = function exportValue(object) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    return this.valueFrom(row);
+    return this._accessor(object, options);
   };
 
   _createClass(SimpleColumn, [{

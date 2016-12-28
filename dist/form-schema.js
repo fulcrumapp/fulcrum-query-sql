@@ -105,14 +105,11 @@ var FormSchema = function (_FormFieldSchema) {
     }
 
     if (this.form.statusField.isEnabled) {
-      var columnObject = new _elementColumn2.default(this.form.statusField, this._rawColumnsByKey._status, '_status');
-
-      this._columns.push(columnObject);
-
-      this._columnsByKey._status = columnObject;
+      this.addRawElementColumn(this.form.statusField, this._rawColumnsByKey._status, '_status', null, '_status');
     }
 
     if (this.fullSchema) {
+      this.addSystemColumn('Geometry', 'geometryAsGeoJSON', '_geometry');
       this.addSystemColumn('Latitude', 'latitude', '_latitude');
       this.addSystemColumn('Longitude', 'longitude', '_longitude');
 

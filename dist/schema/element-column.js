@@ -23,7 +23,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ElementColumn = function (_Column) {
   _inherits(ElementColumn, _Column);
 
-  function ElementColumn(element, rawColumn, id, part) {
+  function ElementColumn(_ref) {
+    var element = _ref.element,
+        rawColumn = _ref.rawColumn,
+        id = _ref.id,
+        part = _ref.part;
+
     _classCallCheck(this, ElementColumn);
 
     var _this = _possibleConstructorReturn(this, _Column.call(this));
