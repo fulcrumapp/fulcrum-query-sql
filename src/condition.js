@@ -48,6 +48,21 @@ export class Condition {
     this._expressions = _.without(this._expressions, condition);
   }
 
+  ensureEmptyCondition() {
+    let hasEmpty = false;
+
+    for (const expression of this._expressions) {
+      if (!expression.field) {
+        hasEmpty = true;
+        break;
+      }
+    }
+
+    if (!hasEmpty) {
+      this.addEmptyExpression();
+    }
+  }
+
   addEmptyExpression() {
     this._expressions.push(new Expression({}, this._schema));
   }
