@@ -52,7 +52,7 @@ var Condition = exports.Condition = function () {
     this._expressions = _lodash2.default.without(this._expressions, condition);
   };
 
-  Condition.prototype.ensureEmptyCondition = function ensureEmptyCondition() {
+  Condition.prototype.ensureEmptyExpression = function ensureEmptyExpression() {
     var hasEmpty = false;
 
     for (var _iterator = this._expressions, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {

@@ -48,7 +48,7 @@ export class Condition {
     this._expressions = _.without(this._expressions, condition);
   }
 
-  ensureEmptyCondition() {
+  ensureEmptyExpression() {
     let hasEmpty = false;
 
     for (const expression of this._expressions) {
