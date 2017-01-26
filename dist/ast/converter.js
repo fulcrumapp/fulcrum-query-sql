@@ -396,9 +396,9 @@ var Converter = function () {
           })();
         } else if (filter.isEmptySet) {
           // add 1 = 0 clause to return 0 rows
-          var _expr = (0, _helpers.AExpr)(0, '=', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), (0, _helpers.AConst)((0, _helpers.IntegerValue)(0)));
+          var expr = (0, _helpers.AExpr)(0, '=', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), (0, _helpers.AConst)((0, _helpers.IntegerValue)(0)));
 
-          systemParts.push(_expr);
+          systemParts.push(expr);
         }
       }
     }

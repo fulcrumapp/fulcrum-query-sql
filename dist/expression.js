@@ -43,7 +43,7 @@ var Expression = exports.Expression = function () {
     }
 
     return this.value.find(function (o) {
-      return o.toString().toLowerCase().indexOf(value.toString().toLowerCase()) > -1;
+      return value == null && o == null || o.toString() === value.toString();
     });
   };
 
@@ -65,6 +65,34 @@ var Expression = exports.Expression = function () {
 
   Expression.prototype.availableOperators = function availableOperators() {
     return (0, _operator.availableOperatorsForColumn)(this.column);
+  };
+
+  Expression.prototype.labelForValue = function labelForValue(value) {
+    var column = this.column;
+
+    if (!column) {
+      return value;
+    }
+
+    var element = this.column.element;
+
+    if (element) {
+      if (element.isStatusElement) {
+        var choice = element.statusForValue(value);
+
+        if (choice) {
+          return choice.label;
+        }
+      } else if (element.isChoiceElement) {
+        var _choice = element.choiceByValue(value);
+
+        if (_choice) {
+          return _choice.label;
+        }
+      }
+    }
+
+    return value;
   };
 
   _createClass(Expression, [{

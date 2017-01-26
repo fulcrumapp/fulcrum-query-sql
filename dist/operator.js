@@ -150,11 +150,11 @@ var OperatorType = exports.OperatorType = {
   }
 };
 
-var TEXTUAL_OPERATORS = [OperatorType.TextContain, OperatorType.TextNotContain, OperatorType.TextStartsWith, OperatorType.TextEndsWith, OperatorType.TextEqual, OperatorType.TextNotEqual, OperatorType.TextMatch, OperatorType.TextNotMatch, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
+var TEXTUAL_OPERATORS = [OperatorType.In, OperatorType.NotIn, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.TextContain, OperatorType.TextNotContain, OperatorType.TextStartsWith, OperatorType.TextEndsWith, OperatorType.TextEqual, OperatorType.TextNotEqual, OperatorType.TextMatch, OperatorType.TextNotMatch];
 
-var DATE_OPERATORS = [OperatorType.DateEqual, OperatorType.DateAfter, OperatorType.DateBefore, OperatorType.DateNotEqual, OperatorType.Empty, OperatorType.NotEmpty];
+var DATE_OPERATORS = [OperatorType.DateEqual, OperatorType.DateAfter, OperatorType.DateBefore, OperatorType.DateNotEqual, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
 
-var NUMERIC_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.GreaterThan, OperatorType.GreaterThanOrEqual, OperatorType.LessThan, OperatorType.LessThanOrEqual, OperatorType.Between, OperatorType.NotBetween, OperatorType.Empty, OperatorType.NotEmpty];
+var NUMERIC_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.GreaterThan, OperatorType.GreaterThanOrEqual, OperatorType.LessThan, OperatorType.LessThanOrEqual, OperatorType.Between, OperatorType.NotBetween, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
 
 var ARRAY_OPERATORS = [OperatorType.ArrayAnyOf, OperatorType.ArrayAllOf, OperatorType.ArrayEqual, OperatorType.Empty, OperatorType.NotEmpty];
 
