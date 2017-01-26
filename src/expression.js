@@ -95,7 +95,7 @@ export class Expression {
       return false;
     }
 
-    return this.value.find(o => o.toString().toLowerCase().indexOf(value.toString().toLowerCase()) > -1);
+    return this.value.find(o => (value == null && o == null) || (o.toString() === value.toString()));
   }
 
   toJSON() {
@@ -118,5 +118,33 @@ export class Expression {
 
   availableOperators() {
     return availableOperatorsForColumn(this.column);
+  }
+
+  labelForValue(value) {
+    const column = this.column;
+
+    if (!column) {
+      return value;
+    }
+
+    const element = this.column.element;
+
+    if (element) {
+      if (element.isStatusElement) {
+        const choice = element.statusForValue(value);
+
+        if (choice) {
+          return choice.label;
+        }
+      } else if (element.isChoiceElement) {
+        const choice = element.choiceByValue(value);
+
+        if (choice) {
+          return choice.label;
+        }
+      }
+    }
+
+    return value;
   }
 }

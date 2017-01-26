@@ -146,6 +146,10 @@ export const OperatorType = {
 };
 
 const TEXTUAL_OPERATORS = [
+  OperatorType.In,
+  OperatorType.NotIn,
+  OperatorType.Empty,
+  OperatorType.NotEmpty,
   OperatorType.TextContain,
   OperatorType.TextNotContain,
   OperatorType.TextStartsWith,
@@ -153,11 +157,7 @@ const TEXTUAL_OPERATORS = [
   OperatorType.TextEqual,
   OperatorType.TextNotEqual,
   OperatorType.TextMatch,
-  OperatorType.TextNotMatch,
-  OperatorType.Empty,
-  OperatorType.NotEmpty,
-  OperatorType.In,
-  OperatorType.NotIn
+  OperatorType.TextNotMatch
 ];
 
 const DATE_OPERATORS = [
@@ -166,7 +166,9 @@ const DATE_OPERATORS = [
   OperatorType.DateBefore,
   OperatorType.DateNotEqual,
   OperatorType.Empty,
-  OperatorType.NotEmpty
+  OperatorType.NotEmpty,
+  OperatorType.In,
+  OperatorType.NotIn
 ];
 
 const NUMERIC_OPERATORS = [
@@ -179,7 +181,9 @@ const NUMERIC_OPERATORS = [
   OperatorType.Between,
   OperatorType.NotBetween,
   OperatorType.Empty,
-  OperatorType.NotEmpty
+  OperatorType.NotEmpty,
+  OperatorType.In,
+  OperatorType.NotIn
 ];
 
 const ARRAY_OPERATORS = [
