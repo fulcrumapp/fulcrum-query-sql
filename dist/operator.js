@@ -160,6 +160,8 @@ var ARRAY_OPERATORS = [OperatorType.ArrayAnyOf, OperatorType.ArrayAllOf, Operato
 
 var GEOSPATIAL_OPERATORS = [];
 
+var MEDIA_OPERATORS = [OperatorType.Empty, OperatorType.NotEmpty];
+
 var SYSTEM_COLUMNS = {
   _record_id: TEXTUAL_OPERATORS,
   _project_id: TEXTUAL_OPERATORS,
@@ -251,6 +253,10 @@ function availableOperatorsForColumn(column) {
 
     if (element.isStatusElement) {
       operators.push.apply(operators, TEXTUAL_OPERATORS);
+    }
+
+    if (element.isPhotoElement || element.isVideoElement || element.isAudioElement || element.isSignatureElement) {
+      operators.push.apply(operators, MEDIA_OPERATORS);
     }
   }
 

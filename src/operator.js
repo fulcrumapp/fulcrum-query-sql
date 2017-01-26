@@ -197,6 +197,11 @@ const ARRAY_OPERATORS = [
 const GEOSPATIAL_OPERATORS = [
 ];
 
+const MEDIA_OPERATORS = [
+  OperatorType.Empty,
+  OperatorType.NotEmpty
+];
+
 const SYSTEM_COLUMNS = {
   _record_id: TEXTUAL_OPERATORS,
   _project_id: TEXTUAL_OPERATORS,
@@ -288,6 +293,13 @@ export function availableOperatorsForColumn(column) {
 
     if (element.isStatusElement) {
       operators.push.apply(operators, TEXTUAL_OPERATORS);
+    }
+
+    if (element.isPhotoElement ||
+          element.isVideoElement ||
+          element.isAudioElement ||
+          element.isSignatureElement) {
+      operators.push.apply(operators, MEDIA_OPERATORS);
     }
   }
 
