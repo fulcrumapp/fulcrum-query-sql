@@ -26,6 +26,10 @@ var _pgQueryDeparser = require('pg-query-deparser');
 
 var _pgQueryDeparser2 = _interopRequireDefault(_pgQueryDeparser);
 
+var _queryOptions = require('./query-options');
+
+var _queryOptions2 = _interopRequireDefault(_queryOptions);
+
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -37,18 +41,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Query = function () {
-  function Query(form, outputs, filter, sort, schema) {
+  function Query(attrs) {
     _classCallCheck(this, Query);
 
-    this._form = form;
+    this._form = attrs.form;
     this._outputs = [];
-    this._schema = schema;
-    this._filter = new _condition.Condition(filter, schema);
+    this._schema = attrs.schema;
+    this._filter = new _condition.Condition(attrs.filter, attrs.schema);
     this._columnFilters = {};
-    this._sorting = new _sortExpressions2.default(sort || [], schema);
+    this._sorting = new _sortExpressions2.default(attrs.sort || [], attrs.schema);
     this._boundingBox = null;
     this._searchFilter = null;
-    this._dateFilter = new _expression.Expression({ field: '_server_updated_at' }, schema);
+    this._dateFilter = new _expression.Expression(attrs.date_filter || { field: '_server_updated_at' }, attrs.schema);
+    this._options = new _queryOptions2.default(attrs.options || {});
   }
 
   Query.prototype.columnFilter = function columnFilter(column) {
@@ -70,7 +75,9 @@ var Query = function () {
       sorting: this.sorting.toJSON(),
       column_filters: Object.keys(this.columnFilters).map(function (key) {
         return _this.columnFilters[key].toJSON();
-      })
+      }),
+      options: this.options.toJSON(),
+      date_filter: this.dateFilter.toJSON()
     };
   };
 
@@ -201,6 +208,11 @@ var Query = function () {
       return this._dateFilter;
     }
   }, {
+    key: 'options',
+    get: function get() {
+      return this._options;
+    }
+  }, {
     key: 'boundingBox',
     set: function set(box) {
       this._boundingBox = box;
@@ -221,7 +233,8 @@ var Query = function () {
     get: function get() {
       return {
         boundingBox: this.boundingBox,
-        searchFilter: this.searchFilter
+        searchFilter: this.searchFilter,
+        dateFilter: this.dateFilter
       };
     }
   }, {

@@ -295,6 +295,8 @@ var GEOSPATIAL_OPERATORS = [];
 
 var MEDIA_OPERATORS = [OperatorType.Empty, OperatorType.NotEmpty];
 
+var NO_VALUE_OPERATORS = [OperatorType.Empty, OperatorType.NotEmpty, OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLastWeek, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear];
+
 var SYSTEM_COLUMNS = {
   _record_id: TEXTUAL_OPERATORS,
   _project_id: TEXTUAL_OPERATORS,
@@ -333,7 +335,9 @@ var SYSTEM_COLUMNS = {
 };
 
 function isValueRequired(operator) {
-  return operator !== OperatorType.Empty.name && operator !== OperatorType.NotEmpty.name;
+  return !NO_VALUE_OPERATORS.find(function (o) {
+    return o.name === operator;
+  });
 }
 
 function availableOperatorsForColumn(column) {
@@ -396,75 +400,76 @@ function availableOperatorsForColumn(column) {
   return operators;
 }
 
-function calculateDateRange(operator, value, today) {
-  today = (0, _moment2.default)(today || new Date()).startOf('day');
+function calculateDateRange(operator, value, now) {
+  now = (0, _moment2.default)(now || new Date()).clone().startOf('day');
+
+  var date1 = now.clone();
+  var date2 = now.clone();
 
   var range = function range(start, end) {
-    return [start, (end || start).endOf('day')];
+    return [start.clone(), (end || start).clone().endOf('day')];
   };
-
-  var today2 = today.clone();
 
   switch (operator) {
     case OperatorType.DateToday.name:
-      return range(today);
+      return range(date1);
 
     case OperatorType.DateYesterday.name:
-      return range(today.subtract(1, 'days'));
+      return range(date1.subtract(1, 'days'));
 
     case OperatorType.DateTomorrow.name:
-      return range(today.add(1, 'days'));
+      return range(date1.add(1, 'days'));
 
     case OperatorType.DateLastWeek.name:
-      return range(today.subtract(1, 'week'), today2);
+      return range(date1.subtract(1, 'week'), date2);
 
     case OperatorType.DateLastMonth.name:
-      return range(today.subtract(1, 'month'), today2);
+      return range(date1.subtract(1, 'month'), date2);
 
     case OperatorType.DateLastYear.name:
-      return range(today.subtract(1, 'year'), today2);
+      return range(date1.subtract(1, 'year'), date2);
 
     case OperatorType.DateNextWeek.name:
-      return range(today2, today.add(1, 'week'));
+      return range(date1, date2.add(1, 'week'));
 
     case OperatorType.DateNextMonth.name:
-      return range(today2, today.add(1, 'month'));
+      return range(date1, date2.add(1, 'month'));
 
     case OperatorType.DateNextYear.name:
-      return range(today2, today.add(1, 'year'));
+      return range(date1, date2.add(1, 'year'));
 
     case OperatorType.DateCurrentCalendarWeek.name:
-      return range(today.startOf('week'), today2.endOf('week'));
+      return range(date1.startOf('week'), date2.endOf('week'));
 
     case OperatorType.DatePreviousCalendarWeek.name:
-      return range(today.subtract(1, 'week').startOf('week'), today2.subtract(1, 'week').endOf('week'));
+      return range(date1.subtract(1, 'week').startOf('week'), date2.subtract(1, 'week').endOf('week'));
 
     case OperatorType.DateNextCalendarWeek.name:
-      return range(today.add(1, 'week').startOf('week'), today2.add(1, 'week').endOf('week'));
+      return range(date1.add(1, 'week').startOf('week'), date2.add(1, 'week').endOf('week'));
 
     case OperatorType.DateCurrentCalendarMonth.name:
-      return range(today.startOf('month'), today2.endOf('month'));
+      return range(date1.startOf('month'), date2.endOf('month'));
 
     case OperatorType.DatePreviousCalendarMonth.name:
-      return range(today.subtract(1, 'month').startOf('month'), today2.subtract(1, 'month').endOf('month'));
+      return range(date1.subtract(1, 'month').startOf('month'), date2.subtract(1, 'month').endOf('month'));
 
     case OperatorType.DateNextCalendarMonth.name:
-      return range(today.add(1, 'month').startOf('month'), today2.add(1, 'month').endOf('month'));
+      return range(date1.add(1, 'month').startOf('month'), date2.add(1, 'month').endOf('month'));
 
     case OperatorType.DateCurrentCalendarYear.name:
-      return range(today.startOf('year'), today2.endOf('year'));
+      return range(date1.startOf('year'), date2.endOf('year'));
 
     case OperatorType.DatePreviousCalendarYear.name:
-      return range(today.subtract(1, 'year').startOf('year'), today2.subtract(1, 'year').endOf('year'));
+      return range(date1.subtract(1, 'year').startOf('year'), date2.subtract(1, 'year').endOf('year'));
 
     case OperatorType.DateNextCalendarYear.name:
-      return range(today.add(1, 'year').startOf('year'), today2.add(1, 'year').endOf('year'));
+      return range(date1.add(1, 'year').startOf('year'), date2.add(1, 'year').endOf('year'));
 
     case OperatorType.DateDaysFromNow.name:
-      return value && range(today, today2.add(+value, 'days'));
+      return value && range(date1, date2.add(+value, 'days'));
 
     case OperatorType.DateDaysAgo.name:
-      return value && range(today.subtract(+value, 'days'), today2);
+      return value && range(date1.subtract(+value, 'days'), date2);
 
     case OperatorType.DateBetween.name:
       return value && range(value[0] && (0, _moment2.default)(value[0]), value[1] && (0, _moment2.default)(value[1]));
