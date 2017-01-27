@@ -4,10 +4,6 @@ exports.__esModule = true;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _elementColumn = require('./schema/element-column');
-
-var _elementColumn2 = _interopRequireDefault(_elementColumn);
-
 var _repeatableSchema = require('./repeatable-schema');
 
 var _repeatableSchema2 = _interopRequireDefault(_repeatableSchema);

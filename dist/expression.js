@@ -174,6 +174,30 @@ var Expression = exports.Expression = function () {
     get: function get() {
       return this._expressions;
     }
+  }, {
+    key: 'startDate',
+    get: function get() {
+      return this._value && this._value[0];
+    },
+    set: function set(date) {
+      if (!this._value) {
+        this._value = [];
+      }
+
+      this._value = [date && date.utc().format('YYYY-MM-DD'), this.value[1]];
+    }
+  }, {
+    key: 'endDate',
+    get: function get() {
+      return this._value && this._value[1];
+    },
+    set: function set(date) {
+      if (!this._value) {
+        this._value = [];
+      }
+
+      this._value = [this.value[0], date && date.utc().format('YYYY-MM-DD')];
+    }
   }]);
 
   return Expression;

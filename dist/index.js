@@ -1,45 +1,42 @@
 'use strict';
 
 exports.__esModule = true;
-exports.OperatorType = exports.ConditionType = exports.Condition = exports.ExpressionKind = exports.Expression = exports.PhotoColumn = exports.ElementColumn = exports.SimpleColumn = exports.Column = exports.FormSchema = exports.Query = undefined;
+exports.PhotoColumn = exports.ElementColumn = exports.SimpleColumn = exports.Column = exports.FormSchema = exports.Query = undefined;
 
 var _expression = require('./expression');
 
-Object.defineProperty(exports, 'Expression', {
-  enumerable: true,
-  get: function get() {
-    return _expression.Expression;
-  }
-});
-Object.defineProperty(exports, 'ExpressionKind', {
-  enumerable: true,
-  get: function get() {
-    return _expression.ExpressionKind;
-  }
+Object.keys(_expression).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _expression[key];
+    }
+  });
 });
 
 var _condition = require('./condition');
 
-Object.defineProperty(exports, 'Condition', {
-  enumerable: true,
-  get: function get() {
-    return _condition.Condition;
-  }
-});
-Object.defineProperty(exports, 'ConditionType', {
-  enumerable: true,
-  get: function get() {
-    return _condition.ConditionType;
-  }
+Object.keys(_condition).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _condition[key];
+    }
+  });
 });
 
 var _operator = require('./operator');
 
-Object.defineProperty(exports, 'OperatorType', {
-  enumerable: true,
-  get: function get() {
-    return _operator.OperatorType;
-  }
+Object.keys(_operator).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _operator[key];
+    }
+  });
 });
 
 var _query = require('./query');

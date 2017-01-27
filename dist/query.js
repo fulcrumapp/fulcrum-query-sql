@@ -8,6 +8,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _condition = require('./condition');
 
+var _expression = require('./expression');
+
 var _sortExpressions = require('./sort-expressions');
 
 var _sortExpressions2 = _interopRequireDefault(_sortExpressions);
@@ -46,6 +48,7 @@ var Query = function () {
     this._sorting = new _sortExpressions2.default(sort || [], schema);
     this._boundingBox = null;
     this._searchFilter = null;
+    this._dateFilter = new _expression.Expression({ field: '_server_updated_at' }, schema);
   }
 
   Query.prototype.columnFilter = function columnFilter(column) {
@@ -191,6 +194,11 @@ var Query = function () {
     key: 'columnFilters',
     get: function get() {
       return this._columnFilters;
+    }
+  }, {
+    key: 'dateFilter',
+    get: function get() {
+      return this._dateFilter;
     }
   }, {
     key: 'boundingBox',
