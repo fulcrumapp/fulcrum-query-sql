@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const OperatorType = {
   Empty: {
     name: 'is_empty',
@@ -114,9 +116,129 @@ export const OperatorType = {
     label: 'After'
   },
 
+  DateOnOrAfter: {
+    name: 'date_on_or_after',
+    label: 'On or After'
+  },
+
   DateBefore: {
     name: 'date_before',
     label: 'Before'
+  },
+
+  DateOnOrBefore: {
+    name: 'date_on_or_before',
+    label: 'On or Before'
+  },
+
+  DateToday: {
+    name: 'date_today',
+    label: 'Today'
+  },
+
+  DateYesterday: {
+    name: 'date_yesterday',
+    label: 'Yesterday'
+  },
+
+  DateTomorrow: {
+    name: 'date_tomorrow',
+    label: 'Tomorrow'
+  },
+
+  DateLastWeek: {
+    name: 'date_last_week',
+    label: '1 Week Ago'
+  },
+
+  DateLastMonth: {
+    name: 'date_last_month',
+    label: '1 Month Ago'
+  },
+
+  DateLastYear: {
+    name: 'date_last_year',
+    label: '1 Year Ago'
+  },
+
+  DateNextWeek: {
+    name: 'date_next_week',
+    label: '1 Week from Now'
+  },
+
+  DateNextMonth: {
+    name: 'date_next_month',
+    label: '1 Month from Now'
+  },
+
+  DateNextYear: {
+    name: 'date_next_year',
+    label: '1 Year from Now'
+  },
+
+  DateCurrentCalendarWeek: {
+    name: 'date_current_calendar_week',
+    label: 'This Week'
+  },
+
+  DateCurrentCalendarMonth: {
+    name: 'date_current_calendar_month',
+    label: 'This Month'
+  },
+
+  DateCurrentCalendarYear: {
+    name: 'date_current_calendar_year',
+    label: 'This Year'
+  },
+
+  DatePreviousCalendarWeek: {
+    name: 'date_previous_calendar_week',
+    label: 'Last Week'
+  },
+
+  DatePreviousCalendarMonth: {
+    name: 'date_previous_calendar_month',
+    label: 'Last Month'
+  },
+
+  DatePreviousCalendarYear: {
+    name: 'date_previous_calendar_year',
+    label: 'Last Year'
+  },
+
+  DateNextCalendarWeek: {
+    name: 'date_next_calendar_week',
+    label: 'Next Week'
+  },
+
+  DateNextCalendarMonth: {
+    name: 'date_next_calendar_month',
+    label: 'Next Month'
+  },
+
+  DateNextCalendarYear: {
+    name: 'date_next_calendar_year',
+    label: 'Next Year'
+  },
+
+  DateDaysFromNow: {
+    name: 'date_days_from_now',
+    label: 'Days from Now'
+  },
+
+  DateDaysAgo: {
+    name: 'date_days_ago',
+    label: 'Days ago'
+  },
+
+  DateBetween: {
+    name: 'date_between',
+    label: 'Between'
+  },
+
+  DateNotBetween: {
+    name: 'date_not_between',
+    label: 'Not Between'
   },
 
   ArrayAnyOf: {
@@ -162,13 +284,70 @@ const TEXTUAL_OPERATORS = [
 
 const DATE_OPERATORS = [
   OperatorType.DateEqual,
+  OperatorType.DateOnOrAfter,
   OperatorType.DateAfter,
+  OperatorType.DateOnOrBefore,
   OperatorType.DateBefore,
+  OperatorType.DateBetween,
+  OperatorType.DateNotBetween,
   OperatorType.DateNotEqual,
   OperatorType.Empty,
   OperatorType.NotEmpty,
   OperatorType.In,
-  OperatorType.NotIn
+  OperatorType.NotIn,
+  OperatorType.DateToday,
+  OperatorType.DateYesterday,
+  OperatorType.DateTomorrow,
+  OperatorType.DateLastWeek,
+  OperatorType.DateLastMonth,
+  OperatorType.DateLastYear,
+  OperatorType.DateNextWeek,
+  OperatorType.DateNextMonth,
+  OperatorType.DateNextYear,
+  OperatorType.DateCurrentCalendarWeek,
+  OperatorType.DateCurrentCalendarMonth,
+  OperatorType.DateCurrentCalendarYear,
+  OperatorType.DatePreviousCalendarWeek,
+  OperatorType.DatePreviousCalendarMonth,
+  OperatorType.DatePreviousCalendarYear,
+  OperatorType.DateNextCalendarWeek,
+  OperatorType.DateNextCalendarMonth,
+  OperatorType.DateNextCalendarYear,
+  OperatorType.DateDaysFromNow,
+  OperatorType.DateDaysAgo
+];
+
+export const DYNAMIC_DATE_OPERATORS = [
+  OperatorType.DateToday,
+  OperatorType.DateYesterday,
+  OperatorType.DateTomorrow,
+  OperatorType.DateLastWeek,
+  OperatorType.DateLastMonth,
+  OperatorType.DateLastYear,
+  OperatorType.DateNextWeek,
+  OperatorType.DateNextMonth,
+  OperatorType.DateNextYear,
+  OperatorType.DateCurrentCalendarWeek,
+  OperatorType.DateCurrentCalendarMonth,
+  OperatorType.DateCurrentCalendarYear,
+  OperatorType.DatePreviousCalendarWeek,
+  OperatorType.DatePreviousCalendarMonth,
+  OperatorType.DatePreviousCalendarYear,
+  OperatorType.DateNextCalendarWeek,
+  OperatorType.DateNextCalendarMonth,
+  OperatorType.DateNextCalendarYear,
+  OperatorType.DateDaysFromNow,
+  OperatorType.DateDaysAgo
+];
+
+export const FRIENDLY_DATE_OPERATORS = [
+  OperatorType.DateToday,
+  OperatorType.DateYesterday,
+  OperatorType.DateTomorrow,
+  OperatorType.DateLastWeek,
+  OperatorType.DateLastMonth,
+  OperatorType.DateCurrentCalendarMonth,
+  OperatorType.DatePreviousCalendarMonth
 ];
 
 const NUMERIC_OPERATORS = [
@@ -304,4 +483,88 @@ export function availableOperatorsForColumn(column) {
   }
 
   return operators;
+}
+
+export function calculateDateRange(operator, value, today) {
+  today = moment(today || new Date()).startOf('day');
+
+  const range = (start, end) => {
+    return [ start, (end || start).endOf('day') ];
+  };
+
+  const today2 = today.clone();
+
+  switch (operator) {
+    case OperatorType.DateToday.name:
+      return range(today);
+
+    case OperatorType.DateYesterday.name:
+      return range(today.subtract(1, 'days'));
+
+    case OperatorType.DateTomorrow.name:
+      return range(today.add(1, 'days'));
+
+    case OperatorType.DateLastWeek.name:
+      return range(today.subtract(1, 'week'), today2);
+
+    case OperatorType.DateLastMonth.name:
+      return range(today.subtract(1, 'month'), today2);
+
+    case OperatorType.DateLastYear.name:
+      return range(today.subtract(1, 'year'), today2);
+
+    case OperatorType.DateNextWeek.name:
+      return range(today2, today.add(1, 'week'));
+
+    case OperatorType.DateNextMonth.name:
+      return range(today2, today.add(1, 'month'));
+
+    case OperatorType.DateNextYear.name:
+      return range(today2, today.add(1, 'year'));
+
+    case OperatorType.DateCurrentCalendarWeek.name:
+      return range(today.startOf('week'), today2.endOf('week'));
+
+    case OperatorType.DatePreviousCalendarWeek.name:
+      return range(today.subtract(1, 'week').startOf('week'),
+                   today2.subtract(1, 'week').endOf('week'));
+
+    case OperatorType.DateNextCalendarWeek.name:
+      return range(today.add(1, 'week').startOf('week'),
+                   today2.add(1, 'week').endOf('week'));
+
+    case OperatorType.DateCurrentCalendarMonth.name:
+      return range(today.startOf('month'), today2.endOf('month'));
+
+    case OperatorType.DatePreviousCalendarMonth.name:
+      return range(today.subtract(1, 'month').startOf('month'),
+                   today2.subtract(1, 'month').endOf('month'));
+
+    case OperatorType.DateNextCalendarMonth.name:
+      return range(today.add(1, 'month').startOf('month'),
+                   today2.add(1, 'month').endOf('month'));
+
+    case OperatorType.DateCurrentCalendarYear.name:
+      return range(today.startOf('year'), today2.endOf('year'));
+
+    case OperatorType.DatePreviousCalendarYear.name:
+      return range(today.subtract(1, 'year').startOf('year'),
+                   today2.subtract(1, 'year').endOf('year'));
+
+    case OperatorType.DateNextCalendarYear.name:
+      return range(today.add(1, 'year').startOf('year'),
+                   today2.add(1, 'year').endOf('year'));
+
+    case OperatorType.DateDaysFromNow.name:
+      return value && range(today, today2.add(+value, 'days'));
+
+    case OperatorType.DateDaysAgo.name:
+      return value && range(today.subtract(+value, 'days'), today2);
+
+    case OperatorType.DateBetween.name:
+      return value && range(value[0] && moment(value[0]), value[1] && moment(value[1]));
+
+    default:
+      return null;
+  }
 }

@@ -120,6 +120,30 @@ export class Expression {
     return availableOperatorsForColumn(this.column);
   }
 
+  get startDate() {
+    return this._value && this._value[0];
+  }
+
+  set startDate(date) {
+    if (!this._value) {
+      this._value = [];
+    }
+
+    this._value = [ date && date.utc().format('YYYY-MM-DD'), this.value[1] ];
+  }
+
+  get endDate() {
+    return this._value && this._value[1];
+  }
+
+  set endDate(date) {
+    if (!this._value) {
+      this._value = [];
+    }
+
+    this._value = [ this.value[0], date && date.utc().format('YYYY-MM-DD') ];
+  }
+
   labelForValue(value) {
     const column = this.column;
 

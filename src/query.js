@@ -1,4 +1,5 @@
 import { Condition } from './condition';
+import { Expression } from './expression';
 import SortExpressions from './sort-expressions';
 import Converter from './ast/converter';
 import ColumnFilter from './column-filter';
@@ -31,6 +32,7 @@ export default class Query {
     this._sorting = new SortExpressions(sort || [], schema);
     this._boundingBox = null;
     this._searchFilter = null;
+    this._dateFilter = new Expression({field: '_server_updated_at'}, schema);
   }
 
   get form() {
@@ -51,6 +53,10 @@ export default class Query {
 
   get columnFilters() {
     return this._columnFilters;
+  }
+
+  get dateFilter() {
+    return this._dateFilter;
   }
 
   columnFilter(column) {

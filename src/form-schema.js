@@ -1,4 +1,3 @@
-import ElementColumn from './schema/element-column';
 import RepeatableSchema from './repeatable-schema';
 import FormFieldSchema from './form-field-schema';
 
