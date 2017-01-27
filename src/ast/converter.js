@@ -26,7 +26,8 @@ import { ColumnRef,
          SubLink } from './helpers';
 
 import { ConditionType } from '../condition';
-import { OperatorType } from '../operator';
+import { OperatorType, calculateDateRange } from '../operator';
+import moment from 'moment-timezone';
 
 // import { SelectStmt } from './ast/helpers';
 
@@ -219,7 +220,15 @@ export default class Converter {
 
   whereClause(query, boundingBox, search) {
     const systemParts = [];
-    const filterNode = this.nodeForCondition(query.filter);
+    const filterNode = this.nodeForCondition(query.filter, query.options);
+
+    if (query.dateFilter) {
+      const dateExpression = this.nodeForExpression(query.dateFilter, query.options);
+
+      if (dateExpression) {
+        systemParts.push(dateExpression);
+      }
+    }
 
     if (boundingBox) {
       systemParts.push(this.boundingBoxFilter(boundingBox));
@@ -356,24 +365,24 @@ export default class Converter {
     return BoolExpr(0, andArgs);
   }
 
-  nodeForExpressions(expressions) {
-    return expressions.map(e => this.nodeForExpression(e))
+  nodeForExpressions(expressions, options) {
+    return expressions.map(e => this.nodeForExpression(e, options))
                       .filter(e => e);
   }
 
-  nodeForCondition(condition) {
+  nodeForCondition(condition, options) {
     const converter = {
       [ConditionType.And]: this.AndConverter,
       [ConditionType.Or]: this.OrConverter,
       [ConditionType.Not]: this.NotConverter
     };
 
-    return converter[condition.type](condition);
+    return converter[condition.type](condition, options);
   }
 
-  nodeForExpression(expression) {
+  nodeForExpression(expression, options) {
     if (expression.expressions) {
-      return this.nodeForCondition(expression);
+      return this.nodeForCondition(expression, options);
     }
 
     const converter = {
@@ -397,24 +406,47 @@ export default class Converter {
       [OperatorType.TextNotEqual.name]: this.TextNotEqualConverter,
       [OperatorType.TextMatch.name]: this.TextMatchConverter,
       [OperatorType.TextNotMatch.name]: this.TextNotMatchConverter,
-      [OperatorType.DateEqual.name]: this.DateEqualConverter,
-      [OperatorType.DateAfter.name]: this.DateAfterConverter,
-      [OperatorType.DateBefore.name]: this.DateBeforeConverter,
+      [OperatorType.DateEqual.name]: this.EqualConverter,
+      [OperatorType.DateNotEqual.name]: this.NotEqualConverter,
+      [OperatorType.DateAfter.name]: this.GreaterThanConverter,
+      [OperatorType.DateOnOrAfter.name]: this.GreaterThanOrEqualConverter,
+      [OperatorType.DateBefore.name]: this.LessThanConverter,
+      [OperatorType.DateOnOrBefore.name]: this.LessThanOrEqualConverter,
       [OperatorType.ArrayAnyOf.name]: this.ArrayAnyOfConverter,
       [OperatorType.ArrayAllOf.name]: this.ArrayAllOfConverter,
       [OperatorType.ArrayEqual.name]: this.ArrayEqualConverter,
-      [OperatorType.Search.name]: this.SearchConverter
+      [OperatorType.Search.name]: this.SearchConverter,
+      [OperatorType.DateToday.name]: this.DynamicDateConverter,
+      [OperatorType.DateYesterday.name]: this.DynamicDateConverter,
+      [OperatorType.DateTomorrow.name]: this.DynamicDateConverter,
+      [OperatorType.DateLastWeek.name]: this.DynamicDateConverter,
+      [OperatorType.DateLastMonth.name]: this.DynamicDateConverter,
+      [OperatorType.DateLastYear.name]: this.DynamicDateConverter,
+      [OperatorType.DateNextWeek.name]: this.DynamicDateConverter,
+      [OperatorType.DateNextMonth.name]: this.DynamicDateConverter,
+      [OperatorType.DateNextYear.name]: this.DynamicDateConverter,
+      [OperatorType.DateCurrentCalendarWeek.name]: this.DynamicDateConverter,
+      [OperatorType.DateCurrentCalendarMonth.name]: this.DynamicDateConverter,
+      [OperatorType.DateCurrentCalendarYear.name]: this.DynamicDateConverter,
+      [OperatorType.DatePreviousCalendarWeek.name]: this.DynamicDateConverter,
+      [OperatorType.DatePreviousCalendarMonth.name]: this.DynamicDateConverter,
+      [OperatorType.DatePreviousCalendarYear.name]: this.DynamicDateConverter,
+      [OperatorType.DateNextCalendarWeek.name]: this.DynamicDateConverter,
+      [OperatorType.DateNextCalendarMonth.name]: this.DynamicDateConverter,
+      [OperatorType.DateNextCalendarYear.name]: this.DynamicDateConverter,
+      [OperatorType.DateDaysFromNow.name]: this.DynamicDateConverter,
+      [OperatorType.DateDaysAgo.name]: this.DynamicDateConverter
     };
 
     if (!expression.isValid) {
       return null;
     }
 
-    return converter[expression.operator](expression);
+    return converter[expression.operator](expression, options);
   }
 
-  BooleanConverter = (type, condition) => {
-    const args = this.nodeForExpressions(condition.expressions);
+  BooleanConverter = (type, condition, options) => {
+    const args = this.nodeForExpressions(condition.expressions, options);
 
     if (args && args.length) {
       return BoolExpr(type, args);
@@ -423,20 +455,20 @@ export default class Converter {
     return null;
   }
 
-  AndConverter = (condition) => {
-    return this.BooleanConverter(0, condition);
+  AndConverter = (condition, options) => {
+    return this.BooleanConverter(0, condition, options);
   }
 
-  OrConverter = (condition) => {
-    return this.BooleanConverter(1, condition);
+  OrConverter = (condition, options) => {
+    return this.BooleanConverter(1, condition, options);
   }
 
-  NotConverter = (condition) => {
+  NotConverter = (condition, options) => {
     if (condition.expressions.length > 1) {
-      return BoolExpr(2, [ this.BooleanConverter(0, condition) ]);
+      return BoolExpr(2, [ this.BooleanConverter(0, condition, options) ]);
     }
 
-    return this.BooleanConverter(2, condition);
+    return this.BooleanConverter(2, condition, options);
   }
 
   NotEmptyConverter = (expression) => {
@@ -471,6 +503,16 @@ export default class Converter {
     return this.BinaryConverter(0, '<=', expression);
   }
 
+  BetweenConverter = (expression) => {
+    return AExpr(10, 'BETWEEN', ColumnRef(expression.columnName),
+                 [ AConst(StringValue(expression.value[0])), AConst(StringValue(expression.value[1])) ]);
+  }
+
+  NotBetweenConverter = (expression) => {
+    return AExpr(11, 'NOT BETWEEN', ColumnRef(expression.columnName),
+                 [ AConst(StringValue(expression.value[0])), AConst(StringValue(expression.value[1])) ]);
+  }
+
   InConverter = (expression) => {
     const values = expression.value.map(v => AConst(StringValue(v)));
 
@@ -486,7 +528,7 @@ export default class Converter {
   }
 
   BinaryConverter = (kind, operator, expression) => {
-    return AExpr(0, operator, ColumnRef(expression.columnName),
+    return AExpr(kind, operator, ColumnRef(expression.columnName),
                  AConst(StringValue(expression.scalarValue)));
   }
 
@@ -569,5 +611,33 @@ export default class Converter {
 
     return AExpr(0, '@@', ColumnRef(expression.columnName),
                  rhs);
+  }
+
+  DynamicDateConverter = (expression, options) => {
+    // Let the caller specify the timezone to be used for dynamic date calculations. This
+    // makes sure when the browser calculates a dynamic range, the server would calculate
+    // the same range. So 'Today' is midnight to midnight in the user's local time. It would
+    // be much less useful and confusing if we forced "Today" to always be London's today.
+    const timeZone = (options && options.timeZone) || moment.tz.guess();
+
+    const now = moment().tz(timeZone);
+
+    const range = calculateDateRange(expression.operator, expression.value, now);
+
+    const value1 = range[0] && range[0].clone();
+    const value2 = range[1] && range[1].clone();
+
+    const constant1 = value1 && AConst(StringValue(value1.toISOString()));
+    const constant2 = value2 && AConst(StringValue(value2.toISOString()));
+
+    if (constant1 && constant2) {
+      return AExpr(10, 'BETWEEN', ColumnRef(expression.columnName), [ constant1, constant2 ]);
+    } else if (constant1) {
+      return AExpr(0, '>=', ColumnRef(expression.columnName), constant1);
+    } else if (constant2) {
+      return AExpr(0, '<=', ColumnRef(expression.columnName), constant2);
+    }
+
+    return null;
   }
 }

@@ -4,6 +4,7 @@ import SortExpressions from './sort-expressions';
 import Converter from './ast/converter';
 import ColumnFilter from './column-filter';
 import Deparse from 'pg-query-deparser';
+import QueryOptions from './query-options';
 import _ from 'lodash';
 
 import { ResTarget,
@@ -23,16 +24,17 @@ import { ResTarget,
          IntegerValue } from './ast/helpers';
 
 export default class Query {
-  constructor(form, outputs, filter, sort, schema) {
-    this._form = form;
+  constructor(attrs) {
+    this._form = attrs.form;
     this._outputs = [];
-    this._schema = schema;
-    this._filter = new Condition(filter, schema);
+    this._schema = attrs.schema;
+    this._filter = new Condition(attrs.filter, attrs.schema);
     this._columnFilters = {};
-    this._sorting = new SortExpressions(sort || [], schema);
+    this._sorting = new SortExpressions(attrs.sort || [], attrs.schema);
     this._boundingBox = null;
     this._searchFilter = null;
-    this._dateFilter = new Expression({field: '_server_updated_at'}, schema);
+    this._dateFilter = new Expression(attrs.date_filter || {field: '_server_updated_at'}, attrs.schema);
+    this._options = new QueryOptions(attrs.options || {});
   }
 
   get form() {
@@ -57,6 +59,10 @@ export default class Query {
 
   get dateFilter() {
     return this._dateFilter;
+  }
+
+  get options() {
+    return this._options;
   }
 
   columnFilter(column) {
@@ -86,7 +92,8 @@ export default class Query {
   get runtimeFilters() {
     return {
       boundingBox: this.boundingBox,
-      searchFilter: this.searchFilter
+      searchFilter: this.searchFilter,
+      dateFilter: this.dateFilter
     };
   }
 
@@ -95,7 +102,9 @@ export default class Query {
       outputs: this.outputs.map(o => o.toJSON()),
       filter: this.filter.toJSON(),
       sorting: this.sorting.toJSON(),
-      column_filters: Object.keys(this.columnFilters).map(key => this.columnFilters[key].toJSON())
+      column_filters: Object.keys(this.columnFilters).map(key => this.columnFilters[key].toJSON()),
+      options: this.options.toJSON(),
+      date_filter: this.dateFilter.toJSON()
     };
   }
 
