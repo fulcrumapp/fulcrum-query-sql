@@ -3,6 +3,7 @@
 exports.__esModule = true;
 exports.FRIENDLY_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = exports.OperatorType = undefined;
 exports.isValueRequired = isValueRequired;
+exports.isDateOperator = isDateOperator;
 exports.availableOperatorsForColumn = availableOperatorsForColumn;
 exports.calculateDateRange = calculateDateRange;
 
@@ -158,9 +159,19 @@ var OperatorType = exports.OperatorType = {
     label: 'Tomorrow'
   },
 
-  DateLastWeek: {
-    name: 'date_last_week',
-    label: '1 Week Ago'
+  DateLast7Days: {
+    name: 'date_last_7_days',
+    label: 'Last 7 days'
+  },
+
+  DateLast30Days: {
+    name: 'date_last_30_days',
+    label: 'Last 30 days'
+  },
+
+  DateLast90Days: {
+    name: 'date_last_90_days',
+    label: 'Last 90 days'
   },
 
   DateLastMonth: {
@@ -238,9 +249,39 @@ var OperatorType = exports.OperatorType = {
     label: 'Days from Now'
   },
 
+  DateWeeksFromNow: {
+    name: 'date_weeks_from_now',
+    label: 'Weeks from Now'
+  },
+
+  DateMonthsFromNow: {
+    name: 'date_months_from_now',
+    label: 'Months from now'
+  },
+
+  DateYearsFromNow: {
+    name: 'date_weeks_from_now',
+    label: 'Years from now'
+  },
+
   DateDaysAgo: {
     name: 'date_days_ago',
     label: 'Days ago'
+  },
+
+  DateWeeksAgo: {
+    name: 'date_weeks_ago',
+    label: 'Weeks ago'
+  },
+
+  DateMonthsAgo: {
+    name: 'date_months_ago',
+    label: 'Months ago'
+  },
+
+  DateYearsAgo: {
+    name: 'date_years_ago',
+    label: 'Years ago'
   },
 
   DateBetween: {
@@ -281,11 +322,11 @@ var OperatorType = exports.OperatorType = {
 
 var TEXTUAL_OPERATORS = [OperatorType.In, OperatorType.NotIn, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.TextContain, OperatorType.TextNotContain, OperatorType.TextStartsWith, OperatorType.TextEndsWith, OperatorType.TextEqual, OperatorType.TextNotEqual, OperatorType.TextMatch, OperatorType.TextNotMatch];
 
-var DATE_OPERATORS = [OperatorType.DateEqual, OperatorType.DateOnOrAfter, OperatorType.DateAfter, OperatorType.DateOnOrBefore, OperatorType.DateBefore, OperatorType.DateBetween, OperatorType.DateNotBetween, OperatorType.DateNotEqual, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn, OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLastWeek, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear, OperatorType.DateDaysFromNow, OperatorType.DateDaysAgo];
+var DATE_OPERATORS = [OperatorType.DateEqual, OperatorType.DateOnOrAfter, OperatorType.DateAfter, OperatorType.DateOnOrBefore, OperatorType.DateBefore, OperatorType.DateBetween, OperatorType.DateNotBetween, OperatorType.DateNotEqual, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn, OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateLast90Days, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear, OperatorType.DateDaysFromNow, OperatorType.DateWeeksFromNow, OperatorType.DateMonthsFromNow, OperatorType.DateYearsFromNow, OperatorType.DateDaysAgo, OperatorType.DateWeeksAgo, OperatorType.DateMonthsAgo, OperatorType.DateYearsAgo];
 
-var DYNAMIC_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLastWeek, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear, OperatorType.DateDaysFromNow, OperatorType.DateDaysAgo];
+var DYNAMIC_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateLast90Days, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear, OperatorType.DateDaysFromNow, OperatorType.DateWeeksFromNow, OperatorType.DateMonthsFromNow, OperatorType.DateYearsFromNow, OperatorType.DateDaysAgo, OperatorType.DateWeeksAgo, OperatorType.DateMonthsAgo, OperatorType.DateYearsAgo];
 
-var FRIENDLY_DATE_OPERATORS = exports.FRIENDLY_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLastWeek, OperatorType.DateLastMonth, OperatorType.DateCurrentCalendarMonth, OperatorType.DatePreviousCalendarMonth, OperatorType.DateBetween];
+var FRIENDLY_DATE_OPERATORS = exports.FRIENDLY_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateCurrentCalendarMonth, OperatorType.DatePreviousCalendarMonth, OperatorType.DateBetween];
 
 var NUMERIC_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.GreaterThan, OperatorType.GreaterThanOrEqual, OperatorType.LessThan, OperatorType.LessThanOrEqual, OperatorType.Between, OperatorType.NotBetween, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
 
@@ -295,7 +336,7 @@ var GEOSPATIAL_OPERATORS = [];
 
 var MEDIA_OPERATORS = [OperatorType.Empty, OperatorType.NotEmpty];
 
-var NO_VALUE_OPERATORS = [OperatorType.Empty, OperatorType.NotEmpty, OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLastWeek, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear];
+var NO_VALUE_OPERATORS = [OperatorType.Empty, OperatorType.NotEmpty, OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateLast90Days, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear];
 
 var SYSTEM_COLUMNS = {
   _record_id: TEXTUAL_OPERATORS,
@@ -336,6 +377,12 @@ var SYSTEM_COLUMNS = {
 
 function isValueRequired(operator) {
   return !NO_VALUE_OPERATORS.find(function (o) {
+    return o.name === operator;
+  });
+}
+
+function isDateOperator(operator) {
+  return DATE_OPERATORS.find(function (o) {
     return o.name === operator;
   });
 }
@@ -420,8 +467,14 @@ function calculateDateRange(operator, value, now) {
     case OperatorType.DateTomorrow.name:
       return range(date1.add(1, 'days'));
 
-    case OperatorType.DateLastWeek.name:
-      return range(date1.subtract(1, 'week'), date2);
+    case OperatorType.DateLast7Days.name:
+      return range(date1.subtract(7, 'days'), date2);
+
+    case OperatorType.DateLast30Days.name:
+      return range(date1.subtract(30, 'days'), date2);
+
+    case OperatorType.DateLast90Days.name:
+      return range(date1.subtract(90, 'days'), date2);
 
     case OperatorType.DateLastMonth.name:
       return range(date1.subtract(1, 'month'), date2);
@@ -468,8 +521,26 @@ function calculateDateRange(operator, value, now) {
     case OperatorType.DateDaysFromNow.name:
       return value && range(date1, date2.add(+value, 'days'));
 
+    case OperatorType.DateWeeksFromNow.name:
+      return value && range(date1, date2.add(+value, 'weeks'));
+
+    case OperatorType.DateMonthsFromNow.name:
+      return value && range(date1, date2.add(+value, 'months'));
+
+    case OperatorType.DateYearsFromNow.name:
+      return value && range(date1, date2.add(+value, 'years'));
+
     case OperatorType.DateDaysAgo.name:
       return value && range(date1.subtract(+value, 'days'), date2);
+
+    case OperatorType.DateWeeksAgo.name:
+      return value && range(date1.subtract(+value, 'weeks'), date2);
+
+    case OperatorType.DateMonthsAgo.name:
+      return value && range(date1.subtract(+value, 'months'), date2);
+
+    case OperatorType.DateYearsAgo.name:
+      return value && range(date1.subtract(+value, 'years'), date2);
 
     case OperatorType.DateBetween.name:
       return value && range(value[0] && (0, _moment2.default)(value[0]), value[1] && (0, _moment2.default)(value[1]));

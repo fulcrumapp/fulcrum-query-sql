@@ -132,6 +132,21 @@ var Expression = exports.Expression = function () {
       this._value = value ? [value] : null;
     }
   }, {
+    key: 'value1',
+    get: function get() {
+      return this.value && this.value[0];
+    }
+  }, {
+    key: 'value2',
+    get: function get() {
+      return this.value && this.value[1];
+    }
+  }, {
+    key: 'isDateOperator',
+    get: function get() {
+      return (0, _operator.isDateOperator)(this.operator);
+    }
+  }, {
     key: 'operator',
     get: function get() {
       return this._operator;
@@ -184,7 +199,7 @@ var Expression = exports.Expression = function () {
         this._value = [];
       }
 
-      this._value = [date && date.utc().format('YYYY-MM-DD'), this.value[1]];
+      this._value = [date && date.format('YYYY-MM-DD'), this.value[1]];
     }
   }, {
     key: 'endDate',
@@ -196,7 +211,7 @@ var Expression = exports.Expression = function () {
         this._value = [];
       }
 
-      this._value = [this.value[0], date && date.utc().format('YYYY-MM-DD')];
+      this._value = [this.value[0], date && date.format('YYYY-MM-DD')];
     }
   }]);
 

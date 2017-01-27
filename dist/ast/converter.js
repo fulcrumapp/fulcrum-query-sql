@@ -82,12 +82,28 @@ var Converter = function () {
       return _this.BinaryConverter(0, '<=', expression);
     };
 
-    this.BetweenConverter = function (expression) {
-      return (0, _helpers.AExpr)(10, 'BETWEEN', (0, _helpers.ColumnRef)(expression.columnName), [(0, _helpers.AConst)((0, _helpers.StringValue)(expression.value[0])), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.value[1]))]);
+    this.BetweenConverter = function (expression, options) {
+      var value1 = expression.value1;
+      var value2 = expression.value2;
+
+      if (expression.isDateOperator) {
+        value1 = value1 && _this.ConvertDateValue(_this.GetDate(value1, options).startOf('day'));
+        value2 = value2 && _this.ConvertDateValue(_this.GetDate(value2, options).endOf('day'));
+      }
+
+      return _this.Between(expression.columnName, value1, value2);
     };
 
-    this.NotBetweenConverter = function (expression) {
-      return (0, _helpers.AExpr)(11, 'NOT BETWEEN', (0, _helpers.ColumnRef)(expression.columnName), [(0, _helpers.AConst)((0, _helpers.StringValue)(expression.value[0])), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.value[1]))]);
+    this.NotBetweenConverter = function (expression, options) {
+      var value1 = expression.value1;
+      var value2 = expression.value2;
+
+      if (expression.isDateOperator) {
+        value1 = value1 && _this.ConvertDateValue(_this.GetDate(value1, options).startOf('day'));
+        value2 = value2 && _this.ConvertDateValue(_this.GetDate(value2, options).endOf('day'));
+      }
+
+      return _this.NotBetween(expression.columnName, value1, value2);
     };
 
     this.InConverter = function (expression) {
@@ -189,26 +205,50 @@ var Converter = function () {
       // makes sure when the browser calculates a dynamic range, the server would calculate
       // the same range. So 'Today' is midnight to midnight in the user's local time. It would
       // be much less useful and confusing if we forced "Today" to always be London's today.
-      var timeZone = options && options.timeZone || _momentTimezone2.default.tz.guess();
-
-      var now = (0, _momentTimezone2.default)().tz(timeZone);
+      var now = _this.GetDate(null, options);
 
       var range = (0, _operator.calculateDateRange)(expression.operator, expression.value, now);
 
-      var value1 = range[0] && range[0].clone();
-      var value2 = range[1] && range[1].clone();
+      var value1 = _this.ConvertDateValue(range[0]);
+      var value2 = _this.ConvertDateValue(range[1]);
 
-      var constant1 = value1 && (0, _helpers.AConst)((0, _helpers.StringValue)(value1.toISOString()));
-      var constant2 = value2 && (0, _helpers.AConst)((0, _helpers.StringValue)(value2.toISOString()));
+      return _this.Between(expression.columnName, value1, value2);
+    };
 
-      if (constant1 && constant2) {
-        return (0, _helpers.AExpr)(10, 'BETWEEN', (0, _helpers.ColumnRef)(expression.columnName), [constant1, constant2]);
-      } else if (constant1) {
-        return (0, _helpers.AExpr)(0, '>=', (0, _helpers.ColumnRef)(expression.columnName), constant1);
-      } else if (constant2) {
-        return (0, _helpers.AExpr)(0, '<=', (0, _helpers.ColumnRef)(expression.columnName), constant2);
+    this.NotBetween = function (columnName, value1, value2) {
+      if (value1 != null && value2 != null) {
+        return (0, _helpers.AExpr)(11, 'NOT BETWEEN', (0, _helpers.ColumnRef)(columnName), [(0, _helpers.AConst)((0, _helpers.StringValue)(value1)), (0, _helpers.AConst)((0, _helpers.StringValue)(value2))]);
+      } else if (value1 != null) {
+        return (0, _helpers.AExpr)(0, '<', (0, _helpers.ColumnRef)(columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(value1)));
+      } else if (value2 != null) {
+        return (0, _helpers.AExpr)(0, '>', (0, _helpers.ColumnRef)(columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(value2)));
       }
 
+      return null;
+    };
+
+    this.Between = function (columnName, value1, value2) {
+      if (value1 != null && value2 != null) {
+        return (0, _helpers.AExpr)(10, 'BETWEEN', (0, _helpers.ColumnRef)(columnName), [(0, _helpers.AConst)((0, _helpers.StringValue)(value1)), (0, _helpers.AConst)((0, _helpers.StringValue)(value2))]);
+      } else if (value1 != null) {
+        return (0, _helpers.AExpr)(0, '>=', (0, _helpers.ColumnRef)(columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(value1)));
+      } else if (value2 != null) {
+        return (0, _helpers.AExpr)(0, '<=', (0, _helpers.ColumnRef)(columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(value2)));
+      }
+
+      return null;
+    };
+
+    this.GetDate = function (date, options) {
+      var timeZone = options && options.timeZone || _momentTimezone2.default.tz.guess();
+
+      return (0, _momentTimezone2.default)(date || new Date()).tz(timeZone);
+    };
+
+    this.ConvertDateValue = function (date) {
+      if (date) {
+        return date.clone().toISOString();
+      }
       return null;
     };
   }
@@ -550,7 +590,7 @@ var Converter = function () {
       return this.nodeForCondition(expression, options);
     }
 
-    var converter = (_converter2 = {}, _converter2[_operator.OperatorType.Empty.name] = this.EmptyConverter, _converter2[_operator.OperatorType.NotEmpty.name] = this.NotEmptyConverter, _converter2[_operator.OperatorType.Equal.name] = this.EqualConverter, _converter2[_operator.OperatorType.NotEqual.name] = this.NotEqualConverter, _converter2[_operator.OperatorType.GreaterThan.name] = this.GreaterThanConverter, _converter2[_operator.OperatorType.GreaterThanOrEqual.name] = this.GreaterThanOrEqualConverter, _converter2[_operator.OperatorType.LessThan.name] = this.LessThanConverter, _converter2[_operator.OperatorType.LessThanOrEqual.name] = this.LessThanOrEqualConverter, _converter2[_operator.OperatorType.Between.name] = this.BetweenConverter, _converter2[_operator.OperatorType.NotBetween.name] = this.NotBetweenConverter, _converter2[_operator.OperatorType.In.name] = this.InConverter, _converter2[_operator.OperatorType.NotIn.name] = this.NotInConverter, _converter2[_operator.OperatorType.TextContain.name] = this.TextContainConverter, _converter2[_operator.OperatorType.TextNotContain.name] = this.TextNotContainConverter, _converter2[_operator.OperatorType.TextStartsWith.name] = this.TextStartsWithConverter, _converter2[_operator.OperatorType.TextEndsWith.name] = this.TextEndsWithConverter, _converter2[_operator.OperatorType.TextEqual.name] = this.TextEqualConverter, _converter2[_operator.OperatorType.TextNotEqual.name] = this.TextNotEqualConverter, _converter2[_operator.OperatorType.TextMatch.name] = this.TextMatchConverter, _converter2[_operator.OperatorType.TextNotMatch.name] = this.TextNotMatchConverter, _converter2[_operator.OperatorType.DateEqual.name] = this.EqualConverter, _converter2[_operator.OperatorType.DateNotEqual.name] = this.NotEqualConverter, _converter2[_operator.OperatorType.DateAfter.name] = this.GreaterThanConverter, _converter2[_operator.OperatorType.DateOnOrAfter.name] = this.GreaterThanOrEqualConverter, _converter2[_operator.OperatorType.DateBefore.name] = this.LessThanConverter, _converter2[_operator.OperatorType.DateOnOrBefore.name] = this.LessThanOrEqualConverter, _converter2[_operator.OperatorType.ArrayAnyOf.name] = this.ArrayAnyOfConverter, _converter2[_operator.OperatorType.ArrayAllOf.name] = this.ArrayAllOfConverter, _converter2[_operator.OperatorType.ArrayEqual.name] = this.ArrayEqualConverter, _converter2[_operator.OperatorType.Search.name] = this.SearchConverter, _converter2[_operator.OperatorType.DateToday.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateYesterday.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateTomorrow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLastWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLastMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLastYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateDaysFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateDaysAgo.name] = this.DynamicDateConverter, _converter2);
+    var converter = (_converter2 = {}, _converter2[_operator.OperatorType.Empty.name] = this.EmptyConverter, _converter2[_operator.OperatorType.NotEmpty.name] = this.NotEmptyConverter, _converter2[_operator.OperatorType.Equal.name] = this.EqualConverter, _converter2[_operator.OperatorType.NotEqual.name] = this.NotEqualConverter, _converter2[_operator.OperatorType.GreaterThan.name] = this.GreaterThanConverter, _converter2[_operator.OperatorType.GreaterThanOrEqual.name] = this.GreaterThanOrEqualConverter, _converter2[_operator.OperatorType.LessThan.name] = this.LessThanConverter, _converter2[_operator.OperatorType.LessThanOrEqual.name] = this.LessThanOrEqualConverter, _converter2[_operator.OperatorType.Between.name] = this.BetweenConverter, _converter2[_operator.OperatorType.NotBetween.name] = this.NotBetweenConverter, _converter2[_operator.OperatorType.In.name] = this.InConverter, _converter2[_operator.OperatorType.NotIn.name] = this.NotInConverter, _converter2[_operator.OperatorType.TextContain.name] = this.TextContainConverter, _converter2[_operator.OperatorType.TextNotContain.name] = this.TextNotContainConverter, _converter2[_operator.OperatorType.TextStartsWith.name] = this.TextStartsWithConverter, _converter2[_operator.OperatorType.TextEndsWith.name] = this.TextEndsWithConverter, _converter2[_operator.OperatorType.TextEqual.name] = this.TextEqualConverter, _converter2[_operator.OperatorType.TextNotEqual.name] = this.TextNotEqualConverter, _converter2[_operator.OperatorType.TextMatch.name] = this.TextMatchConverter, _converter2[_operator.OperatorType.TextNotMatch.name] = this.TextNotMatchConverter, _converter2[_operator.OperatorType.DateEqual.name] = this.EqualConverter, _converter2[_operator.OperatorType.DateNotEqual.name] = this.NotEqualConverter, _converter2[_operator.OperatorType.DateAfter.name] = this.GreaterThanConverter, _converter2[_operator.OperatorType.DateOnOrAfter.name] = this.GreaterThanOrEqualConverter, _converter2[_operator.OperatorType.DateBefore.name] = this.LessThanConverter, _converter2[_operator.OperatorType.DateOnOrBefore.name] = this.LessThanOrEqualConverter, _converter2[_operator.OperatorType.DateBetween.name] = this.BetweenConverter, _converter2[_operator.OperatorType.DateNotBetween.name] = this.NotBetweenConverter, _converter2[_operator.OperatorType.ArrayAnyOf.name] = this.ArrayAnyOfConverter, _converter2[_operator.OperatorType.ArrayAllOf.name] = this.ArrayAllOfConverter, _converter2[_operator.OperatorType.ArrayEqual.name] = this.ArrayEqualConverter, _converter2[_operator.OperatorType.Search.name] = this.SearchConverter, _converter2[_operator.OperatorType.DateToday.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateYesterday.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateTomorrow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLast7Days.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLast30Days.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLast90Days.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLastMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLastYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateDaysFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateWeeksFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateMonthsFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateYearsFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateDaysAgo.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateWeeksAgo.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateMonthsAgo.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateYearsAgo.name] = this.DynamicDateConverter, _converter2);
 
     if (!expression.isValid) {
       return null;
