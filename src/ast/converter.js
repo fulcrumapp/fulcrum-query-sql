@@ -412,6 +412,8 @@ export default class Converter {
       [OperatorType.DateOnOrAfter.name]: this.GreaterThanOrEqualConverter,
       [OperatorType.DateBefore.name]: this.LessThanConverter,
       [OperatorType.DateOnOrBefore.name]: this.LessThanOrEqualConverter,
+      [OperatorType.DateBetween.name]: this.BetweenConverter,
+      [OperatorType.DateNotBetween.name]: this.NotBetweenConverter,
       [OperatorType.ArrayAnyOf.name]: this.ArrayAnyOfConverter,
       [OperatorType.ArrayAllOf.name]: this.ArrayAllOfConverter,
       [OperatorType.ArrayEqual.name]: this.ArrayEqualConverter,
@@ -419,7 +421,9 @@ export default class Converter {
       [OperatorType.DateToday.name]: this.DynamicDateConverter,
       [OperatorType.DateYesterday.name]: this.DynamicDateConverter,
       [OperatorType.DateTomorrow.name]: this.DynamicDateConverter,
-      [OperatorType.DateLastWeek.name]: this.DynamicDateConverter,
+      [OperatorType.DateLast7Days.name]: this.DynamicDateConverter,
+      [OperatorType.DateLast30Days.name]: this.DynamicDateConverter,
+      [OperatorType.DateLast90Days.name]: this.DynamicDateConverter,
       [OperatorType.DateLastMonth.name]: this.DynamicDateConverter,
       [OperatorType.DateLastYear.name]: this.DynamicDateConverter,
       [OperatorType.DateNextWeek.name]: this.DynamicDateConverter,
@@ -435,7 +439,13 @@ export default class Converter {
       [OperatorType.DateNextCalendarMonth.name]: this.DynamicDateConverter,
       [OperatorType.DateNextCalendarYear.name]: this.DynamicDateConverter,
       [OperatorType.DateDaysFromNow.name]: this.DynamicDateConverter,
-      [OperatorType.DateDaysAgo.name]: this.DynamicDateConverter
+      [OperatorType.DateWeeksFromNow.name]: this.DynamicDateConverter,
+      [OperatorType.DateMonthsFromNow.name]: this.DynamicDateConverter,
+      [OperatorType.DateYearsFromNow.name]: this.DynamicDateConverter,
+      [OperatorType.DateDaysAgo.name]: this.DynamicDateConverter,
+      [OperatorType.DateWeeksAgo.name]: this.DynamicDateConverter,
+      [OperatorType.DateMonthsAgo.name]: this.DynamicDateConverter,
+      [OperatorType.DateYearsAgo.name]: this.DynamicDateConverter
     };
 
     if (!expression.isValid) {
@@ -503,14 +513,28 @@ export default class Converter {
     return this.BinaryConverter(0, '<=', expression);
   }
 
-  BetweenConverter = (expression) => {
-    return AExpr(10, 'BETWEEN', ColumnRef(expression.columnName),
-                 [ AConst(StringValue(expression.value[0])), AConst(StringValue(expression.value[1])) ]);
+  BetweenConverter = (expression, options) => {
+    let value1 = expression.value1;
+    let value2 = expression.value2;
+
+    if (expression.isDateOperator) {
+      value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options).startOf('day'));
+      value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options).endOf('day'));
+    }
+
+    return this.Between(expression.columnName, value1, value2);
   }
 
-  NotBetweenConverter = (expression) => {
-    return AExpr(11, 'NOT BETWEEN', ColumnRef(expression.columnName),
-                 [ AConst(StringValue(expression.value[0])), AConst(StringValue(expression.value[1])) ]);
+  NotBetweenConverter = (expression, options) => {
+    let value1 = expression.value1;
+    let value2 = expression.value2;
+
+    if (expression.isDateOperator) {
+      value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options).startOf('day'));
+      value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options).endOf('day'));
+    }
+
+    return this.NotBetween(expression.columnName, value1, value2);
   }
 
   InConverter = (expression) => {
@@ -618,26 +642,50 @@ export default class Converter {
     // makes sure when the browser calculates a dynamic range, the server would calculate
     // the same range. So 'Today' is midnight to midnight in the user's local time. It would
     // be much less useful and confusing if we forced "Today" to always be London's today.
-    const timeZone = (options && options.timeZone) || moment.tz.guess();
-
-    const now = moment().tz(timeZone);
+    const now = this.GetDate(null, options);
 
     const range = calculateDateRange(expression.operator, expression.value, now);
 
-    const value1 = range[0] && range[0].clone();
-    const value2 = range[1] && range[1].clone();
+    const value1 = this.ConvertDateValue(range[0]);
+    const value2 = this.ConvertDateValue(range[1]);
 
-    const constant1 = value1 && AConst(StringValue(value1.toISOString()));
-    const constant2 = value2 && AConst(StringValue(value2.toISOString()));
+    return this.Between(expression.columnName, value1, value2);
+  }
 
-    if (constant1 && constant2) {
-      return AExpr(10, 'BETWEEN', ColumnRef(expression.columnName), [ constant1, constant2 ]);
-    } else if (constant1) {
-      return AExpr(0, '>=', ColumnRef(expression.columnName), constant1);
-    } else if (constant2) {
-      return AExpr(0, '<=', ColumnRef(expression.columnName), constant2);
+  NotBetween = (columnName, value1, value2) => {
+    if (value1 != null && value2 != null) {
+      return AExpr(11, 'NOT BETWEEN', ColumnRef(columnName), [ AConst(StringValue(value1)), AConst(StringValue(value2)) ]);
+    } else if (value1 != null) {
+      return AExpr(0, '<', ColumnRef(columnName), AConst(StringValue(value1)));
+    } else if (value2 != null) {
+      return AExpr(0, '>', ColumnRef(columnName), AConst(StringValue(value2)));
     }
 
+    return null;
+  }
+
+  Between = (columnName, value1, value2) => {
+    if (value1 != null && value2 != null) {
+      return AExpr(10, 'BETWEEN', ColumnRef(columnName), [ AConst(StringValue(value1)), AConst(StringValue(value2)) ]);
+    } else if (value1 != null) {
+      return AExpr(0, '>=', ColumnRef(columnName), AConst(StringValue(value1)));
+    } else if (value2 != null) {
+      return AExpr(0, '<=', ColumnRef(columnName), AConst(StringValue(value2)));
+    }
+
+    return null;
+  }
+
+  GetDate = (date, options) => {
+    const timeZone = (options && options.timeZone) || moment.tz.guess();
+
+    return moment(date || new Date()).tz(timeZone);
+  }
+
+  ConvertDateValue = (date) => {
+    if (date) {
+      return date.clone().toISOString();
+    }
     return null;
   }
 }

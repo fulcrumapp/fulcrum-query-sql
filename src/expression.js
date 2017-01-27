@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { availableOperatorsForColumn, isValueRequired } from './operator';
+import { availableOperatorsForColumn, isValueRequired, isDateOperator } from './operator';
 
 export class Expression {
   constructor(attrs, schema) {
@@ -40,6 +40,18 @@ export class Expression {
 
   set scalarValue(value) {
     this._value = value ? [ value ] : null;
+  }
+
+  get value1() {
+    return this.value && this.value[0];
+  }
+
+  get value2() {
+    return this.value && this.value[1];
+  }
+
+  get isDateOperator() {
+    return isDateOperator(this.operator);
   }
 
   get operator() {
@@ -129,7 +141,7 @@ export class Expression {
       this._value = [];
     }
 
-    this._value = [ date && date.utc().format('YYYY-MM-DD'), this.value[1] ];
+    this._value = [ date && date.format('YYYY-MM-DD'), this.value[1] ];
   }
 
   get endDate() {
@@ -141,7 +153,7 @@ export class Expression {
       this._value = [];
     }
 
-    this._value = [ this.value[0], date && date.utc().format('YYYY-MM-DD') ];
+    this._value = [ this.value[0], date && date.format('YYYY-MM-DD') ];
   }
 
   labelForValue(value) {

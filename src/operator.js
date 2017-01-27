@@ -146,9 +146,19 @@ export const OperatorType = {
     label: 'Tomorrow'
   },
 
-  DateLastWeek: {
-    name: 'date_last_week',
-    label: '1 Week Ago'
+  DateLast7Days: {
+    name: 'date_last_7_days',
+    label: 'Last 7 days'
+  },
+
+  DateLast30Days: {
+    name: 'date_last_30_days',
+    label: 'Last 30 days'
+  },
+
+  DateLast90Days: {
+    name: 'date_last_90_days',
+    label: 'Last 90 days'
   },
 
   DateLastMonth: {
@@ -226,9 +236,39 @@ export const OperatorType = {
     label: 'Days from Now'
   },
 
+  DateWeeksFromNow: {
+    name: 'date_weeks_from_now',
+    label: 'Weeks from Now'
+  },
+
+  DateMonthsFromNow: {
+    name: 'date_months_from_now',
+    label: 'Months from now'
+  },
+
+  DateYearsFromNow: {
+    name: 'date_weeks_from_now',
+    label: 'Years from now'
+  },
+
   DateDaysAgo: {
     name: 'date_days_ago',
     label: 'Days ago'
+  },
+
+  DateWeeksAgo: {
+    name: 'date_weeks_ago',
+    label: 'Weeks ago'
+  },
+
+  DateMonthsAgo: {
+    name: 'date_months_ago',
+    label: 'Months ago'
+  },
+
+  DateYearsAgo: {
+    name: 'date_years_ago',
+    label: 'Years ago'
   },
 
   DateBetween: {
@@ -298,7 +338,9 @@ const DATE_OPERATORS = [
   OperatorType.DateToday,
   OperatorType.DateYesterday,
   OperatorType.DateTomorrow,
-  OperatorType.DateLastWeek,
+  OperatorType.DateLast7Days,
+  OperatorType.DateLast30Days,
+  OperatorType.DateLast90Days,
   OperatorType.DateLastMonth,
   OperatorType.DateLastYear,
   OperatorType.DateNextWeek,
@@ -314,14 +356,22 @@ const DATE_OPERATORS = [
   OperatorType.DateNextCalendarMonth,
   OperatorType.DateNextCalendarYear,
   OperatorType.DateDaysFromNow,
-  OperatorType.DateDaysAgo
+  OperatorType.DateWeeksFromNow,
+  OperatorType.DateMonthsFromNow,
+  OperatorType.DateYearsFromNow,
+  OperatorType.DateDaysAgo,
+  OperatorType.DateWeeksAgo,
+  OperatorType.DateMonthsAgo,
+  OperatorType.DateYearsAgo
 ];
 
 export const DYNAMIC_DATE_OPERATORS = [
   OperatorType.DateToday,
   OperatorType.DateYesterday,
   OperatorType.DateTomorrow,
-  OperatorType.DateLastWeek,
+  OperatorType.DateLast7Days,
+  OperatorType.DateLast30Days,
+  OperatorType.DateLast90Days,
   OperatorType.DateLastMonth,
   OperatorType.DateLastYear,
   OperatorType.DateNextWeek,
@@ -337,15 +387,21 @@ export const DYNAMIC_DATE_OPERATORS = [
   OperatorType.DateNextCalendarMonth,
   OperatorType.DateNextCalendarYear,
   OperatorType.DateDaysFromNow,
-  OperatorType.DateDaysAgo
+  OperatorType.DateWeeksFromNow,
+  OperatorType.DateMonthsFromNow,
+  OperatorType.DateYearsFromNow,
+  OperatorType.DateDaysAgo,
+  OperatorType.DateWeeksAgo,
+  OperatorType.DateMonthsAgo,
+  OperatorType.DateYearsAgo
 ];
 
 export const FRIENDLY_DATE_OPERATORS = [
   OperatorType.DateToday,
   OperatorType.DateYesterday,
   OperatorType.DateTomorrow,
-  OperatorType.DateLastWeek,
-  OperatorType.DateLastMonth,
+  OperatorType.DateLast7Days,
+  OperatorType.DateLast30Days,
   OperatorType.DateCurrentCalendarMonth,
   OperatorType.DatePreviousCalendarMonth,
   OperatorType.DateBetween
@@ -388,7 +444,9 @@ const NO_VALUE_OPERATORS = [
   OperatorType.DateToday,
   OperatorType.DateYesterday,
   OperatorType.DateTomorrow,
-  OperatorType.DateLastWeek,
+  OperatorType.DateLast7Days,
+  OperatorType.DateLast30Days,
+  OperatorType.DateLast90Days,
   OperatorType.DateLastMonth,
   OperatorType.DateLastYear,
   OperatorType.DateNextWeek,
@@ -444,6 +502,10 @@ const SYSTEM_COLUMNS = {
 
 export function isValueRequired(operator) {
   return !NO_VALUE_OPERATORS.find(o => o.name === operator);
+}
+
+export function isDateOperator(operator) {
+  return DATE_OPERATORS.find(o => o.name === operator);
 }
 
 export function availableOperatorsForColumn(column) {
@@ -529,8 +591,14 @@ export function calculateDateRange(operator, value, now) {
     case OperatorType.DateTomorrow.name:
       return range(date1.add(1, 'days'));
 
-    case OperatorType.DateLastWeek.name:
-      return range(date1.subtract(1, 'week'), date2);
+    case OperatorType.DateLast7Days.name:
+      return range(date1.subtract(7, 'days'), date2);
+
+    case OperatorType.DateLast30Days.name:
+      return range(date1.subtract(30, 'days'), date2);
+
+    case OperatorType.DateLast90Days.name:
+      return range(date1.subtract(90, 'days'), date2);
 
     case OperatorType.DateLastMonth.name:
       return range(date1.subtract(1, 'month'), date2);
@@ -583,8 +651,26 @@ export function calculateDateRange(operator, value, now) {
     case OperatorType.DateDaysFromNow.name:
       return value && range(date1, date2.add(+value, 'days'));
 
+    case OperatorType.DateWeeksFromNow.name:
+      return value && range(date1, date2.add(+value, 'weeks'));
+
+    case OperatorType.DateMonthsFromNow.name:
+      return value && range(date1, date2.add(+value, 'months'));
+
+    case OperatorType.DateYearsFromNow.name:
+      return value && range(date1, date2.add(+value, 'years'));
+
     case OperatorType.DateDaysAgo.name:
       return value && range(date1.subtract(+value, 'days'), date2);
+
+    case OperatorType.DateWeeksAgo.name:
+      return value && range(date1.subtract(+value, 'weeks'), date2);
+
+    case OperatorType.DateMonthsAgo.name:
+      return value && range(date1.subtract(+value, 'months'), date2);
+
+    case OperatorType.DateYearsAgo.name:
+      return value && range(date1.subtract(+value, 'years'), date2);
 
     case OperatorType.DateBetween.name:
       return value && range(value[0] && moment(value[0]), value[1] && moment(value[1]));
