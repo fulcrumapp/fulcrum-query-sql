@@ -245,7 +245,7 @@ var OperatorType = exports.OperatorType = {
 
   DateBetween: {
     name: 'date_between',
-    label: 'Between'
+    label: 'Specific Range'
   },
 
   DateNotBetween: {
@@ -285,7 +285,7 @@ var DATE_OPERATORS = [OperatorType.DateEqual, OperatorType.DateOnOrAfter, Operat
 
 var DYNAMIC_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLastWeek, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear, OperatorType.DateDaysFromNow, OperatorType.DateDaysAgo];
 
-var FRIENDLY_DATE_OPERATORS = exports.FRIENDLY_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLastWeek, OperatorType.DateLastMonth, OperatorType.DateCurrentCalendarMonth, OperatorType.DatePreviousCalendarMonth];
+var FRIENDLY_DATE_OPERATORS = exports.FRIENDLY_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLastWeek, OperatorType.DateLastMonth, OperatorType.DateCurrentCalendarMonth, OperatorType.DatePreviousCalendarMonth, OperatorType.DateBetween];
 
 var NUMERIC_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.GreaterThan, OperatorType.GreaterThanOrEqual, OperatorType.LessThan, OperatorType.LessThanOrEqual, OperatorType.Between, OperatorType.NotBetween, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
 

@@ -233,7 +233,7 @@ export const OperatorType = {
 
   DateBetween: {
     name: 'date_between',
-    label: 'Between'
+    label: 'Specific Range'
   },
 
   DateNotBetween: {
@@ -347,7 +347,8 @@ export const FRIENDLY_DATE_OPERATORS = [
   OperatorType.DateLastWeek,
   OperatorType.DateLastMonth,
   OperatorType.DateCurrentCalendarMonth,
-  OperatorType.DatePreviousCalendarMonth
+  OperatorType.DatePreviousCalendarMonth,
+  OperatorType.DateBetween
 ];
 
 const NUMERIC_OPERATORS = [
