@@ -21,6 +21,16 @@ var ColumnFilter = function () {
     this._schema = schema;
   }
 
+  ColumnFilter.prototype.reset = function reset() {
+    this._value = null;
+  };
+
+  ColumnFilter.prototype.resetIfEmpty = function resetIfEmpty() {
+    if (this.isEmptySet) {
+      this.reset();
+    }
+  };
+
   ColumnFilter.prototype.clearValues = function clearValues() {
     this._value = [];
   };

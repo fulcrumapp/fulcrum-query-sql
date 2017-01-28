@@ -438,6 +438,24 @@ var Converter = function () {
       systemParts.push(this.searchFilter(search));
     }
 
+    var statusExpression = this.createExpressionForColumnFilter(query.statusFilter);
+
+    if (statusExpression) {
+      systemParts.push(statusExpression);
+    }
+
+    var projectExpression = this.createExpressionForColumnFilter(query.projectFilter);
+
+    if (projectExpression) {
+      systemParts.push(projectExpression);
+    }
+
+    var assignmentExpression = this.createExpressionForColumnFilter(query.assignmentFilter);
+
+    if (assignmentExpression) {
+      systemParts.push(assignmentExpression);
+    }
+
     var columnFilterKeys = Object.keys(query.columnFilters);
 
     if (columnFilterKeys.length) {
@@ -457,38 +475,10 @@ var Converter = function () {
 
         var filter = query.columnFilters[key];
 
-        if (filter.hasValues) {
-          (function () {
-            var hasNull = false;
-            var values = [];
+        var expression = this.createExpressionForColumnFilter(filter);
 
-            filter.value.forEach(function (v) {
-              if (v !== null) {
-                values.push((0, _helpers.AConst)((0, _helpers.StringValue)(v)));
-              } else {
-                hasNull = true;
-              }
-            });
-
-            var expr = null;
-
-            if (values.length) {
-              expr = (0, _helpers.AExpr)(6, '=', (0, _helpers.ColumnRef)(filter.columnName), values);
-
-              if (hasNull) {
-                expr = (0, _helpers.BoolExpr)(1, [(0, _helpers.NullTest)(0, (0, _helpers.ColumnRef)(filter.columnName)), expr]);
-              }
-            } else if (hasNull) {
-              expr = (0, _helpers.NullTest)(0, (0, _helpers.ColumnRef)(filter.columnName));
-            }
-
-            systemParts.push(expr);
-          })();
-        } else if (filter.isEmptySet) {
-          // add 1 = 0 clause to return 0 rows
-          var expr = (0, _helpers.AExpr)(0, '=', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), (0, _helpers.AConst)((0, _helpers.IntegerValue)(0)));
-
-          systemParts.push(expr);
+        if (expression) {
+          systemParts.push(expression);
         }
       }
     }
@@ -500,6 +490,40 @@ var Converter = function () {
     }
 
     return filterNode;
+  };
+
+  Converter.prototype.createExpressionForColumnFilter = function createExpressionForColumnFilter(filter) {
+    var expression = null;
+
+    if (filter.hasValues) {
+      (function () {
+        var hasNull = false;
+        var values = [];
+
+        filter.value.forEach(function (v) {
+          if (v !== null) {
+            values.push((0, _helpers.AConst)((0, _helpers.StringValue)(v)));
+          } else {
+            hasNull = true;
+          }
+        });
+
+        if (values.length) {
+          expression = (0, _helpers.AExpr)(6, '=', (0, _helpers.ColumnRef)(filter.columnName), values);
+
+          if (hasNull) {
+            expression = (0, _helpers.BoolExpr)(1, [(0, _helpers.NullTest)(0, (0, _helpers.ColumnRef)(filter.columnName)), expression]);
+          }
+        } else if (hasNull) {
+          expression = (0, _helpers.NullTest)(0, (0, _helpers.ColumnRef)(filter.columnName));
+        }
+      })();
+    } else if (filter.isEmptySet) {
+      // add 1 = 0 clause to return 0 rows
+      expression = (0, _helpers.AExpr)(0, '=', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), (0, _helpers.AConst)((0, _helpers.IntegerValue)(0)));
+    }
+
+    return expression;
   };
 
   Converter.prototype.boundingBoxFilter = function boundingBoxFilter(boundingBox) {

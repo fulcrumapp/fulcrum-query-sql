@@ -53,8 +53,24 @@ var Query = function () {
     this._boundingBox = null;
     this._searchFilter = null;
     this._dateFilter = new _expression.Expression(attrs.date_filter || { field: '_server_updated_at' }, attrs.schema);
+    this._statusFilter = new _columnFilter2.default(_extends({}, attrs.status_filter, { field: '_status' }), this._schema);
+    this._projectFilter = new _columnFilter2.default(_extends({}, attrs.project_filter, { field: '_project_id' }), this._schema);
+    this._assignmentFilter = new _columnFilter2.default(_extends({}, attrs.assignment_filter, { field: '_assigned_to_id' }), this._schema);
     this._options = new _queryOptions2.default(attrs.options || {});
   }
+
+  Query.prototype.clearAllFilters = function clearAllFilters() {
+    this.statusFilter.reset();
+    this.projectFilter.reset();
+    this.assignmentFilter.reset();
+
+    this._columnFilters = {};
+    this._filter = new _condition.Condition({}, this._schema);
+    this._sorting = new _sortExpressions2.default([], this._schema);
+    // this._boundingBox = null;
+    this._searchFilter = null;
+    this._dateFilter = new _expression.Expression({ field: '_server_updated_at' }, this._schema);
+  };
 
   Query.prototype.columnFilter = function columnFilter(column) {
     if (this.columnFilters[column.id] == null) {
@@ -206,6 +222,21 @@ var Query = function () {
     key: 'dateFilter',
     get: function get() {
       return this._dateFilter;
+    }
+  }, {
+    key: 'statusFilter',
+    get: function get() {
+      return this._statusFilter;
+    }
+  }, {
+    key: 'projectFilter',
+    get: function get() {
+      return this._projectFilter;
+    }
+  }, {
+    key: 'assignmentFilter',
+    get: function get() {
+      return this._assignmentFilter;
     }
   }, {
     key: 'options',
