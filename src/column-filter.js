@@ -40,6 +40,16 @@ export default class ColumnFilter {
     return null;
   }
 
+  reset() {
+    this._value = null;
+  }
+
+  resetIfEmpty() {
+    if (this.isEmptySet) {
+      this.reset();
+    }
+  }
+
   clearValues() {
     this._value = [];
   }

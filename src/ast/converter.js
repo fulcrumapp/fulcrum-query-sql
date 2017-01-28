@@ -238,44 +238,34 @@ export default class Converter {
       systemParts.push(this.searchFilter(search));
     }
 
+    const statusExpression = this.createExpressionForColumnFilter(query.statusFilter);
+
+    if (statusExpression) {
+      systemParts.push(statusExpression);
+    }
+
+    const projectExpression = this.createExpressionForColumnFilter(query.projectFilter);
+
+    if (projectExpression) {
+      systemParts.push(projectExpression);
+    }
+
+    const assignmentExpression = this.createExpressionForColumnFilter(query.assignmentFilter);
+
+    if (assignmentExpression) {
+      systemParts.push(assignmentExpression);
+    }
+
     const columnFilterKeys = Object.keys(query.columnFilters);
 
     if (columnFilterKeys.length) {
       for (const key of columnFilterKeys) {
         const filter = query.columnFilters[key];
 
-        if (filter.hasValues) {
-          let hasNull = false;
-          const values = [];
+        const expression = this.createExpressionForColumnFilter(filter);
 
-          filter.value.forEach(v => {
-            if (v !== null) {
-              values.push(AConst(StringValue(v)));
-            } else {
-              hasNull = true;
-            }
-          });
-
-          let expr = null;
-
-          if (values.length) {
-            expr = AExpr(6, '=', ColumnRef(filter.columnName),
-                         values);
-
-            if (hasNull) {
-              expr = BoolExpr(1, [ NullTest(0, ColumnRef(filter.columnName)), expr ]);
-            }
-          } else if (hasNull) {
-            expr = NullTest(0, ColumnRef(filter.columnName));
-          }
-
-          systemParts.push(expr);
-        } else if (filter.isEmptySet) {
-          // add 1 = 0 clause to return 0 rows
-          const expr = AExpr(0, '=', AConst(IntegerValue(1)),
-                             AConst(IntegerValue(0)));
-
-          systemParts.push(expr);
+        if (expression) {
+          systemParts.push(expression);
         }
       }
     }
@@ -287,6 +277,40 @@ export default class Converter {
     }
 
     return filterNode;
+  }
+
+  createExpressionForColumnFilter(filter) {
+    let expression = null;
+
+    if (filter.hasValues) {
+      let hasNull = false;
+      const values = [];
+
+      filter.value.forEach(v => {
+        if (v !== null) {
+          values.push(AConst(StringValue(v)));
+        } else {
+          hasNull = true;
+        }
+      });
+
+      if (values.length) {
+        expression = AExpr(6, '=', ColumnRef(filter.columnName),
+                     values);
+
+        if (hasNull) {
+          expression = BoolExpr(1, [ NullTest(0, ColumnRef(filter.columnName)), expression ]);
+        }
+      } else if (hasNull) {
+        expression = NullTest(0, ColumnRef(filter.columnName));
+      }
+    } else if (filter.isEmptySet) {
+      // add 1 = 0 clause to return 0 rows
+      expression = AExpr(0, '=', AConst(IntegerValue(1)),
+                                 AConst(IntegerValue(0)));
+    }
+
+    return expression;
   }
 
   boundingBoxFilter(boundingBox) {

@@ -34,6 +34,9 @@ export default class Query {
     this._boundingBox = null;
     this._searchFilter = null;
     this._dateFilter = new Expression(attrs.date_filter || {field: '_server_updated_at'}, attrs.schema);
+    this._statusFilter = new ColumnFilter({...attrs.status_filter, field: '_status'}, this._schema);
+    this._projectFilter = new ColumnFilter({...attrs.project_filter, field: '_project_id'}, this._schema);
+    this._assignmentFilter = new ColumnFilter({...attrs.assignment_filter, field: '_assigned_to_id'}, this._schema);
     this._options = new QueryOptions(attrs.options || {});
   }
 
@@ -61,8 +64,33 @@ export default class Query {
     return this._dateFilter;
   }
 
+  get statusFilter() {
+    return this._statusFilter;
+  }
+
+  get projectFilter() {
+    return this._projectFilter;
+  }
+
+  get assignmentFilter() {
+    return this._assignmentFilter;
+  }
+
   get options() {
     return this._options;
+  }
+
+  clearAllFilters() {
+    this.statusFilter.reset();
+    this.projectFilter.reset();
+    this.assignmentFilter.reset();
+
+    this._columnFilters = {};
+    this._filter = new Condition({}, this._schema);
+    this._sorting = new SortExpressions([], this._schema);
+    // this._boundingBox = null;
+    this._searchFilter = null;
+    this._dateFilter = new Expression({field: '_server_updated_at'}, this._schema);
   }
 
   columnFilter(column) {
