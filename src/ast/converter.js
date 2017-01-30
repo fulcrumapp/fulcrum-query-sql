@@ -269,6 +269,10 @@ export default class Converter {
         systemParts.push(AExpr(8, '~~*', ColumnRef(item.column.columnName),
                                          AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
       }
+
+      if (item.expression.isValid) {
+        systemParts.push(this.nodeForExpression(item.expression, query.options));
+      }
     }
 
     if (filterNode && systemParts.length) {

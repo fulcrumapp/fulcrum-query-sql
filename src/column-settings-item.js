@@ -8,7 +8,7 @@ export default class ColumnSettingsItem {
     this._column = attrs.column;
     this._search = attrs.search || '';
     this._filter = new ColumnFilter({...attrs.filter, field: attrs.column.id}, this._schema);
-    this._expression = new Expression(attrs.expression, schema);
+    this._expression = new Expression({...attrs.expression, field: attrs.column.id}, schema);
     this._range = new Expression(attrs.range, schema);
   }
 
@@ -16,7 +16,7 @@ export default class ColumnSettingsItem {
     this._hidden = false;
     this._search = '';
     this._filter = new ColumnFilter({field: this.column.id}, this._schema);
-    this._expression = new Expression(null, this._schema);
+    this._expression = new Expression({field: this.column.id}, this._schema);
     this._range = new Expression(null, this._schema);
   }
 
