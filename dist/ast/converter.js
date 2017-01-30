@@ -477,6 +477,14 @@ var Converter = function () {
           systemParts.push(expression);
         }
       }
+
+      if (item.search) {
+        systemParts.push((0, _helpers.AExpr)(8, '~~*', (0, _helpers.ColumnRef)(item.column.columnName), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
+      }
+
+      if (item.expression.isValid) {
+        systemParts.push(this.nodeForExpression(item.expression, query.options));
+      }
     }
 
     if (filterNode && systemParts.length) {

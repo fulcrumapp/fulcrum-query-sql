@@ -25,14 +25,15 @@ var ColumnSettingsItem = function () {
     this._column = attrs.column;
     this._search = attrs.search || '';
     this._filter = new _columnFilter2.default(_extends({}, attrs.filter, { field: attrs.column.id }), this._schema);
-    this._expression = new _expression.Expression(attrs.expression, schema);
+    this._expression = new _expression.Expression(_extends({}, attrs.expression, { field: attrs.column.id }), schema);
     this._range = new _expression.Expression(attrs.range, schema);
   }
 
   ColumnSettingsItem.prototype.clear = function clear() {
     this._hidden = false;
     this._search = '';
-    this._expression = new _expression.Expression(null, this._schema);
+    this._filter = new _columnFilter2.default({ field: this.column.id }, this._schema);
+    this._expression = new _expression.Expression({ field: this.column.id }, this._schema);
     this._range = new _expression.Expression(null, this._schema);
   };
 
