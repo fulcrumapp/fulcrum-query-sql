@@ -264,6 +264,11 @@ export default class Converter {
           systemParts.push(expression);
         }
       }
+
+      if (item.search) {
+        systemParts.push(AExpr(8, '~~*', ColumnRef(item.column.columnName),
+                                         AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
+      }
     }
 
     if (filterNode && systemParts.length) {
