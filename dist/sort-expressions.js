@@ -32,10 +32,25 @@ var SortExpressions = function () {
     });
   };
 
+  SortExpressions.prototype.toHumanDescription = function toHumanDescription() {
+    if (!this.hasSort) {
+      return null;
+    }
+
+    return this.expressions.map(function (o) {
+      return o.toHumanDescription();
+    }).join(', ');
+  };
+
   _createClass(SortExpressions, [{
     key: 'isEmpty',
     get: function get() {
       return this._expressions.length === 0;
+    }
+  }, {
+    key: 'hasSort',
+    get: function get() {
+      return !this.isEmpty;
     }
   }, {
     key: 'expressions',

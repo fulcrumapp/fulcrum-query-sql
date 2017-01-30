@@ -2,6 +2,8 @@ import { Sort } from './sort';
 
 export default class SortExpressions {
   constructor(sorts, schema) {
+    sorts = sorts || [];
+
     this._expressions = sorts.map(o => new Sort(o, schema));
     this._schema = schema;
   }

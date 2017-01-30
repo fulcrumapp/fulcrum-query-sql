@@ -9,6 +9,8 @@ export const ConditionType = {
 
 export class Condition {
   constructor(attrs, schema) {
+    attrs = attrs || {};
+
     this._type = attrs.type || ConditionType.And;
     this._schema = schema;
     this._expressions = [];
@@ -22,6 +24,8 @@ export class Condition {
         return new Expression(o, schema);
       });
     }
+
+    this.ensureEmptyExpression();
   }
 
   get type() {

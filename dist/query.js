@@ -47,11 +47,11 @@ var Query = function () {
     this._form = attrs.form;
     this._outputs = [];
     this._schema = attrs.schema;
-    this._filter = new _condition.Condition(attrs.filter, attrs.schema);
+    this._filter = new _condition.Condition(attrs.filter || this.defaultFilter, attrs.schema);
     this._columnFilters = {};
     this._sorting = new _sortExpressions2.default(attrs.sort || [], attrs.schema);
     this._boundingBox = null;
-    this._searchFilter = null;
+    this._searchFilter = '';
     this._dateFilter = new _expression.Expression(attrs.date_filter || { field: '_server_updated_at' }, attrs.schema);
     this._statusFilter = new _columnFilter2.default(_extends({}, attrs.status_filter, { field: '_status' }), this._schema);
     this._projectFilter = new _columnFilter2.default(_extends({}, attrs.project_filter, { field: '_project_id' }), this._schema);
@@ -65,10 +65,10 @@ var Query = function () {
     this.assignmentFilter.reset();
 
     this._columnFilters = {};
-    this._filter = new _condition.Condition({}, this._schema);
+    this._filter = new _condition.Condition(this.defaultFilter, this._schema);
     this._sorting = new _sortExpressions2.default([], this._schema);
     // this._boundingBox = null;
-    this._searchFilter = null;
+    this._searchFilter = '';
     this._dateFilter = new _expression.Expression({ field: '_server_updated_at' }, this._schema);
   };
 
@@ -193,6 +193,65 @@ var Query = function () {
     return [assignedToJoin];
   };
 
+  Query.prototype.toHumanDescription = function toHumanDescription() {
+    var parts = [];
+
+    var description = null;
+
+    if (description = this.statusFilter.toHumanDescription()) {
+      parts.push(description);
+    }
+
+    if (description = this.projectFilter.toHumanDescription()) {
+      parts.push(description);
+    }
+
+    if (description = this.assignmentFilter.toHumanDescription()) {
+      parts.push(description);
+    }
+
+    if (description = this.columnFiltersList.map(function (o) {
+      return o.toHumanDescription();
+    })) {
+      for (var _iterator = description, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+        var _ref4;
+
+        if (_isArray) {
+          if (_i >= _iterator.length) break;
+          _ref4 = _iterator[_i++];
+        } else {
+          _i = _iterator.next();
+          if (_i.done) break;
+          _ref4 = _i.value;
+        }
+
+        var desc = _ref4;
+
+        if (desc) {
+          parts.push(desc);
+        }
+      }
+    }
+
+    if (this.searchFilter) {
+      parts.push('Search by ' + this.searchFilter);
+    }
+
+    if (description = this.dateFilter.toHumanDescription()) {
+      parts.push(description);
+    }
+
+    if (description = this.filter.toHumanDescription()) {
+      parts.push(description);
+    }
+
+    if (description = this.sorting.toHumanDescription()) {
+      parts.push(description);
+    }
+
+    return parts.join(', ');
+  };
+
   _createClass(Query, [{
     key: 'form',
     get: function get() {
@@ -219,6 +278,15 @@ var Query = function () {
       return this._columnFilters;
     }
   }, {
+    key: 'columnFiltersList',
+    get: function get() {
+      var _this2 = this;
+
+      return Object.keys(this._columnFilters).map(function (key) {
+        return _this2._columnFilters[key];
+      });
+    }
+  }, {
     key: 'dateFilter',
     get: function get() {
       return this._dateFilter;
@@ -242,6 +310,25 @@ var Query = function () {
     key: 'options',
     get: function get() {
       return this._options;
+    }
+  }, {
+    key: 'defaultFilter',
+    get: function get() {
+      return {
+        type: null,
+        expressions: [{ field: null,
+          operator: null,
+          value: null }]
+      };
+    }
+  }, {
+    key: 'hasFilter',
+    get: function get() {
+      return this.statusFilter.hasFilter || this.projectFilter.hasFilter || this.assignmentFilter.hasFilter || this.columnFiltersList.find(function (o) {
+        return o.hasFilter;
+      }) || this.searchFilter || this.dateFilter.isValid || this.filter.expressions.find(function (o) {
+        return o.isValid;
+      }) || this.sorting.hasSort;
     }
   }, {
     key: 'boundingBox',

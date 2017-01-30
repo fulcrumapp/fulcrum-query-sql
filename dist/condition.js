@@ -97,6 +97,47 @@ var Condition = exports.Condition = function () {
     };
   };
 
+  Condition.prototype.toHumanDescription = function toHumanDescription() {
+    var topLevel = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+    if (this.expressions.length === 0) {
+      return null;
+    }
+
+    var descriptions = [];
+
+    for (var _iterator2 = this.expressions, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
+      var _ref2;
+
+      if (_isArray2) {
+        if (_i2 >= _iterator2.length) break;
+        _ref2 = _iterator2[_i2++];
+      } else {
+        _i2 = _iterator2.next();
+        if (_i2.done) break;
+        _ref2 = _i2.value;
+      }
+
+      var expression = _ref2;
+
+      var desc = expression.toHumanDescription();
+
+      if (desc) {
+        descriptions.push(desc);
+      }
+    }
+
+    if (descriptions.length === 0) {
+      return null;
+    }
+
+    if (this.type === 'not') {
+      return '(NOT ' + descriptions.join(' AND ') + ')';
+    }
+
+    return '(' + descriptions.join(' ' + this.type.toUpperCase() + ' ') + ')';
+  };
+
   _createClass(Condition, [{
     key: 'type',
     get: function get() {

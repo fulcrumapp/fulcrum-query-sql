@@ -4,6 +4,8 @@ import { availableOperatorsForColumn, isValueRequired, isDateOperator, Operators
 
 export class Expression {
   constructor(attrs, schema) {
+    attrs = attrs || {};
+
     this._field = attrs.field || null;
     this._operator = attrs.operator || null;
     this._value = attrs.value || null;

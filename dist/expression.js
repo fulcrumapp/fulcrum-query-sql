@@ -95,6 +95,24 @@ var Expression = exports.Expression = function () {
     return value;
   };
 
+  Expression.prototype.toHumanDescription = function toHumanDescription() {
+    if (!this.isValid) {
+      return null;
+    }
+
+    var parts = [this.columnName, _operator.OperatorsByValue[this.operator].label];
+
+    if (this.supportsValue) {
+      if (this.value.length === 1) {
+        parts.push(this.value.join(', '));
+      } else {
+        parts.push('[' + this.value.join(', ') + ']');
+      }
+    }
+
+    return parts.join(' ');
+  };
+
   _createClass(Expression, [{
     key: 'isValid',
     get: function get() {

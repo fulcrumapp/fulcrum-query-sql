@@ -6,6 +6,7 @@ import ColumnFilter from './column-filter';
 import Deparse from 'pg-query-deparser';
 import QueryOptions from './query-options';
 import _ from 'lodash';
+import ColumnSettings from './column-settings';
 
 import { ResTarget,
          ColumnRef,
@@ -28,9 +29,8 @@ export default class Query {
     this._form = attrs.form;
     this._outputs = [];
     this._schema = attrs.schema;
-    this._filter = new Condition(attrs.filter || this.defaultFilter, attrs.schema);
-    this._columnFilters = {};
-    this._sorting = new SortExpressions(attrs.sort || [], attrs.schema);
+    this._filter = new Condition(attrs.filter, attrs.schema);
+    this._sorting = new SortExpressions(attrs.sort, attrs.schema);
     this._boundingBox = null;
     this._searchFilter = '';
     this._dateFilter = new Expression(attrs.date_filter || {field: '_server_updated_at'}, attrs.schema);
@@ -38,6 +38,7 @@ export default class Query {
     this._projectFilter = new ColumnFilter({...attrs.project_filter, field: '_project_id'}, this._schema);
     this._assignmentFilter = new ColumnFilter({...attrs.assignment_filter, field: '_assigned_to_id'}, this._schema);
     this._options = new QueryOptions(attrs.options || {});
+    this._columnSettings = new ColumnSettings(this._schema);
   }
 
   get form() {
@@ -56,12 +57,8 @@ export default class Query {
     return this._sorting;
   }
 
-  get columnFilters() {
-    return this._columnFilters;
-  }
-
-  get columnFiltersList() {
-    return Object.keys(this._columnFilters).map(key => this._columnFilters[key]);
+  get columnSettings() {
+    return this._columnSettings;
   }
 
   get dateFilter() {
@@ -84,22 +81,11 @@ export default class Query {
     return this._options;
   }
 
-  get defaultFilter() {
-    return {
-      type: null,
-      expressions: [
-        { field: null,
-          operator: null,
-          value: null }
-      ]
-    };
-  }
-
   get hasFilter() {
     return this.statusFilter.hasFilter ||
            this.projectFilter.hasFilter ||
            this.assignmentFilter.hasFilter ||
-           this.columnFiltersList.find(o => o.hasFilter) ||
+           this.columnSettings.columns.find(o => o.hasFilter) ||
            this.searchFilter ||
            this.dateFilter.isValid ||
            this.filter.expressions.find(o => o.isValid) ||
@@ -111,20 +97,13 @@ export default class Query {
     this.projectFilter.reset();
     this.assignmentFilter.reset();
 
-    this._columnFilters = {};
-    this._filter = new Condition(this.defaultFilter, this._schema);
-    this._sorting = new SortExpressions([], this._schema);
+    this.columnSettings.reset();
+
+    this._filter = new Condition(null, this._schema);
+    this._sorting = new SortExpressions(null, this._schema);
     // this._boundingBox = null;
     this._searchFilter = '';
     this._dateFilter = new Expression({field: '_server_updated_at'}, this._schema);
-  }
-
-  columnFilter(column) {
-    if (this.columnFilters[column.id] == null) {
-      this.columnFilters[column.id] = new ColumnFilter({field: column.id}, this._schema);
-    }
-
-    return this.columnFilters[column.id];
   }
 
   set boundingBox(box) {
@@ -156,9 +135,9 @@ export default class Query {
       outputs: this.outputs.map(o => o.toJSON()),
       filter: this.filter.toJSON(),
       sorting: this.sorting.toJSON(),
-      column_filters: Object.keys(this.columnFilters).map(key => this.columnFilters[key].toJSON()),
       options: this.options.toJSON(),
-      date_filter: this.dateFilter.toJSON()
+      date_filter: this.dateFilter.toJSON(),
+      columns: this.columnSettings.toJSON()
     };
   }
 
@@ -326,7 +305,7 @@ export default class Query {
       parts.push(description);
     }
 
-    if ((description = this.columnFiltersList.map(o => o.toHumanDescription()))) {
+    if ((description = this.columnSettings.columns.map(o => o.filter).map(o => o.toHumanDescription()))) {
       for (const desc of description) {
         if (desc) {
           parts.push(desc);

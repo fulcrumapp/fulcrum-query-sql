@@ -72,6 +72,14 @@ var ColumnFilter = function () {
     };
   };
 
+  ColumnFilter.prototype.toHumanDescription = function toHumanDescription() {
+    if (!this.hasFilter) {
+      return null;
+    }
+
+    return [this.field, 'one of', '[' + this.value.join(', ') + ']'].join(' ');
+  };
+
   _createClass(ColumnFilter, [{
     key: 'value',
     get: function get() {
@@ -84,6 +92,11 @@ var ColumnFilter = function () {
     key: 'isNull',
     get: function get() {
       return this.value == null;
+    }
+  }, {
+    key: 'hasFilter',
+    get: function get() {
+      return !this.isNull;
     }
   }, {
     key: 'hasValues',

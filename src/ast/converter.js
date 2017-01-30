@@ -256,13 +256,9 @@ export default class Converter {
       systemParts.push(assignmentExpression);
     }
 
-    const columnFilterKeys = Object.keys(query.columnFilters);
-
-    if (columnFilterKeys.length) {
-      for (const key of columnFilterKeys) {
-        const filter = query.columnFilters[key];
-
-        const expression = this.createExpressionForColumnFilter(filter);
+    for (const item of query.columnSettings.columns) {
+      if (item.hasFilter) {
+        const expression = this.createExpressionForColumnFilter(item.filter);
 
         if (expression) {
           systemParts.push(expression);

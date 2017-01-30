@@ -31,6 +31,14 @@ var Sort = exports.Sort = function () {
     };
   };
 
+  Sort.prototype.toHumanDescription = function toHumanDescription() {
+    if (!this.isValid) {
+      return null;
+    }
+
+    return [this.columnName, this.direction.toUpperCase()].join(' ');
+  };
+
   _createClass(Sort, [{
     key: 'isValid',
     get: function get() {

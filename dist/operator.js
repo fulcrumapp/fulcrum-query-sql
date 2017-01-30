@@ -1,7 +1,7 @@
 'use strict';
 
 exports.__esModule = true;
-exports.FRIENDLY_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = exports.OperatorType = undefined;
+exports.FRIENDLY_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = exports.OperatorsByValue = exports.OperatorType = undefined;
 exports.isValueRequired = isValueRequired;
 exports.isDateOperator = isDateOperator;
 exports.availableOperatorsForColumn = availableOperatorsForColumn;
@@ -319,6 +319,25 @@ var OperatorType = exports.OperatorType = {
     label: 'Search'
   }
 };
+
+var OperatorsByValue = exports.OperatorsByValue = {};
+
+for (var _iterator = Object.keys(OperatorType), _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+  var _ref;
+
+  if (_isArray) {
+    if (_i >= _iterator.length) break;
+    _ref = _iterator[_i++];
+  } else {
+    _i = _iterator.next();
+    if (_i.done) break;
+    _ref = _i.value;
+  }
+
+  var key = _ref;
+
+  OperatorsByValue[OperatorType[key].name] = OperatorType[key];
+}
 
 var TEXTUAL_OPERATORS = [OperatorType.In, OperatorType.NotIn, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.TextContain, OperatorType.TextNotContain, OperatorType.TextStartsWith, OperatorType.TextEndsWith, OperatorType.TextEqual, OperatorType.TextNotEqual, OperatorType.TextMatch, OperatorType.TextNotMatch];
 
