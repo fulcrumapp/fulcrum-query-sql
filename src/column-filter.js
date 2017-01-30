@@ -16,6 +16,10 @@ export default class ColumnFilter {
     return this.value == null;
   }
 
+  get hasFilter() {
+    return !this.isNull;
+  }
+
   get hasValues() {
     return this.value != null && this.value.length > 0;
   }
@@ -89,5 +93,17 @@ export default class ColumnFilter {
       field: this._field,
       value: this._value
     };
+  }
+
+  toHumanDescription() {
+    if (!this.hasFilter) {
+      return null;
+    }
+
+    return [
+      this.field,
+      'one of',
+      '[' + this.value.join(', ') + ']'
+    ].join(' ');
   }
 }

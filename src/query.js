@@ -28,11 +28,11 @@ export default class Query {
     this._form = attrs.form;
     this._outputs = [];
     this._schema = attrs.schema;
-    this._filter = new Condition(attrs.filter, attrs.schema);
+    this._filter = new Condition(attrs.filter || this.defaultFilter, attrs.schema);
     this._columnFilters = {};
     this._sorting = new SortExpressions(attrs.sort || [], attrs.schema);
     this._boundingBox = null;
-    this._searchFilter = null;
+    this._searchFilter = '';
     this._dateFilter = new Expression(attrs.date_filter || {field: '_server_updated_at'}, attrs.schema);
     this._statusFilter = new ColumnFilter({...attrs.status_filter, field: '_status'}, this._schema);
     this._projectFilter = new ColumnFilter({...attrs.project_filter, field: '_project_id'}, this._schema);
@@ -60,6 +60,10 @@ export default class Query {
     return this._columnFilters;
   }
 
+  get columnFiltersList() {
+    return Object.keys(this._columnFilters).map(key => this._columnFilters[key]);
+  }
+
   get dateFilter() {
     return this._dateFilter;
   }
@@ -80,16 +84,38 @@ export default class Query {
     return this._options;
   }
 
+  get defaultFilter() {
+    return {
+      type: null,
+      expressions: [
+        { field: null,
+          operator: null,
+          value: null }
+      ]
+    };
+  }
+
+  get hasFilter() {
+    return this.statusFilter.hasFilter ||
+           this.projectFilter.hasFilter ||
+           this.assignmentFilter.hasFilter ||
+           this.columnFiltersList.find(o => o.hasFilter) ||
+           this.searchFilter ||
+           this.dateFilter.isValid ||
+           this.filter.expressions.find(o => o.isValid) ||
+           this.sorting.hasSort;
+  }
+
   clearAllFilters() {
     this.statusFilter.reset();
     this.projectFilter.reset();
     this.assignmentFilter.reset();
 
     this._columnFilters = {};
-    this._filter = new Condition({}, this._schema);
+    this._filter = new Condition(this.defaultFilter, this._schema);
     this._sorting = new SortExpressions([], this._schema);
     // this._boundingBox = null;
-    this._searchFilter = null;
+    this._searchFilter = '';
     this._dateFilter = new Expression({field: '_server_updated_at'}, this._schema);
   }
 
@@ -281,5 +307,49 @@ export default class Query {
 
   get outerSortClause() {
     return [ SortBy(ColumnRef('_row_number'), 1, 0) ];
+  }
+
+  toHumanDescription() {
+    const parts = [];
+
+    let description = null;
+
+    if ((description = this.statusFilter.toHumanDescription())) {
+      parts.push(description);
+    }
+
+    if ((description = this.projectFilter.toHumanDescription())) {
+      parts.push(description);
+    }
+
+    if ((description = this.assignmentFilter.toHumanDescription())) {
+      parts.push(description);
+    }
+
+    if ((description = this.columnFiltersList.map(o => o.toHumanDescription()))) {
+      for (const desc of description) {
+        if (desc) {
+          parts.push(desc);
+        }
+      }
+    }
+
+    if (this.searchFilter) {
+      parts.push('Search by ' + this.searchFilter);
+    }
+
+    if ((description = this.dateFilter.toHumanDescription())) {
+      parts.push(description);
+    }
+
+    if ((description = this.filter.toHumanDescription())) {
+      parts.push(description);
+    }
+
+    if ((description = this.sorting.toHumanDescription())) {
+      parts.push(description);
+    }
+
+    return parts.join(', ');
   }
 }

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { availableOperatorsForColumn, isValueRequired, isDateOperator } from './operator';
+import { availableOperatorsForColumn, isValueRequired, isDateOperator, OperatorsByValue } from './operator';
 
 export class Expression {
   constructor(attrs, schema) {
@@ -182,5 +182,26 @@ export class Expression {
     }
 
     return value;
+  }
+
+  toHumanDescription() {
+    if (!this.isValid) {
+      return null;
+    }
+
+    const parts = [
+      this.columnName,
+      OperatorsByValue[this.operator].label
+    ];
+
+    if (this.supportsValue) {
+      if (this.value.length === 1) {
+        parts.push(this.value.join(', '));
+      } else {
+        parts.push('[' + this.value.join(', ') + ']');
+      }
+    }
+
+    return parts.join(' ');
   }
 }

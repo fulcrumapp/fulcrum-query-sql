@@ -51,4 +51,12 @@ export class Sort {
       direction: this._direction
     };
   }
+
+  toHumanDescription() {
+    if (!this.isValid) {
+      return null;
+    }
+
+    return [ this.columnName, this.direction.toUpperCase() ].join(' ');
+  }
 }

@@ -77,4 +77,30 @@ export class Condition {
       expressions: this.expressions ? this.expressions.map(o => o.toJSON()) : null
     };
   }
+
+  toHumanDescription(topLevel = false) {
+    if (this.expressions.length === 0) {
+      return null;
+    }
+
+    const descriptions = [];
+
+    for (const expression of this.expressions) {
+      const desc = expression.toHumanDescription();
+
+      if (desc) {
+        descriptions.push(desc);
+      }
+    }
+
+    if (descriptions.length === 0) {
+      return null;
+    }
+
+    if (this.type === 'not') {
+      return '(NOT ' + descriptions.join(' AND ') + ')';
+    }
+
+    return '(' + descriptions.join(' ' + this.type.toUpperCase() + ' ') + ')';
+  }
 }

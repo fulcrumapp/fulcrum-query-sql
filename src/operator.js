@@ -307,6 +307,12 @@ export const OperatorType = {
   }
 };
 
+export const OperatorsByValue = {};
+
+for (const key of Object.keys(OperatorType)) {
+  OperatorsByValue[OperatorType[key].name] = OperatorType[key];
+}
+
 const TEXTUAL_OPERATORS = [
   OperatorType.In,
   OperatorType.NotIn,

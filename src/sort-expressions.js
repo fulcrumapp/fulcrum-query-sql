@@ -18,11 +18,23 @@ export default class SortExpressions {
     return this._expressions.length === 0;
   }
 
+  get hasSort() {
+    return !this.isEmpty;
+  }
+
   get expressions() {
     return this._expressions;
   }
 
   toJSON() {
     return this.expressions.map(o => o.toJSON());
+  }
+
+  toHumanDescription() {
+    if (!this.hasSort) {
+      return null;
+    }
+
+    return this.expressions.map(o => o.toHumanDescription()).join(', ');
   }
 }
