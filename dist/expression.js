@@ -19,6 +19,8 @@ var Expression = exports.Expression = function () {
   function Expression(attrs, schema) {
     _classCallCheck(this, Expression);
 
+    attrs = attrs || {};
+
     this._field = attrs.field || null;
     this._operator = attrs.operator || null;
     this._value = attrs.value || null;

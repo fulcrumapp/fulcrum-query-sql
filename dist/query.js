@@ -34,6 +34,10 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _columnSettings = require('./column-settings');
+
+var _columnSettings2 = _interopRequireDefault(_columnSettings);
+
 var _helpers = require('./ast/helpers');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -47,9 +51,8 @@ var Query = function () {
     this._form = attrs.form;
     this._outputs = [];
     this._schema = attrs.schema;
-    this._filter = new _condition.Condition(attrs.filter || this.defaultFilter, attrs.schema);
-    this._columnFilters = {};
-    this._sorting = new _sortExpressions2.default(attrs.sort || [], attrs.schema);
+    this._filter = new _condition.Condition(attrs.filter, attrs.schema);
+    this._sorting = new _sortExpressions2.default(attrs.sort, attrs.schema);
     this._boundingBox = null;
     this._searchFilter = '';
     this._dateFilter = new _expression.Expression(attrs.date_filter || { field: '_server_updated_at' }, attrs.schema);
@@ -57,6 +60,7 @@ var Query = function () {
     this._projectFilter = new _columnFilter2.default(_extends({}, attrs.project_filter, { field: '_project_id' }), this._schema);
     this._assignmentFilter = new _columnFilter2.default(_extends({}, attrs.assignment_filter, { field: '_assigned_to_id' }), this._schema);
     this._options = new _queryOptions2.default(attrs.options || {});
+    this._columnSettings = new _columnSettings2.default(this._schema);
   }
 
   Query.prototype.clearAllFilters = function clearAllFilters() {
@@ -64,36 +68,25 @@ var Query = function () {
     this.projectFilter.reset();
     this.assignmentFilter.reset();
 
-    this._columnFilters = {};
-    this._filter = new _condition.Condition(this.defaultFilter, this._schema);
-    this._sorting = new _sortExpressions2.default([], this._schema);
+    this.columnSettings.reset();
+
+    this._filter = new _condition.Condition(null, this._schema);
+    this._sorting = new _sortExpressions2.default(null, this._schema);
     // this._boundingBox = null;
     this._searchFilter = '';
     this._dateFilter = new _expression.Expression({ field: '_server_updated_at' }, this._schema);
   };
 
-  Query.prototype.columnFilter = function columnFilter(column) {
-    if (this.columnFilters[column.id] == null) {
-      this.columnFilters[column.id] = new _columnFilter2.default({ field: column.id }, this._schema);
-    }
-
-    return this.columnFilters[column.id];
-  };
-
   Query.prototype.toJSON = function toJSON() {
-    var _this = this;
-
     return {
       outputs: this.outputs.map(function (o) {
         return o.toJSON();
       }),
       filter: this.filter.toJSON(),
       sorting: this.sorting.toJSON(),
-      column_filters: Object.keys(this.columnFilters).map(function (key) {
-        return _this.columnFilters[key].toJSON();
-      }),
       options: this.options.toJSON(),
-      date_filter: this.dateFilter.toJSON()
+      date_filter: this.dateFilter.toJSON(),
+      columns: this.columnSettings.toJSON()
     };
   };
 
@@ -210,7 +203,9 @@ var Query = function () {
       parts.push(description);
     }
 
-    if (description = this.columnFiltersList.map(function (o) {
+    if (description = this.columnSettings.columns.map(function (o) {
+      return o.filter;
+    }).map(function (o) {
       return o.toHumanDescription();
     })) {
       for (var _iterator = description, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
@@ -273,18 +268,9 @@ var Query = function () {
       return this._sorting;
     }
   }, {
-    key: 'columnFilters',
+    key: 'columnSettings',
     get: function get() {
-      return this._columnFilters;
-    }
-  }, {
-    key: 'columnFiltersList',
-    get: function get() {
-      var _this2 = this;
-
-      return Object.keys(this._columnFilters).map(function (key) {
-        return _this2._columnFilters[key];
-      });
+      return this._columnSettings;
     }
   }, {
     key: 'dateFilter',
@@ -312,19 +298,9 @@ var Query = function () {
       return this._options;
     }
   }, {
-    key: 'defaultFilter',
-    get: function get() {
-      return {
-        type: null,
-        expressions: [{ field: null,
-          operator: null,
-          value: null }]
-      };
-    }
-  }, {
     key: 'hasFilter',
     get: function get() {
-      return this.statusFilter.hasFilter || this.projectFilter.hasFilter || this.assignmentFilter.hasFilter || this.columnFiltersList.find(function (o) {
+      return this.statusFilter.hasFilter || this.projectFilter.hasFilter || this.assignmentFilter.hasFilter || this.columnSettings.columns.find(function (o) {
         return o.hasFilter;
       }) || this.searchFilter || this.dateFilter.isValid || this.filter.expressions.find(function (o) {
         return o.isValid;

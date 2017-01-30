@@ -12,6 +12,8 @@ var SortExpressions = function () {
   function SortExpressions(sorts, schema) {
     _classCallCheck(this, SortExpressions);
 
+    sorts = sorts || [];
+
     this._expressions = sorts.map(function (o) {
       return new _sort.Sort(o, schema);
     });

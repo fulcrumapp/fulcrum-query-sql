@@ -25,6 +25,8 @@ var Condition = exports.Condition = function () {
   function Condition(attrs, schema) {
     _classCallCheck(this, Condition);
 
+    attrs = attrs || {};
+
     this._type = attrs.type || ConditionType.And;
     this._schema = schema;
     this._expressions = [];
@@ -38,6 +40,8 @@ var Condition = exports.Condition = function () {
         return new _expression.Expression(o, schema);
       });
     }
+
+    this.ensureEmptyExpression();
   }
 
   Condition.prototype.addEmptyCondition = function addEmptyCondition() {

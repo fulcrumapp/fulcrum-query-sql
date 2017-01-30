@@ -456,26 +456,22 @@ var Converter = function () {
       systemParts.push(assignmentExpression);
     }
 
-    var columnFilterKeys = Object.keys(query.columnFilters);
+    for (var _iterator = query.columnSettings.columns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+      var _ref5;
 
-    if (columnFilterKeys.length) {
-      for (var _iterator = columnFilterKeys, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-        var _ref5;
+      if (_isArray) {
+        if (_i >= _iterator.length) break;
+        _ref5 = _iterator[_i++];
+      } else {
+        _i = _iterator.next();
+        if (_i.done) break;
+        _ref5 = _i.value;
+      }
 
-        if (_isArray) {
-          if (_i >= _iterator.length) break;
-          _ref5 = _iterator[_i++];
-        } else {
-          _i = _iterator.next();
-          if (_i.done) break;
-          _ref5 = _i.value;
-        }
+      var item = _ref5;
 
-        var key = _ref5;
-
-        var filter = query.columnFilters[key];
-
-        var expression = this.createExpressionForColumnFilter(filter);
+      if (item.hasFilter) {
+        var expression = this.createExpressionForColumnFilter(item.filter);
 
         if (expression) {
           systemParts.push(expression);
