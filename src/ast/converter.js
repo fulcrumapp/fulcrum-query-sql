@@ -300,8 +300,11 @@ export default class Converter {
       });
 
       if (values.length) {
-        expression = AExpr(6, '=', ColumnRef(filter.columnName),
-                     values);
+        if (filter.column.isArray) {
+          expression = this.ArrayAnyOfConverter(filter);
+        } else {
+          expression = this.InConverter(filter);
+        }
 
         if (hasNull) {
           expression = BoolExpr(1, [ NullTest(0, ColumnRef(filter.columnName)), expression ]);
