@@ -101,7 +101,7 @@ var FormSchema = function (_FormFieldSchema) {
     }
 
     if (this.form.statusField.isEnabled) {
-      this.addRawElementColumn(this.form.statusField, this._rawColumnsByKey._status, '_status', null, '_status');
+      this.addRawElementColumn(this.form.statusField, this._rawColumnsByKey._status, '_status', 'string', null, '_status');
     }
 
     if (this.fullSchema) {
