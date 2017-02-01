@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 exports.__esModule = true;
 
@@ -12,9 +12,24 @@ var Column = function () {
   }
 
   _createClass(Column, [{
-    key: "isArray",
+    key: 'isArray',
     get: function get() {
-      return false;
+      return this.type === 'array';
+    }
+  }, {
+    key: 'isDate',
+    get: function get() {
+      return this.type === 'timestamp';
+    }
+  }, {
+    key: 'isNumber',
+    get: function get() {
+      return this.type === 'double' || this.type === 'integer';
+    }
+  }, {
+    key: 'supportsRanges',
+    get: function get() {
+      return this.isNumber || this.isDate;
     }
   }]);
 

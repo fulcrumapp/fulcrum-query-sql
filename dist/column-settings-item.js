@@ -8,6 +8,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _expression = require('./expression');
 
+var _operator = require('./operator');
+
 var _columnFilter = require('./column-filter');
 
 var _columnFilter2 = _interopRequireDefault(_columnFilter);
@@ -26,7 +28,9 @@ var ColumnSettingsItem = function () {
     this._search = attrs.search || '';
     this._filter = new _columnFilter2.default(_extends({}, attrs.filter, { field: attrs.column.id }), this._schema);
     this._expression = new _expression.Expression(_extends({}, attrs.expression, { field: attrs.column.id }), schema);
-    this._range = new _expression.Expression(attrs.range, schema);
+    this._range = new _expression.Expression(_extends({}, attrs.expression, {
+      operator: attrs.column.isDate ? _operator.OperatorType.DateBetween.name : _operator.OperatorType.Between.name,
+      field: attrs.column.id }), schema);
   }
 
   ColumnSettingsItem.prototype.clear = function clear() {
@@ -34,7 +38,8 @@ var ColumnSettingsItem = function () {
     this._search = '';
     this._filter = new _columnFilter2.default({ field: this.column.id }, this._schema);
     this._expression = new _expression.Expression({ field: this.column.id }, this._schema);
-    this._range = new _expression.Expression(null, this._schema);
+    this._range = new _expression.Expression({ operator: this.column.isDate ? _operator.OperatorType.DateBetween.name : _operator.OperatorType.Between.name,
+      field: this.column.id }, this._schema);
   };
 
   ColumnSettingsItem.prototype.toJSON = function toJSON() {

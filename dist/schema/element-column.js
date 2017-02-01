@@ -70,11 +70,6 @@ var ElementColumn = function (_Column) {
       return this._type;
     }
   }, {
-    key: 'isArray',
-    get: function get() {
-      return this.type === 'array';
-    }
-  }, {
     key: 'name',
     get: function get() {
       return this.element.label;

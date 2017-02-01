@@ -4,9 +4,9 @@ exports.__esModule = true;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _column = require('./column');
+var _formFieldSchema = require('./form-field-schema');
 
-var _column2 = _interopRequireDefault(_column);
+var _formFieldSchema2 = _interopRequireDefault(_formFieldSchema);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -18,73 +18,83 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : _defaults(subClass, superClass); }
 
-var SimpleColumn = function (_Column) {
-  _inherits(SimpleColumn, _Column);
+var SQLQuerySchema = function (_FormFieldSchema) {
+  _inherits(SQLQuerySchema, _FormFieldSchema);
 
-  function SimpleColumn(_ref) {
-    var name = _ref.name,
-        attributeName = _ref.attributeName,
-        columnName = _ref.columnName,
-        _ref$type = _ref.type,
-        type = _ref$type === undefined ? null : _ref$type,
-        _ref$accessor = _ref.accessor,
-        accessor = _ref$accessor === undefined ? null : _ref$accessor;
+  function SQLQuerySchema(rawColumns, tableName) {
+    _classCallCheck(this, SQLQuerySchema);
 
-    _classCallCheck(this, SimpleColumn);
+    var _this = _possibleConstructorReturn(this, _FormFieldSchema.call(this));
 
-    var _this = _possibleConstructorReturn(this, _Column.call(this));
+    _this._tableName = tableName || 'query';
 
-    _this.defaultAccessor = function (object) {
-      return object[_this.attributeName];
-    };
+    _this._columns = [];
+    _this._rawColumns = rawColumns;
 
-    _this._type = type || 'string';
-    _this._name = name;
-    _this._attributeName = attributeName;
-    _this._columnName = columnName;
-    _this._accessor = accessor || _this.defaultAccessor;
+    _this._rawColumnsByKey = {};
+    _this._columnsByKey = {};
+
+    for (var _iterator = rawColumns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+      var _ref;
+
+      if (_isArray) {
+        if (_i >= _iterator.length) break;
+        _ref = _iterator[_i++];
+      } else {
+        _i = _iterator.next();
+        if (_i.done) break;
+        _ref = _i.value;
+      }
+
+      var column = _ref;
+
+      _this._rawColumnsByKey[column.name] = column;
+    }
+
+    _this.setupColumns();
     return _this;
   }
 
-  SimpleColumn.prototype.valueFrom = function valueFrom(object) {
-    return this._accessor(object);
+  SQLQuerySchema.prototype.setupColumns = function setupColumns() {
+    for (var _iterator2 = this._rawColumns, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
+      var _ref2;
+
+      if (_isArray2) {
+        if (_i2 >= _iterator2.length) break;
+        _ref2 = _iterator2[_i2++];
+      } else {
+        _i2 = _iterator2.next();
+        if (_i2.done) break;
+        _ref2 = _i2.value;
+      }
+
+      var column = _ref2;
+
+      var attrs = {
+        name: column.name,
+        attributeName: column.name,
+        columnName: column.name,
+        type: column.type
+      };
+
+      this.addSystemColumn(attrs);
+    }
   };
 
-  SimpleColumn.prototype.exportValue = function exportValue(object) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    return this._accessor(object, options);
-  };
-
-  _createClass(SimpleColumn, [{
-    key: 'type',
+  _createClass(SQLQuerySchema, [{
+    key: 'tableName',
     get: function get() {
-      return this._type;
+      return this._tableName;
     }
   }, {
-    key: 'id',
+    key: 'isSQL',
     get: function get() {
-      return this._columnName;
-    }
-  }, {
-    key: 'name',
-    get: function get() {
-      return this._name;
-    }
-  }, {
-    key: 'columnName',
-    get: function get() {
-      return this._columnName;
-    }
-  }, {
-    key: 'attributeName',
-    get: function get() {
-      return this._attributeName;
+      return true;
     }
   }]);
 
-  return SimpleColumn;
-}(_column2.default);
+  return SQLQuerySchema;
+}(_formFieldSchema2.default);
 
-exports.default = SimpleColumn;
-//# sourceMappingURL=simple-column.js.map
+exports.default = SQLQuerySchema;
+//# sourceMappingURL=sql-query-schema.js.map

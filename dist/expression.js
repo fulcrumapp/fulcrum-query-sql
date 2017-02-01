@@ -155,11 +155,25 @@ var Expression = exports.Expression = function () {
     key: 'value1',
     get: function get() {
       return this.value && this.value[0];
+    },
+    set: function set(value) {
+      if (!this._value) {
+        this._value = [];
+      }
+
+      this._value = [value, this.value[1]];
     }
   }, {
     key: 'value2',
     get: function get() {
       return this.value && this.value[1];
+    },
+    set: function set(value) {
+      if (!this._value) {
+        this._value = [];
+      }
+
+      this._value = [this.value[0], value];
     }
   }, {
     key: 'isDateOperator',

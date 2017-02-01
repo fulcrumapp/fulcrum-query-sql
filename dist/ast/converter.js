@@ -485,6 +485,10 @@ var Converter = function () {
       if (item.expression.isValid) {
         systemParts.push(this.nodeForExpression(item.expression, query.options));
       }
+
+      if (item.range.isValid) {
+        systemParts.push(this.nodeForExpression(item.range, query.options));
+      }
     }
 
     if (filterNode && systemParts.length) {
