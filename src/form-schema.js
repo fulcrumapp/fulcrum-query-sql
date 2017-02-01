@@ -84,6 +84,7 @@ export default class FormSchema extends FormFieldSchema {
       this.addRawElementColumn(this.form.statusField,
                                this._rawColumnsByKey._status,
                                '_status',
+                               'string',
                                null,
                                '_status');
     }
