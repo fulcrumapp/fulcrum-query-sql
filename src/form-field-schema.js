@@ -6,16 +6,17 @@ export default class FormFieldSchema {
     this.fullSchema = fullSchema;
   }
 
-  addSystemColumn(label, attribute, columnName, accessor) {
+  addSystemColumn(label, attribute, columnName, type, accessor) {
     const column = new SimpleColumn({name: label,
                                      attributeName: attribute,
                                      columnName: columnName,
+                                     type: type,
                                      accessor: accessor});
     this._columns.push(column);
     this._columnsByKey[columnName] = column;
   }
 
-  addElementColumn(element, part) {
+  addElementColumn(element, part, type) {
     const columnKey = part ? element.key + '_' + part : element.key;
 
     const rawColumn = this._rawColumnsByKey[columnKey];
@@ -25,11 +26,11 @@ export default class FormFieldSchema {
     //   throw new Error('Column not found for element ' + columnKey + Object.keys(this._rawColumnsByKey));
     // }
 
-    this.addRawElementColumn(element, rawColumn, null, part, columnKey);
+    this.addRawElementColumn(element, rawColumn, null, type || rawColumn.type, part, columnKey);
   }
 
-  addRawElementColumn(element, rawColumn, id, part, columnKey) {
-    const columnObject = new ElementColumn({element, rawColumn, id, part});
+  addRawElementColumn(element, rawColumn, id, type, part, columnKey) {
+    const columnObject = new ElementColumn({element, rawColumn, type, id, part});
 
     this._columns.push(columnObject);
     this._columnsByKey[columnKey] = columnObject;
@@ -55,8 +56,8 @@ export default class FormFieldSchema {
       }
 
       if (this.fullSchema && (element.isPhotoElement || element.isVideoElement || element.isAudioElement)) {
-        this.addElementColumn(element, 'captions');
-        this.addElementColumn(element, 'urls');
+        this.addElementColumn(element, 'captions', 'array');
+        this.addElementColumn(element, 'urls', 'array');
       }
 
       if (this.fullSchema && element.isSignatureElement) {
