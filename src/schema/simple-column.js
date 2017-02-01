@@ -15,10 +15,6 @@ export default class SimpleColumn extends Column {
     return this._type;
   }
 
-  get isArray() {
-    return this.type === 'array';
-  }
-
   get id() {
     return this._columnName;
   }

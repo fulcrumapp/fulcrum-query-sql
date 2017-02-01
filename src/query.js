@@ -22,7 +22,8 @@ import { ResTarget,
          RangeSubselect,
          SelectStmt,
          SortBy,
-         IntegerValue } from './ast/helpers';
+         IntegerValue,
+         AStar } from './ast/helpers';
 
 export default class Query {
   constructor(attrs) {
@@ -43,6 +44,10 @@ export default class Query {
 
   get form() {
     return this._form;
+  }
+
+  get schema() {
+    return this._schema;
   }
 
   get outputs() {
@@ -205,6 +210,10 @@ export default class Query {
   }
 
   targetList() {
+    if (this.schema.isSQL) {
+      return [ ResTarget(ColumnRef(AStar())) ];
+    }
+
     return [
       ResTarget(ColumnRef('_status'), 'status'),
       ResTarget(ColumnRef('_version'), 'version'),

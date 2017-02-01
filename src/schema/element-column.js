@@ -19,10 +19,6 @@ export default class ElementColumn extends Column {
     return this._type;
   }
 
-  get isArray() {
-    return this.type === 'array';
-  }
-
   get name() {
     return this.element.label;
   }

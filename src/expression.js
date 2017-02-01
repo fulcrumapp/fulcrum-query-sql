@@ -48,8 +48,24 @@ export class Expression {
     return this.value && this.value[0];
   }
 
+  set value1(value) {
+    if (!this._value) {
+      this._value = [];
+    }
+
+    this._value = [ value, this.value[1] ];
+  }
+
   get value2() {
     return this.value && this.value[1];
+  }
+
+  set value2(value) {
+    if (!this._value) {
+      this._value = [];
+    }
+
+    this._value = [ this.value[0], value ];
   }
 
   get isDateOperator() {

@@ -1,4 +1,5 @@
 import { Expression } from './expression';
+import { OperatorType } from './operator';
 import ColumnFilter from './column-filter';
 
 export default class ColumnSettingsItem {
@@ -9,7 +10,10 @@ export default class ColumnSettingsItem {
     this._search = attrs.search || '';
     this._filter = new ColumnFilter({...attrs.filter, field: attrs.column.id}, this._schema);
     this._expression = new Expression({...attrs.expression, field: attrs.column.id}, schema);
-    this._range = new Expression(attrs.range, schema);
+    this._range = new Expression({...attrs.expression,
+                                  operator: attrs.column.isDate ? OperatorType.DateBetween.name
+                                                                : OperatorType.Between.name,
+                                  field: attrs.column.id}, schema);
   }
 
   clear() {
@@ -17,7 +21,9 @@ export default class ColumnSettingsItem {
     this._search = '';
     this._filter = new ColumnFilter({field: this.column.id}, this._schema);
     this._expression = new Expression({field: this.column.id}, this._schema);
-    this._range = new Expression(null, this._schema);
+    this._range = new Expression({operator: this.column.isDate ? OperatorType.DateBetween.name
+                                                               : OperatorType.Between.name,
+                                  field: this.column.id}, this._schema);
   }
 
   toJSON() {
