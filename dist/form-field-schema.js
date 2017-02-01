@@ -26,16 +26,17 @@ var FormFieldSchema = function () {
     this.fullSchema = fullSchema;
   }
 
-  FormFieldSchema.prototype.addSystemColumn = function addSystemColumn(label, attribute, columnName, accessor) {
+  FormFieldSchema.prototype.addSystemColumn = function addSystemColumn(label, attribute, columnName, type, accessor) {
     var column = new _simpleColumn2.default({ name: label,
       attributeName: attribute,
       columnName: columnName,
+      type: type,
       accessor: accessor });
     this._columns.push(column);
     this._columnsByKey[columnName] = column;
   };
 
-  FormFieldSchema.prototype.addElementColumn = function addElementColumn(element, part) {
+  FormFieldSchema.prototype.addElementColumn = function addElementColumn(element, part, type) {
     var columnKey = part ? element.key + '_' + part : element.key;
 
     var rawColumn = this._rawColumnsByKey[columnKey];
@@ -45,11 +46,11 @@ var FormFieldSchema = function () {
     //   throw new Error('Column not found for element ' + columnKey + Object.keys(this._rawColumnsByKey));
     // }
 
-    this.addRawElementColumn(element, rawColumn, null, part, columnKey);
+    this.addRawElementColumn(element, rawColumn, null, type || rawColumn.type, part, columnKey);
   };
 
-  FormFieldSchema.prototype.addRawElementColumn = function addRawElementColumn(element, rawColumn, id, part, columnKey) {
-    var columnObject = new _elementColumn2.default({ element: element, rawColumn: rawColumn, id: id, part: part });
+  FormFieldSchema.prototype.addRawElementColumn = function addRawElementColumn(element, rawColumn, id, type, part, columnKey) {
+    var columnObject = new _elementColumn2.default({ element: element, rawColumn: rawColumn, type: type, id: id, part: part });
 
     this._columns.push(columnObject);
     this._columnsByKey[columnKey] = columnObject;
@@ -88,8 +89,8 @@ var FormFieldSchema = function () {
       }
 
       if (this.fullSchema && (element.isPhotoElement || element.isVideoElement || element.isAudioElement)) {
-        this.addElementColumn(element, 'captions');
-        this.addElementColumn(element, 'urls');
+        this.addElementColumn(element, 'captions', 'array');
+        this.addElementColumn(element, 'urls', 'array');
       }
 
       if (this.fullSchema && element.isSignatureElement) {

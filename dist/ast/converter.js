@@ -497,6 +497,8 @@ var Converter = function () {
   };
 
   Converter.prototype.createExpressionForColumnFilter = function createExpressionForColumnFilter(filter) {
+    var _this2 = this;
+
     var expression = null;
 
     if (filter.hasValues) {
@@ -513,7 +515,11 @@ var Converter = function () {
         });
 
         if (values.length) {
-          expression = (0, _helpers.AExpr)(6, '=', (0, _helpers.ColumnRef)(filter.columnName), values);
+          if (filter.column.isArray) {
+            expression = _this2.ArrayAnyOfConverter(filter);
+          } else {
+            expression = _this2.InConverter(filter);
+          }
 
           if (hasNull) {
             expression = (0, _helpers.BoolExpr)(1, [(0, _helpers.NullTest)(0, (0, _helpers.ColumnRef)(filter.columnName)), expression]);
@@ -594,10 +600,10 @@ var Converter = function () {
   };
 
   Converter.prototype.nodeForExpressions = function nodeForExpressions(expressions, options) {
-    var _this2 = this;
+    var _this3 = this;
 
     return expressions.map(function (e) {
-      return _this2.nodeForExpression(e, options);
+      return _this3.nodeForExpression(e, options);
     }).filter(function (e) {
       return e;
     });

@@ -62,6 +62,11 @@ var SimpleColumn = function (_Column) {
       return this._type;
     }
   }, {
+    key: 'isArray',
+    get: function get() {
+      return this.type === 'array';
+    }
+  }, {
     key: 'id',
     get: function get() {
       return this._columnName;

@@ -1,1 +1,1 @@
-{"version":3,"sources":["../../src/schema/column.js"],"names":["Column"],"mappings":";;;;;;IAAqBA,M;;;;kBAAAA,M","file":"column.js","sourcesContent":["export default class Column {\n}\n"]}
+{"version":3,"sources":["../../src/schema/column.js"],"names":["Column"],"mappings":";;;;;;;;IAAqBA,M;;;;;;;wBACL;AACZ,aAAO,KAAP;AACD;;;;;;kBAHkBA,M","file":"column.js","sourcesContent":["export default class Column {\n  get isArray() {\n    return false;\n  }\n}\n"]}

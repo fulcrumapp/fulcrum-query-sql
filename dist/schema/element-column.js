@@ -26,6 +26,7 @@ var ElementColumn = function (_Column) {
   function ElementColumn(_ref) {
     var element = _ref.element,
         rawColumn = _ref.rawColumn,
+        type = _ref.type,
         id = _ref.id,
         part = _ref.part;
 
@@ -33,6 +34,7 @@ var ElementColumn = function (_Column) {
 
     var _this = _possibleConstructorReturn(this, _Column.call(this));
 
+    _this._type = type;
     _this._element = element;
     _this._rawColumn = rawColumn;
     _this._id = id || element.key;
@@ -65,7 +67,12 @@ var ElementColumn = function (_Column) {
   _createClass(ElementColumn, [{
     key: 'type',
     get: function get() {
-      return 'string';
+      return this._type;
+    }
+  }, {
+    key: 'isArray',
+    get: function get() {
+      return this.type === 'array';
     }
   }, {
     key: 'name',
