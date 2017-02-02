@@ -69,6 +69,13 @@ var Expression = exports.Expression = function () {
     return (0, _operator.availableOperatorsForColumn)(this.column);
   };
 
+  Expression.prototype.clearRangeValuesIfNull = function clearRangeValuesIfNull() {
+    // if both values are null, clear it, don't allow [ null, null ]
+    if (this._value[0] == null && this._value[1] == null) {
+      this._value = null;
+    }
+  };
+
   Expression.prototype.labelForValue = function labelForValue(value) {
     var column = this.column;
 
@@ -119,10 +126,10 @@ var Expression = exports.Expression = function () {
     key: 'isValid',
     get: function get() {
       if (!(0, _operator.isValueRequired)(this.operator)) {
-        return this.column && this.operator;
+        return this.column != null && this.operator != null;
       }
 
-      return this.column && this.operator && this.hasValue;
+      return this.column != null && this.operator != null && this.hasValue;
     }
   }, {
     key: 'supportsValue',
@@ -132,7 +139,7 @@ var Expression = exports.Expression = function () {
   }, {
     key: 'hasValue',
     get: function get() {
-      return this.value !== null && this.value.length;
+      return this.value !== null && this.value.length !== 0;
     }
   }, {
     key: 'value',
@@ -162,6 +169,8 @@ var Expression = exports.Expression = function () {
       }
 
       this._value = [value, this.value[1]];
+
+      this.clearRangeValuesIfNull();
     }
   }, {
     key: 'value2',
@@ -174,6 +183,8 @@ var Expression = exports.Expression = function () {
       }
 
       this._value = [this.value[0], value];
+
+      this.clearRangeValuesIfNull();
     }
   }, {
     key: 'isDateOperator',
@@ -234,6 +245,8 @@ var Expression = exports.Expression = function () {
       }
 
       this._value = [date && date.format('YYYY-MM-DD'), this.value[1]];
+
+      this.clearRangeValuesIfNull();
     }
   }, {
     key: 'endDate',
@@ -246,6 +259,8 @@ var Expression = exports.Expression = function () {
       }
 
       this._value = [this.value[0], date && date.format('YYYY-MM-DD')];
+
+      this.clearRangeValuesIfNull();
     }
   }]);
 

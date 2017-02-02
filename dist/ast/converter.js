@@ -422,14 +422,6 @@ var Converter = function () {
     var systemParts = [];
     var filterNode = this.nodeForCondition(query.filter, query.options);
 
-    if (query.dateFilter) {
-      var dateExpression = this.nodeForExpression(query.dateFilter, query.options);
-
-      if (dateExpression) {
-        systemParts.push(dateExpression);
-      }
-    }
-
     if (boundingBox) {
       systemParts.push(this.boundingBoxFilter(boundingBox));
     }
@@ -438,23 +430,10 @@ var Converter = function () {
       systemParts.push(this.searchFilter(search));
     }
 
-    var statusExpression = this.createExpressionForColumnFilter(query.statusFilter);
-
-    if (statusExpression) {
-      systemParts.push(statusExpression);
-    }
-
-    var projectExpression = this.createExpressionForColumnFilter(query.projectFilter);
-
-    if (projectExpression) {
-      systemParts.push(projectExpression);
-    }
-
-    var assignmentExpression = this.createExpressionForColumnFilter(query.assignmentFilter);
-
-    if (assignmentExpression) {
-      systemParts.push(assignmentExpression);
-    }
+    systemParts.push(this.nodeForExpression(query.dateFilter, query.options));
+    systemParts.push(this.createExpressionForColumnFilter(query.statusFilter));
+    systemParts.push(this.createExpressionForColumnFilter(query.projectFilter));
+    systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter));
 
     for (var _iterator = query.columnSettings.columns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
       var _ref5;
@@ -491,10 +470,14 @@ var Converter = function () {
       }
     }
 
-    if (filterNode && systemParts.length) {
-      return (0, _helpers.BoolExpr)(0, [filterNode].concat(systemParts));
-    } else if (systemParts.length) {
-      return (0, _helpers.BoolExpr)(0, [].concat(systemParts));
+    var expressions = systemParts.filter(function (o) {
+      return o != null;
+    });
+
+    if (filterNode && expressions.length) {
+      return (0, _helpers.BoolExpr)(0, [filterNode].concat(expressions));
+    } else if (expressions.length) {
+      return (0, _helpers.BoolExpr)(0, [].concat(expressions));
     }
 
     return filterNode;
