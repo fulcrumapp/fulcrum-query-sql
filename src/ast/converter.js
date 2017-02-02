@@ -222,14 +222,6 @@ export default class Converter {
     const systemParts = [];
     const filterNode = this.nodeForCondition(query.filter, query.options);
 
-    if (query.dateFilter) {
-      const dateExpression = this.nodeForExpression(query.dateFilter, query.options);
-
-      if (dateExpression) {
-        systemParts.push(dateExpression);
-      }
-    }
-
     if (boundingBox) {
       systemParts.push(this.boundingBoxFilter(boundingBox));
     }
@@ -238,23 +230,10 @@ export default class Converter {
       systemParts.push(this.searchFilter(search));
     }
 
-    const statusExpression = this.createExpressionForColumnFilter(query.statusFilter);
-
-    if (statusExpression) {
-      systemParts.push(statusExpression);
-    }
-
-    const projectExpression = this.createExpressionForColumnFilter(query.projectFilter);
-
-    if (projectExpression) {
-      systemParts.push(projectExpression);
-    }
-
-    const assignmentExpression = this.createExpressionForColumnFilter(query.assignmentFilter);
-
-    if (assignmentExpression) {
-      systemParts.push(assignmentExpression);
-    }
+    systemParts.push(this.nodeForExpression(query.dateFilter, query.options));
+    systemParts.push(this.createExpressionForColumnFilter(query.statusFilter));
+    systemParts.push(this.createExpressionForColumnFilter(query.projectFilter));
+    systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter));
 
     for (const item of query.columnSettings.columns) {
       if (item.hasFilter) {
@@ -279,10 +258,12 @@ export default class Converter {
       }
     }
 
-    if (filterNode && systemParts.length) {
-      return BoolExpr(0, [ filterNode, ...systemParts ]);
-    } else if (systemParts.length) {
-      return BoolExpr(0, [ ...systemParts ]);
+    const expressions = systemParts.filter(o => o != null);
+
+    if (filterNode && expressions.length) {
+      return BoolExpr(0, [ filterNode, ...expressions ]);
+    } else if (expressions.length) {
+      return BoolExpr(0, [ ...expressions ]);
     }
 
     return filterNode;

@@ -14,10 +14,10 @@ export class Expression {
 
   get isValid() {
     if (!isValueRequired(this.operator)) {
-      return this.column && this.operator;
+      return this.column != null && this.operator != null;
     }
 
-    return this.column && this.operator && this.hasValue;
+    return this.column != null && this.operator != null && this.hasValue;
   }
 
   get supportsValue() {
@@ -25,7 +25,7 @@ export class Expression {
   }
 
   get hasValue() {
-    return this.value !== null && this.value.length;
+    return this.value !== null && this.value.length !== 0;
   }
 
   get value() {
@@ -54,6 +54,8 @@ export class Expression {
     }
 
     this._value = [ value, this.value[1] ];
+
+    this.clearRangeValuesIfNull();
   }
 
   get value2() {
@@ -66,6 +68,8 @@ export class Expression {
     }
 
     this._value = [ this.value[0], value ];
+
+    this.clearRangeValuesIfNull();
   }
 
   get isDateOperator() {
@@ -160,6 +164,8 @@ export class Expression {
     }
 
     this._value = [ date && date.format('YYYY-MM-DD'), this.value[1] ];
+
+    this.clearRangeValuesIfNull();
   }
 
   get endDate() {
@@ -172,6 +178,15 @@ export class Expression {
     }
 
     this._value = [ this.value[0], date && date.format('YYYY-MM-DD') ];
+
+    this.clearRangeValuesIfNull();
+  }
+
+  clearRangeValuesIfNull() {
+    // if both values are null, clear it, don't allow [ null, null ]
+    if (this._value[0] == null && this._value[1] == null) {
+      this._value = null;
+    }
   }
 
   labelForValue(value) {
