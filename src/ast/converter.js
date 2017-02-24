@@ -144,7 +144,9 @@ export default class Converter {
 
     const fromClause = this.fromClause(query);
 
-    const whereClause = null; // this.whereClause(query);
+    // const whereClause = null; // options.all ? null : this.whereClause(query);
+    // TODO(zhm) need to pass the bbox and search here?
+    const whereClause = this.whereClause(query, null, null, options);
 
     const groupClause = [ AConst(IntegerValue(1)) ];
 
@@ -218,9 +220,11 @@ export default class Converter {
     return [ RangeVar(query.form.id + '/_full') ];
   }
 
-  whereClause(query, boundingBox, search) {
+  whereClause(query, boundingBox, search, options = {}) {
     const systemParts = [];
-    const filterNode = this.nodeForCondition(query.filter, query.options);
+    options = {...query.options || {}, ...options};
+
+    const filterNode = this.nodeForCondition(query.filter, options);
 
     if (boundingBox) {
       systemParts.push(this.boundingBoxFilter(boundingBox));
@@ -230,14 +234,14 @@ export default class Converter {
       systemParts.push(this.searchFilter(search));
     }
 
-    systemParts.push(this.nodeForExpression(query.dateFilter, query.options));
-    systemParts.push(this.createExpressionForColumnFilter(query.statusFilter));
-    systemParts.push(this.createExpressionForColumnFilter(query.projectFilter));
-    systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter));
+    systemParts.push(this.nodeForExpression(query.dateFilter, options));
+    systemParts.push(this.createExpressionForColumnFilter(query.statusFilter, options));
+    systemParts.push(this.createExpressionForColumnFilter(query.projectFilter, options));
+    systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
 
     for (const item of query.columnSettings.columns) {
       if (item.hasFilter) {
-        const expression = this.createExpressionForColumnFilter(item.filter);
+        const expression = this.createExpressionForColumnFilter(item.filter, options);
 
         if (expression) {
           systemParts.push(expression);
@@ -250,11 +254,11 @@ export default class Converter {
       }
 
       if (item.expression.isValid) {
-        systemParts.push(this.nodeForExpression(item.expression, query.options));
+        systemParts.push(this.nodeForExpression(item.expression, options));
       }
 
       if (item.range.isValid) {
-        systemParts.push(this.nodeForExpression(item.range, query.options));
+        systemParts.push(this.nodeForExpression(item.range, options));
       }
     }
 
@@ -269,16 +273,20 @@ export default class Converter {
     return filterNode;
   }
 
-  createExpressionForColumnFilter(filter) {
+  createExpressionForColumnFilter(filter, options) {
     let expression = null;
+
+    if (filter === options.except) {
+      return null;
+    }
 
     if (filter.hasValues) {
       let hasNull = false;
       const values = [];
 
       filter.value.forEach(v => {
-        if (v !== null) {
-          values.push(AConst(StringValue(v)));
+        if (v != null) {
+          values.push(v);
         } else {
           hasNull = true;
         }
@@ -286,9 +294,9 @@ export default class Converter {
 
       if (values.length) {
         if (filter.column.isArray) {
-          expression = this.ArrayAnyOfConverter(filter);
+          expression = this.AnyOf(filter.columnName, values);
         } else {
-          expression = this.InConverter(filter);
+          expression = this.In(filter.columnName, values);
         }
 
         if (hasNull) {
@@ -400,6 +408,10 @@ export default class Converter {
   nodeForExpression(expression, options) {
     if (expression.expressions) {
       return this.nodeForCondition(expression, options);
+    }
+
+    if (expression === options.except) {
+      return null;
     }
 
     const converter = {
@@ -555,10 +567,7 @@ export default class Converter {
   }
 
   InConverter = (expression) => {
-    const values = expression.value.map(v => AConst(StringValue(v)));
-
-    return AExpr(6, '=', ColumnRef(expression.columnName),
-                 values);
+    return this.In(expression.columnName, expression.value);
   }
 
   NotInConverter = (expression) => {
@@ -622,10 +631,7 @@ export default class Converter {
   }
 
   ArrayAnyOfConverter = (expression) => {
-    const values = AArrayExpr(expression.value.map(v => AConst(StringValue(v))));
-
-    return AExpr(0, '&&', ColumnRef(expression.columnName),
-                 values);
+    return this.AnyOf(expression.columnName, expression.value);
   }
 
   ArrayAllOfConverter = (expression) => {
@@ -679,6 +685,18 @@ export default class Converter {
     }
 
     return null;
+  }
+
+  AnyOf = (columnName, values) => {
+    const arrayValues = AArrayExpr(values.map(v => AConst(StringValue(v))));
+
+    return AExpr(0, '&&', ColumnRef(columnName), arrayValues);
+  }
+
+  In = (columnName, values) => {
+    const arrayValues = values.map(v => AConst(StringValue(v)));
+
+    return AExpr(6, '=', ColumnRef(columnName), arrayValues);
   }
 
   Between = (columnName, value1, value2) => {
