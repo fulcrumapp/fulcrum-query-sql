@@ -2,6 +2,8 @@
 
 exports.__esModule = true;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _helpers = require('./helpers');
 
 var _condition = require('../condition');
@@ -107,11 +109,7 @@ var Converter = function () {
     };
 
     this.InConverter = function (expression) {
-      var values = expression.value.map(function (v) {
-        return (0, _helpers.AConst)((0, _helpers.StringValue)(v));
-      });
-
-      return (0, _helpers.AExpr)(6, '=', (0, _helpers.ColumnRef)(expression.columnName), values);
+      return _this.In(expression.columnName, expression.value);
     };
 
     this.NotInConverter = function (expression) {
@@ -167,11 +165,7 @@ var Converter = function () {
     };
 
     this.ArrayAnyOfConverter = function (expression) {
-      var values = (0, _helpers.AArrayExpr)(expression.value.map(function (v) {
-        return (0, _helpers.AConst)((0, _helpers.StringValue)(v));
-      }));
-
-      return (0, _helpers.AExpr)(0, '&&', (0, _helpers.ColumnRef)(expression.columnName), values);
+      return _this.AnyOf(expression.columnName, expression.value);
     };
 
     this.ArrayAllOfConverter = function (expression) {
@@ -225,6 +219,22 @@ var Converter = function () {
       }
 
       return null;
+    };
+
+    this.AnyOf = function (columnName, values) {
+      var arrayValues = (0, _helpers.AArrayExpr)(values.map(function (v) {
+        return (0, _helpers.AConst)((0, _helpers.StringValue)(v));
+      }));
+
+      return (0, _helpers.AExpr)(0, '&&', (0, _helpers.ColumnRef)(columnName), arrayValues);
+    };
+
+    this.In = function (columnName, values) {
+      var arrayValues = values.map(function (v) {
+        return (0, _helpers.AConst)((0, _helpers.StringValue)(v));
+      });
+
+      return (0, _helpers.AExpr)(6, '=', (0, _helpers.ColumnRef)(columnName), arrayValues);
     };
 
     this.Between = function (columnName, value1, value2) {
@@ -355,7 +365,9 @@ var Converter = function () {
 
     var fromClause = this.fromClause(query);
 
-    var whereClause = null; // this.whereClause(query);
+    // const whereClause = null; // options.all ? null : this.whereClause(query);
+    // TODO(zhm) need to pass the bbox and search here?
+    var whereClause = this.whereClause(query, null, null, options);
 
     var groupClause = [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))];
 
@@ -419,8 +431,12 @@ var Converter = function () {
   };
 
   Converter.prototype.whereClause = function whereClause(query, boundingBox, search) {
+    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
     var systemParts = [];
-    var filterNode = this.nodeForCondition(query.filter, query.options);
+    options = _extends({}, query.options || {}, options);
+
+    var filterNode = this.nodeForCondition(query.filter, options);
 
     if (boundingBox) {
       systemParts.push(this.boundingBoxFilter(boundingBox));
@@ -430,10 +446,10 @@ var Converter = function () {
       systemParts.push(this.searchFilter(search));
     }
 
-    systemParts.push(this.nodeForExpression(query.dateFilter, query.options));
-    systemParts.push(this.createExpressionForColumnFilter(query.statusFilter));
-    systemParts.push(this.createExpressionForColumnFilter(query.projectFilter));
-    systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter));
+    systemParts.push(this.nodeForExpression(query.dateFilter, options));
+    systemParts.push(this.createExpressionForColumnFilter(query.statusFilter, options));
+    systemParts.push(this.createExpressionForColumnFilter(query.projectFilter, options));
+    systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
 
     for (var _iterator = query.columnSettings.columns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
       var _ref5;
@@ -450,7 +466,7 @@ var Converter = function () {
       var item = _ref5;
 
       if (item.hasFilter) {
-        var expression = this.createExpressionForColumnFilter(item.filter);
+        var expression = this.createExpressionForColumnFilter(item.filter, options);
 
         if (expression) {
           systemParts.push(expression);
@@ -462,11 +478,11 @@ var Converter = function () {
       }
 
       if (item.expression.isValid) {
-        systemParts.push(this.nodeForExpression(item.expression, query.options));
+        systemParts.push(this.nodeForExpression(item.expression, options));
       }
 
       if (item.range.isValid) {
-        systemParts.push(this.nodeForExpression(item.range, query.options));
+        systemParts.push(this.nodeForExpression(item.range, options));
       }
     }
 
@@ -483,10 +499,14 @@ var Converter = function () {
     return filterNode;
   };
 
-  Converter.prototype.createExpressionForColumnFilter = function createExpressionForColumnFilter(filter) {
+  Converter.prototype.createExpressionForColumnFilter = function createExpressionForColumnFilter(filter, options) {
     var _this2 = this;
 
     var expression = null;
+
+    if (filter === options.except) {
+      return null;
+    }
 
     if (filter.hasValues) {
       (function () {
@@ -494,8 +514,8 @@ var Converter = function () {
         var values = [];
 
         filter.value.forEach(function (v) {
-          if (v !== null) {
-            values.push((0, _helpers.AConst)((0, _helpers.StringValue)(v)));
+          if (v != null) {
+            values.push(v);
           } else {
             hasNull = true;
           }
@@ -503,9 +523,9 @@ var Converter = function () {
 
         if (values.length) {
           if (filter.column.isArray) {
-            expression = _this2.ArrayAnyOfConverter(filter);
+            expression = _this2.AnyOf(filter.columnName, values);
           } else {
-            expression = _this2.InConverter(filter);
+            expression = _this2.In(filter.columnName, values);
           }
 
           if (hasNull) {
@@ -609,6 +629,10 @@ var Converter = function () {
 
     if (expression.expressions) {
       return this.nodeForCondition(expression, options);
+    }
+
+    if (expression === options.except) {
+      return null;
     }
 
     var converter = (_converter2 = {}, _converter2[_operator.OperatorType.Empty.name] = this.EmptyConverter, _converter2[_operator.OperatorType.NotEmpty.name] = this.NotEmptyConverter, _converter2[_operator.OperatorType.Equal.name] = this.EqualConverter, _converter2[_operator.OperatorType.NotEqual.name] = this.NotEqualConverter, _converter2[_operator.OperatorType.GreaterThan.name] = this.GreaterThanConverter, _converter2[_operator.OperatorType.GreaterThanOrEqual.name] = this.GreaterThanOrEqualConverter, _converter2[_operator.OperatorType.LessThan.name] = this.LessThanConverter, _converter2[_operator.OperatorType.LessThanOrEqual.name] = this.LessThanOrEqualConverter, _converter2[_operator.OperatorType.Between.name] = this.BetweenConverter, _converter2[_operator.OperatorType.NotBetween.name] = this.NotBetweenConverter, _converter2[_operator.OperatorType.In.name] = this.InConverter, _converter2[_operator.OperatorType.NotIn.name] = this.NotInConverter, _converter2[_operator.OperatorType.TextContain.name] = this.TextContainConverter, _converter2[_operator.OperatorType.TextNotContain.name] = this.TextNotContainConverter, _converter2[_operator.OperatorType.TextStartsWith.name] = this.TextStartsWithConverter, _converter2[_operator.OperatorType.TextEndsWith.name] = this.TextEndsWithConverter, _converter2[_operator.OperatorType.TextEqual.name] = this.TextEqualConverter, _converter2[_operator.OperatorType.TextNotEqual.name] = this.TextNotEqualConverter, _converter2[_operator.OperatorType.TextMatch.name] = this.TextMatchConverter, _converter2[_operator.OperatorType.TextNotMatch.name] = this.TextNotMatchConverter, _converter2[_operator.OperatorType.DateEqual.name] = this.EqualConverter, _converter2[_operator.OperatorType.DateNotEqual.name] = this.NotEqualConverter, _converter2[_operator.OperatorType.DateAfter.name] = this.GreaterThanConverter, _converter2[_operator.OperatorType.DateOnOrAfter.name] = this.GreaterThanOrEqualConverter, _converter2[_operator.OperatorType.DateBefore.name] = this.LessThanConverter, _converter2[_operator.OperatorType.DateOnOrBefore.name] = this.LessThanOrEqualConverter, _converter2[_operator.OperatorType.DateBetween.name] = this.BetweenConverter, _converter2[_operator.OperatorType.DateNotBetween.name] = this.NotBetweenConverter, _converter2[_operator.OperatorType.ArrayAnyOf.name] = this.ArrayAnyOfConverter, _converter2[_operator.OperatorType.ArrayAllOf.name] = this.ArrayAllOfConverter, _converter2[_operator.OperatorType.ArrayEqual.name] = this.ArrayEqualConverter, _converter2[_operator.OperatorType.Search.name] = this.SearchConverter, _converter2[_operator.OperatorType.DateToday.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateYesterday.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateTomorrow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLast7Days.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLast30Days.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLast90Days.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLastMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLastYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateDaysFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateWeeksFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateMonthsFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateYearsFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateDaysAgo.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateWeeksAgo.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateMonthsAgo.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateYearsAgo.name] = this.DynamicDateConverter, _converter2);
