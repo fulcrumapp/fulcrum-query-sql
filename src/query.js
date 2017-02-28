@@ -32,7 +32,7 @@ export default class Query {
     this._schema = attrs.schema;
     this._filter = new Condition(attrs.filter, attrs.schema);
     this._sorting = new SortExpressions(attrs.sort, attrs.schema);
-    this._boundingBox = null;
+    this._boundingBox = attrs.bounding_box || null;
     this._searchFilter = '';
     this._dateFilter = new Expression(attrs.date_filter || {field: '_server_updated_at'}, attrs.schema);
     this._statusFilter = new ColumnFilter({...attrs.status_filter, field: '_status'}, this._schema);
