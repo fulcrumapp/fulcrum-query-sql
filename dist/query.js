@@ -78,6 +78,10 @@ var Query = function () {
   };
 
   Query.prototype.toJSON = function toJSON() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        _ref$boundingBox = _ref.boundingBox,
+        boundingBox = _ref$boundingBox === undefined ? false : _ref$boundingBox;
+
     return {
       outputs: this.outputs.map(function (o) {
         return o.toJSON();
@@ -85,8 +89,14 @@ var Query = function () {
       filter: this.filter.toJSON(),
       sorting: this.sorting.toJSON(),
       options: this.options.toJSON(),
+      bounding_box: boundingBox ? this.boundingBox : null,
+      search_filter: this.searchFilter,
       date_filter: this.dateFilter.toJSON(),
-      columns: this.columnSettings.toJSON()
+      columns: this.columnSettings.toJSON(),
+      status_filter: this.statusFilter.toJSON(),
+      project_filter: this.projectFilter.toJSON(),
+      assignment_filter: this.assignmentFilter.toJSON(),
+      column_settings: this.columnSettings.toJSON()
     };
   };
 
@@ -110,11 +120,11 @@ var Query = function () {
     return new _converter2.default().toHistogramAST(this, options);
   };
 
-  Query.prototype.toAST = function toAST(_ref) {
-    var applySort = _ref.applySort,
-        pageSize = _ref.pageSize,
-        pageIndex = _ref.pageIndex,
-        outerLimit = _ref.outerLimit;
+  Query.prototype.toAST = function toAST(_ref2) {
+    var applySort = _ref2.applySort,
+        pageSize = _ref2.pageSize,
+        pageIndex = _ref2.pageIndex,
+        outerLimit = _ref2.outerLimit;
 
     var finalLimit = outerLimit ? (0, _helpers.AConst)((0, _helpers.IntegerValue)(+outerLimit)) : null;
 
@@ -142,11 +152,11 @@ var Query = function () {
     return new _pgQueryDeparser2.default().deparse(this.toCountAST(this.runtimeFilters));
   };
 
-  Query.prototype.toSQL = function toSQL(_ref2) {
-    var applySort = _ref2.applySort,
-        pageSize = _ref2.pageSize,
-        pageIndex = _ref2.pageIndex,
-        outerLimit = _ref2.outerLimit;
+  Query.prototype.toSQL = function toSQL(_ref3) {
+    var applySort = _ref3.applySort,
+        pageSize = _ref3.pageSize,
+        pageIndex = _ref3.pageIndex,
+        outerLimit = _ref3.outerLimit;
 
     var options = _extends({
       applySort: applySort,
@@ -170,12 +180,12 @@ var Query = function () {
     return [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_status'), 'status'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_version'), 'version'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [(0, _helpers.ColumnRef)('_server_created_at'), (0, _helpers.AConst)((0, _helpers.StringValue)('YYYY-MM-DD"T"HH24:MI:SS"Z"'))]), 'created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [(0, _helpers.ColumnRef)('_server_updated_at'), (0, _helpers.AConst)((0, _helpers.StringValue)('YYYY-MM-DD"T"HH24:MI:SS"Z"'))]), 'updated_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [(0, _helpers.ColumnRef)('_created_at'), (0, _helpers.AConst)((0, _helpers.StringValue)('YYYY-MM-DD"T"HH24:MI:SS"Z"'))]), 'client_created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [(0, _helpers.ColumnRef)('_updated_at'), (0, _helpers.AConst)((0, _helpers.StringValue)('YYYY-MM-DD"T"HH24:MI:SS"Z"'))]), 'client_updated_at'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_by_id'), 'created_by_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'created_by'), 'created_by'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_by_id'), 'updated_by_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'updated_by'), 'updated_by'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(this.form.id))), 'form_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_project_id'), 'project_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_assigned_to_id'), 'assigned_to_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'assigned_to'), 'assigned_to'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_form_values'), 'form_values'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_latitude'), 'latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_longitude'), 'longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_altitude'), 'altitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_speed'), 'speed'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_course'), 'course'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_horizontal_accuracy'), 'horizontal_accuracy'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_vertical_accuracy'), 'vertical_accuracy'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_edited_duration'), 'edited_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_duration'), 'updated_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_duration'), 'created_duration')];
   };
 
-  Query.prototype.fromClause = function fromClause(_ref3) {
-    var applySort = _ref3.applySort,
-        pageSize = _ref3.pageSize,
-        pageIndex = _ref3.pageIndex,
-        boundingBox = _ref3.boundingBox,
-        searchFilter = _ref3.searchFilter;
+  Query.prototype.fromClause = function fromClause(_ref4) {
+    var applySort = _ref4.applySort,
+        pageSize = _ref4.pageSize,
+        pageIndex = _ref4.pageIndex,
+        boundingBox = _ref4.boundingBox,
+        searchFilter = _ref4.searchFilter;
 
     var ast = applySort ? this.toRawAST({ sort: this.sortClause, pageSize: pageSize, pageIndex: pageIndex, boundingBox: boundingBox, searchFilter: searchFilter }) : this.toRawAST({ boundingBox: boundingBox, searchFilter: searchFilter });
 
@@ -213,18 +223,18 @@ var Query = function () {
       return o.toHumanDescription();
     })) {
       for (var _iterator = description, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-        var _ref4;
+        var _ref5;
 
         if (_isArray) {
           if (_i >= _iterator.length) break;
-          _ref4 = _iterator[_i++];
+          _ref5 = _iterator[_i++];
         } else {
           _i = _iterator.next();
           if (_i.done) break;
-          _ref4 = _i.value;
+          _ref5 = _i.value;
         }
 
-        var desc = _ref4;
+        var desc = _ref5;
 
         if (desc) {
           parts.push(desc);

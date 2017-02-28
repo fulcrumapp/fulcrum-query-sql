@@ -135,14 +135,20 @@ export default class Query {
     };
   }
 
-  toJSON() {
+  toJSON({boundingBox = false} = {}) {
     return {
       outputs: this.outputs.map(o => o.toJSON()),
       filter: this.filter.toJSON(),
       sorting: this.sorting.toJSON(),
       options: this.options.toJSON(),
+      bounding_box: boundingBox ? this.boundingBox : null,
+      search_filter: this.searchFilter,
       date_filter: this.dateFilter.toJSON(),
-      columns: this.columnSettings.toJSON()
+      columns: this.columnSettings.toJSON(),
+      status_filter: this.statusFilter.toJSON(),
+      project_filter: this.projectFilter.toJSON(),
+      assignment_filter: this.assignmentFilter.toJSON(),
+      column_settings: this.columnSettings.toJSON()
     };
   }
 
