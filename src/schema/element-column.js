@@ -20,6 +20,10 @@ export default class ElementColumn extends Column {
   }
 
   get name() {
+    if (this.part) {
+      return this.element.label + ' (' + this.part + ')';
+    }
+
     return this.element.label;
   }
 

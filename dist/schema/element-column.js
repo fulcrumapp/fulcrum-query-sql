@@ -72,6 +72,10 @@ var ElementColumn = function (_Column) {
   }, {
     key: 'name',
     get: function get() {
+      if (this.part) {
+        return this.element.label + ' (' + this.part + ')';
+      }
+
       return this.element.label;
     }
   }, {
