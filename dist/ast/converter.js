@@ -93,7 +93,7 @@ var Converter = function () {
         value2 = value2 && _this.ConvertDateValue(_this.GetDate(value2, options).endOf('day'));
       }
 
-      return _this.Between(expression.columnName, value1, value2);
+      return _this.Between(expression.column, value1, value2);
     };
 
     this.NotBetweenConverter = function (expression, options) {
@@ -105,23 +105,23 @@ var Converter = function () {
         value2 = value2 && _this.ConvertDateValue(_this.GetDate(value2, options).endOf('day'));
       }
 
-      return _this.NotBetween(expression.columnName, value1, value2);
+      return _this.NotBetween(expression.column, value1, value2);
     };
 
     this.InConverter = function (expression) {
-      return _this.In(expression.columnName, expression.value);
+      return _this.In(expression.column, expression.value);
     };
 
     this.NotInConverter = function (expression) {
       var values = expression.value.map(function (v) {
-        return (0, _helpers.AConst)((0, _helpers.StringValue)(v));
+        return _this.ConstValue(expression.column, v);
       });
 
       return (0, _helpers.AExpr)(6, '<>', (0, _helpers.ColumnRef)(expression.columnName), values);
     };
 
     this.BinaryConverter = function (kind, operator, expression) {
-      return (0, _helpers.AExpr)(kind, operator, (0, _helpers.ColumnRef)(expression.columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
+      return (0, _helpers.AExpr)(kind, operator, (0, _helpers.ColumnRef)(expression.columnName), _this.ConstValue(expression.column, expression.scalarValue));
     };
 
     this.FieldConverter = function (expression) {
@@ -129,15 +129,15 @@ var Converter = function () {
     };
 
     this.ConstantConverter = function (expression) {
-      return (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue));
+      return _this.ConstValue(expression.column, expression.scalarValue);
     };
 
     this.TextEqualConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '~~*', (0, _helpers.ColumnRef)(expression.columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
+      return (0, _helpers.AExpr)(8, '~~*', (0, _helpers.ColumnRef)(expression.columnName), _this.ConstValue(expression.column, expression.scalarValue));
     };
 
     this.TextNotEqualConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '!~~*', (0, _helpers.ColumnRef)(expression.columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
+      return (0, _helpers.AExpr)(8, '!~~*', (0, _helpers.ColumnRef)(expression.columnName), _this.ConstValue(expression.column, expression.scalarValue));
     };
 
     this.TextContainConverter = function (expression) {
@@ -165,12 +165,12 @@ var Converter = function () {
     };
 
     this.ArrayAnyOfConverter = function (expression) {
-      return _this.AnyOf(expression.columnName, expression.value);
+      return _this.AnyOf(expression.column, expression.value);
     };
 
     this.ArrayAllOfConverter = function (expression) {
       var values = (0, _helpers.AArrayExpr)(expression.value.map(function (v) {
-        return (0, _helpers.AConst)((0, _helpers.StringValue)(v));
+        return _this.ConstValue(expression.column, v);
       }));
 
       return (0, _helpers.AExpr)(0, '@>', (0, _helpers.ColumnRef)(expression.columnName), values);
@@ -178,7 +178,7 @@ var Converter = function () {
 
     this.ArrayEqualConverter = function (expression) {
       var values = (0, _helpers.AArrayExpr)(expression.value.map(function (v) {
-        return (0, _helpers.AConst)((0, _helpers.StringValue)(v));
+        return _this.ConstValue(expression.column, v);
       }));
 
       var a = (0, _helpers.AExpr)(0, '<@', (0, _helpers.ColumnRef)(expression.columnName), values);
@@ -189,7 +189,7 @@ var Converter = function () {
     };
 
     this.SearchConverter = function (expression) {
-      var rhs = (0, _helpers.FuncCall)('to_tsquery', [(0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue))]);
+      var rhs = (0, _helpers.FuncCall)('to_tsquery', [_this.ConstValue(expression.column, expression.scalarValue)]);
 
       return (0, _helpers.AExpr)(0, '@@', (0, _helpers.ColumnRef)(expression.columnName), rhs);
     };
@@ -206,47 +206,63 @@ var Converter = function () {
       var value1 = _this.ConvertDateValue(range[0]);
       var value2 = _this.ConvertDateValue(range[1]);
 
-      return _this.Between(expression.columnName, value1, value2);
+      return _this.Between(expression.column, value1, value2);
     };
 
-    this.NotBetween = function (columnName, value1, value2) {
+    this.NotBetween = function (column, value1, value2) {
       if (value1 != null && value2 != null) {
-        return (0, _helpers.AExpr)(11, 'NOT BETWEEN', (0, _helpers.ColumnRef)(columnName), [(0, _helpers.AConst)((0, _helpers.StringValue)(value1)), (0, _helpers.AConst)((0, _helpers.StringValue)(value2))]);
+        return (0, _helpers.AExpr)(11, 'NOT BETWEEN', (0, _helpers.ColumnRef)(column.columnName), [_this.ConstValue(column, value1), _this.ConstValue(column, value2)]);
       } else if (value1 != null) {
-        return (0, _helpers.AExpr)(0, '<', (0, _helpers.ColumnRef)(columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(value1)));
+        return (0, _helpers.AExpr)(0, '<', (0, _helpers.ColumnRef)(column.columnName), _this.ConstValue(column, value1));
       } else if (value2 != null) {
-        return (0, _helpers.AExpr)(0, '>', (0, _helpers.ColumnRef)(columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(value2)));
+        return (0, _helpers.AExpr)(0, '>', (0, _helpers.ColumnRef)(column.columnName), _this.ConstValue(column, value2));
       }
 
       return null;
     };
 
-    this.AnyOf = function (columnName, values) {
+    this.AnyOf = function (column, values) {
       var arrayValues = (0, _helpers.AArrayExpr)(values.map(function (v) {
-        return (0, _helpers.AConst)((0, _helpers.StringValue)(v));
+        return _this.ConstValue(column, v);
       }));
 
-      return (0, _helpers.AExpr)(0, '&&', (0, _helpers.ColumnRef)(columnName), arrayValues);
+      return (0, _helpers.AExpr)(0, '&&', (0, _helpers.ColumnRef)(column.columnName), arrayValues);
     };
 
-    this.In = function (columnName, values) {
+    this.In = function (column, values) {
       var arrayValues = values.map(function (v) {
-        return (0, _helpers.AConst)((0, _helpers.StringValue)(v));
+        return _this.ConstValue(column, v);
       });
 
-      return (0, _helpers.AExpr)(6, '=', (0, _helpers.ColumnRef)(columnName), arrayValues);
+      return (0, _helpers.AExpr)(6, '=', (0, _helpers.ColumnRef)(column.columnName), arrayValues);
     };
 
-    this.Between = function (columnName, value1, value2) {
+    this.Between = function (column, value1, value2) {
       if (value1 != null && value2 != null) {
-        return (0, _helpers.AExpr)(10, 'BETWEEN', (0, _helpers.ColumnRef)(columnName), [(0, _helpers.AConst)((0, _helpers.StringValue)(value1)), (0, _helpers.AConst)((0, _helpers.StringValue)(value2))]);
+        return (0, _helpers.AExpr)(10, 'BETWEEN', (0, _helpers.ColumnRef)(column.columnName), [_this.ConstValue(column, value1), _this.ConstValue(column, value2)]);
       } else if (value1 != null) {
-        return (0, _helpers.AExpr)(0, '>=', (0, _helpers.ColumnRef)(columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(value1)));
+        return (0, _helpers.AExpr)(0, '>=', (0, _helpers.ColumnRef)(column.columnName), _this.ConstValue(column, value1));
       } else if (value2 != null) {
-        return (0, _helpers.AExpr)(0, '<=', (0, _helpers.ColumnRef)(columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(value2)));
+        return (0, _helpers.AExpr)(0, '<=', (0, _helpers.ColumnRef)(column.columnName), _this.ConstValue(column, value2));
       }
 
       return null;
+    };
+
+    this.ConstValue = function (column, value) {
+      if (value == null) {
+        return null;
+      }
+
+      if (column.isInteger) {
+        return (0, _helpers.AConst)((0, _helpers.IntegerValue)(value));
+      }
+
+      if (column.isNumber) {
+        return (0, _helpers.AConst)((0, _helpers.FloatValue)(value));
+      }
+
+      return (0, _helpers.AConst)((0, _helpers.StringValue)(value));
     };
 
     this.GetDate = function (date, options) {
@@ -523,9 +539,9 @@ var Converter = function () {
 
         if (values.length) {
           if (filter.column.isArray) {
-            expression = _this2.AnyOf(filter.columnName, values);
+            expression = _this2.AnyOf(filter.column, values);
           } else {
-            expression = _this2.In(filter.columnName, values);
+            expression = _this2.In(filter.column, values);
           }
 
           if (hasNull) {

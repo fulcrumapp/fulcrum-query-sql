@@ -30,7 +30,17 @@ var Column = function () {
   }, {
     key: 'isNumber',
     get: function get() {
-      return this.type === 'double' || this.type === 'integer';
+      return this.isDouble || this.isInteger;
+    }
+  }, {
+    key: 'isDouble',
+    get: function get() {
+      return this.type === 'double';
+    }
+  }, {
+    key: 'isInteger',
+    get: function get() {
+      return this.type === 'integer';
     }
   }, {
     key: 'supportsRanges',
