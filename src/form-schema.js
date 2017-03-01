@@ -94,11 +94,11 @@ export default class FormSchema extends FormFieldSchema {
       this.addSystemColumn('Latitude', 'latitude', '_latitude', 'double');
       this.addSystemColumn('Longitude', 'longitude', '_longitude', 'double');
 
-      this.addSystemColumn('Client Created', 'clientCreatedAt', '_created_at', 'timestamp');
-      this.addSystemColumn('Client Updated', 'clientUpdatedAt', '_updated_at', 'timestamp');
+      this.addSystemColumn('Device Created', 'clientCreatedAt', '_created_at', 'timestamp');
+      this.addSystemColumn('Device Updated', 'clientUpdatedAt', '_updated_at', 'timestamp');
 
       this.addSystemColumn('Altitude', 'altitude', '_altitude', 'double');
-      this.addSystemColumn('Accuracy', 'horizontalAccuracy', '_accuracy', 'double');
+      this.addSystemColumn('Accuracy', 'horizontalAccuracy', '_horizontal_accuracy', 'double');
       this.addSystemColumn('Changeset', 'changesetID', '_changeset_id', 'integer');
 
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
