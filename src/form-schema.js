@@ -89,13 +89,27 @@ export default class FormSchema extends FormFieldSchema {
                                '_status');
     }
 
+    this.addSystemColumn('Version', 'version', '_version', 'integer');
+    this.addSystemColumn('Created', 'createdAt', '_server_created_at', 'timestamp');
+    this.addSystemColumn('Updated', 'updatedAt', '_server_updated_at', 'timestamp');
+    this.addSystemColumn('Device Created', 'clientCreatedAt', '_created_at', 'timestamp');
+    this.addSystemColumn('Device Updated', 'clientUpdatedAt', '_updated_at', 'timestamp');
+
+    if (this.form.isProjectEnabled) {
+      this.addSystemColumn('Project', 'project', '_project_id', 'string');
+    }
+
+    if (this.form.isAssignmentEnabled) {
+      this.addSystemColumn('Assigned', 'assignedTo', '_assigned_to_id', 'string');
+    }
+
+    this.addSystemColumn('Created By', 'createdByName', '_created_by', 'string');
+    this.addSystemColumn('Updated By', 'updatedByName', '_updated_by', 'string');
+
     if (this.fullSchema) {
       this.addSystemColumn('Geometry', 'geometryAsGeoJSON', '_geometry', 'geometry');
       this.addSystemColumn('Latitude', 'latitude', '_latitude', 'double');
       this.addSystemColumn('Longitude', 'longitude', '_longitude', 'double');
-
-      this.addSystemColumn('Device Created', 'clientCreatedAt', '_created_at', 'timestamp');
-      this.addSystemColumn('Device Updated', 'clientUpdatedAt', '_updated_at', 'timestamp');
 
       this.addSystemColumn('Altitude', 'altitude', '_altitude', 'double');
       this.addSystemColumn('Accuracy', 'horizontalAccuracy', '_horizontal_accuracy', 'double');
@@ -104,20 +118,6 @@ export default class FormSchema extends FormFieldSchema {
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
-    }
-
-    this.addSystemColumn('Version', 'version', '_version', 'integer');
-    this.addSystemColumn('Created', 'createdAt', '_server_created_at', 'timestamp');
-    this.addSystemColumn('Updated', 'updatedAt', '_server_updated_at', 'timestamp');
-    this.addSystemColumn('Created By', 'createdByName', '_created_by', 'string');
-    this.addSystemColumn('Updated By', 'updatedByName', '_updated_by', 'string');
-
-    if (this.form.isAssignmentEnabled) {
-      this.addSystemColumn('Assigned', 'assignedTo', '_assigned_to_id', 'string');
-    }
-
-    if (this.form.isProjectEnabled) {
-      this.addSystemColumn('Project', 'project', '_project_id', 'string');
     }
 
     this.setupElementColumns();
