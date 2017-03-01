@@ -45,8 +45,7 @@ var ColumnSettingsItem = function () {
   ColumnSettingsItem.prototype.toJSON = function toJSON() {
     var json = {
       hidden: this.isHidden,
-      column: this.column.field,
-      search: this.search
+      column: this.column.toJSON()
     };
 
     if (this.search) {

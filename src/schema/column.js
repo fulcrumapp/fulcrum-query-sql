@@ -14,4 +14,10 @@ export default class Column {
   get supportsRanges() {
     return this.isNumber || this.isDate;
   }
+
+  toJSON() {
+    return {
+      id: this.id
+    };
+  }
 }

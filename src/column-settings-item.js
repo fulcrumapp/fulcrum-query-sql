@@ -29,8 +29,7 @@ export default class ColumnSettingsItem {
   toJSON() {
     const json = {
       hidden: this.isHidden,
-      column: this.column.field,
-      search: this.search
+      column: this.column.toJSON()
     };
 
     if (this.search) {

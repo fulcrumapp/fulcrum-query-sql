@@ -11,6 +11,12 @@ var Column = function () {
     _classCallCheck(this, Column);
   }
 
+  Column.prototype.toJSON = function toJSON() {
+    return {
+      id: this.id
+    };
+  };
+
   _createClass(Column, [{
     key: 'isArray',
     get: function get() {

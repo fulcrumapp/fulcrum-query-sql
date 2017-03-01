@@ -39,7 +39,7 @@ export default class Query {
     this._projectFilter = new ColumnFilter({...attrs.project_filter, field: '_project_id'}, this._schema);
     this._assignmentFilter = new ColumnFilter({...attrs.assignment_filter, field: '_assigned_to_id'}, this._schema);
     this._options = new QueryOptions(attrs.options || {});
-    this._columnSettings = new ColumnSettings(this._schema);
+    this._columnSettings = new ColumnSettings(this._schema, attrs.column_settings);
   }
 
   get form() {

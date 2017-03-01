@@ -2,16 +2,26 @@ import arrayMove from 'array-move';
 import ColumnSettingsItem from './column-settings-item';
 
 export default class ColumnSettings {
-  constructor(schema) {
+  constructor(schema, settings) {
     this._schema = schema;
 
     this._columns = [];
     this._columnsByID = {};
 
+    const existingSettingsByID = {};
+
+    if (settings) {
+      for (const setting of settings) {
+        existingSettingsByID[setting.column.id] = setting;
+      }
+    }
+
     const columns = schema.columns.slice();
 
     for (const column of columns) {
-      const item = new ColumnSettingsItem({column}, this._schema);
+      const existingAttributes = existingSettingsByID[column.id];
+
+      const item = new ColumnSettingsItem({...existingAttributes, column}, this._schema);
 
       this._columns.push(item);
       this._columnsByID[column.id] = item;
