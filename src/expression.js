@@ -133,6 +133,10 @@ export class Expression {
   }
 
   toJSON() {
+    if (!this.isValid) {
+      return null;
+    }
+
     return {
       field: this._field,
       operator: this._operator,

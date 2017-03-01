@@ -27,14 +27,29 @@ export default class ColumnSettingsItem {
   }
 
   toJSON() {
-    return {
+    const json = {
       hidden: this.isHidden,
       column: this.column.field,
-      search: this.search,
-      filter: this.filter.toJSON(),
-      expression: this.expression.toJSON(),
-      range: this.range.toJSON()
+      search: this.search
     };
+
+    if (this.search) {
+      json.search = this.search;
+    }
+
+    if (this.filter.hasFilter) {
+      json.filter = this.filter.toJSON();
+    }
+
+    if (this.expression.isValid) {
+      json.expression = this.expression.toJSON();
+    }
+
+    if (this.range.isValid) {
+      json.range = this.range.toJSON();
+    }
+
+    return json;
   }
 
   get hasFilter() {

@@ -50,6 +50,10 @@ var Expression = exports.Expression = function () {
   };
 
   Expression.prototype.toJSON = function toJSON() {
+    if (!this.isValid) {
+      return null;
+    }
+
     return {
       field: this._field,
       operator: this._operator,

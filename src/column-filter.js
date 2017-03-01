@@ -89,6 +89,10 @@ export default class ColumnFilter {
   }
 
   toJSON() {
+    if (!this.hasFilter) {
+      return null;
+    }
+
     return {
       field: this._field,
       value: this._value

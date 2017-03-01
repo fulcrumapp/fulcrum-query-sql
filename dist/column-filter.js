@@ -66,6 +66,10 @@ var ColumnFilter = function () {
   };
 
   ColumnFilter.prototype.toJSON = function toJSON() {
+    if (!this.hasFilter) {
+      return null;
+    }
+
     return {
       field: this._field,
       value: this._value
