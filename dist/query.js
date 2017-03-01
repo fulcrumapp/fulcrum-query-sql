@@ -60,7 +60,7 @@ var Query = function () {
     this._projectFilter = new _columnFilter2.default(_extends({}, attrs.project_filter, { field: '_project_id' }), this._schema);
     this._assignmentFilter = new _columnFilter2.default(_extends({}, attrs.assignment_filter, { field: '_assigned_to_id' }), this._schema);
     this._options = new _queryOptions2.default(attrs.options || {});
-    this._columnSettings = new _columnSettings2.default(this._schema, attrs.column_settings);
+    this._columnSettings = new _columnSettings2.default(this._schema, attrs.columns);
   }
 
   Query.prototype.clearAllFilters = function clearAllFilters() {
