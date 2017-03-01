@@ -294,9 +294,9 @@ export default class Converter {
 
       if (values.length) {
         if (filter.column.isArray) {
-          expression = this.AnyOf(filter.columnName, values);
+          expression = this.AnyOf(filter.column, values);
         } else {
-          expression = this.In(filter.columnName, values);
+          expression = this.In(filter.column, values);
         }
 
         if (hasNull) {
@@ -551,7 +551,7 @@ export default class Converter {
       value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options).endOf('day'));
     }
 
-    return this.Between(expression.columnName, value1, value2);
+    return this.Between(expression.column, value1, value2);
   }
 
   NotBetweenConverter = (expression, options) => {
@@ -563,15 +563,15 @@ export default class Converter {
       value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options).endOf('day'));
     }
 
-    return this.NotBetween(expression.columnName, value1, value2);
+    return this.NotBetween(expression.column, value1, value2);
   }
 
   InConverter = (expression) => {
-    return this.In(expression.columnName, expression.value);
+    return this.In(expression.column, expression.value);
   }
 
   NotInConverter = (expression) => {
-    const values = expression.value.map(v => AConst(StringValue(v)));
+    const values = expression.value.map(v => this.ConstValue(expression.column, v));
 
     return AExpr(6, '<>', ColumnRef(expression.columnName),
                  values);
@@ -579,7 +579,7 @@ export default class Converter {
 
   BinaryConverter = (kind, operator, expression) => {
     return AExpr(kind, operator, ColumnRef(expression.columnName),
-                 AConst(StringValue(expression.scalarValue)));
+                 this.ConstValue(expression.column, expression.scalarValue));
   }
 
   FieldConverter = (expression) => {
@@ -587,17 +587,17 @@ export default class Converter {
   }
 
   ConstantConverter = (expression) => {
-    return AConst(StringValue(expression.scalarValue));
+    return this.ConstValue(expression.column, expression.scalarValue);
   }
 
   TextEqualConverter = (expression) => {
     return AExpr(8, '~~*', ColumnRef(expression.columnName),
-                 AConst(StringValue(expression.scalarValue)));
+                 this.ConstValue(expression.column, expression.scalarValue));
   }
 
   TextNotEqualConverter = (expression) => {
     return AExpr(8, '!~~*', ColumnRef(expression.columnName),
-                 AConst(StringValue(expression.scalarValue)));
+                 this.ConstValue(expression.column, expression.scalarValue));
   }
 
   TextContainConverter = (expression) => {
@@ -631,18 +631,18 @@ export default class Converter {
   }
 
   ArrayAnyOfConverter = (expression) => {
-    return this.AnyOf(expression.columnName, expression.value);
+    return this.AnyOf(expression.column, expression.value);
   }
 
   ArrayAllOfConverter = (expression) => {
-    const values = AArrayExpr(expression.value.map(v => AConst(StringValue(v))));
+    const values = AArrayExpr(expression.value.map(v => this.ConstValue(expression.column, v)));
 
     return AExpr(0, '@>', ColumnRef(expression.columnName),
                  values);
   }
 
   ArrayEqualConverter = (expression) => {
-    const values = AArrayExpr(expression.value.map(v => AConst(StringValue(v))));
+    const values = AArrayExpr(expression.value.map(v => this.ConstValue(expression.column, v)));
 
     const a = AExpr(0, '<@', ColumnRef(expression.columnName),
                     values);
@@ -654,7 +654,7 @@ export default class Converter {
   }
 
   SearchConverter = (expression) => {
-    const rhs = FuncCall('to_tsquery', [ AConst(StringValue(expression.scalarValue)) ]);
+    const rhs = FuncCall('to_tsquery', [ this.ConstValue(expression.column, expression.scalarValue) ]);
 
     return AExpr(0, '@@', ColumnRef(expression.columnName),
                  rhs);
@@ -672,43 +672,59 @@ export default class Converter {
     const value1 = this.ConvertDateValue(range[0]);
     const value2 = this.ConvertDateValue(range[1]);
 
-    return this.Between(expression.columnName, value1, value2);
+    return this.Between(expression.column, value1, value2);
   }
 
-  NotBetween = (columnName, value1, value2) => {
+  NotBetween = (column, value1, value2) => {
     if (value1 != null && value2 != null) {
-      return AExpr(11, 'NOT BETWEEN', ColumnRef(columnName), [ AConst(StringValue(value1)), AConst(StringValue(value2)) ]);
+      return AExpr(11, 'NOT BETWEEN', ColumnRef(column.columnName), [ this.ConstValue(column, value1), this.ConstValue(column, value2) ]);
     } else if (value1 != null) {
-      return AExpr(0, '<', ColumnRef(columnName), AConst(StringValue(value1)));
+      return AExpr(0, '<', ColumnRef(column.columnName), this.ConstValue(column, value1));
     } else if (value2 != null) {
-      return AExpr(0, '>', ColumnRef(columnName), AConst(StringValue(value2)));
+      return AExpr(0, '>', ColumnRef(column.columnName), this.ConstValue(column, value2));
     }
 
     return null;
   }
 
-  AnyOf = (columnName, values) => {
-    const arrayValues = AArrayExpr(values.map(v => AConst(StringValue(v))));
+  AnyOf = (column, values) => {
+    const arrayValues = AArrayExpr(values.map(v => this.ConstValue(column, v)));
 
-    return AExpr(0, '&&', ColumnRef(columnName), arrayValues);
+    return AExpr(0, '&&', ColumnRef(column.columnName), arrayValues);
   }
 
-  In = (columnName, values) => {
-    const arrayValues = values.map(v => AConst(StringValue(v)));
+  In = (column, values) => {
+    const arrayValues = values.map(v => this.ConstValue(column, v));
 
-    return AExpr(6, '=', ColumnRef(columnName), arrayValues);
+    return AExpr(6, '=', ColumnRef(column.columnName), arrayValues);
   }
 
-  Between = (columnName, value1, value2) => {
+  Between = (column, value1, value2) => {
     if (value1 != null && value2 != null) {
-      return AExpr(10, 'BETWEEN', ColumnRef(columnName), [ AConst(StringValue(value1)), AConst(StringValue(value2)) ]);
+      return AExpr(10, 'BETWEEN', ColumnRef(column.columnName), [ this.ConstValue(column, value1), this.ConstValue(column, value2) ]);
     } else if (value1 != null) {
-      return AExpr(0, '>=', ColumnRef(columnName), AConst(StringValue(value1)));
+      return AExpr(0, '>=', ColumnRef(column.columnName), this.ConstValue(column, value1));
     } else if (value2 != null) {
-      return AExpr(0, '<=', ColumnRef(columnName), AConst(StringValue(value2)));
+      return AExpr(0, '<=', ColumnRef(column.columnName), this.ConstValue(column, value2));
     }
 
     return null;
+  }
+
+  ConstValue = (column, value) => {
+    if (value == null) {
+      return null;
+    }
+
+    if (column.isInteger) {
+      return AConst(IntegerValue(value));
+    }
+
+    if (column.isNumber) {
+      return AConst(FloatValue(value));
+    }
+
+    return AConst(StringValue(value));
   }
 
   GetDate = (date, options) => {

@@ -8,7 +8,15 @@ export default class Column {
   }
 
   get isNumber() {
-    return this.type === 'double' || this.type === 'integer';
+    return this.isDouble || this.isInteger;
+  }
+
+  get isDouble() {
+    return this.type === 'double';
+  }
+
+  get isInteger() {
+    return this.type === 'integer';
   }
 
   get supportsRanges() {
