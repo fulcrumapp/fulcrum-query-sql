@@ -69,7 +69,7 @@ export function ResTarget(node, name = null) {
 export function FuncCall(name, args, over) {
   return {
     FuncCall: {
-      funcname: [ StringValue(name) ],
+      funcname: Array.isArray(name) ? name : [ StringValue(name) ],
       args: args,
       over: over
     }

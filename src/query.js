@@ -220,14 +220,24 @@ export default class Query {
       return [ ResTarget(ColumnRef(AStar())) ];
     }
 
+    const timeZoneCast = (columnRef) => {
+      return FuncCall([ StringValue('pg_catalog'), StringValue('timezone') ], [ AConst(StringValue('UTC')), columnRef ]);
+    };
+
+    const timeZoneFormat = AConst(StringValue('YYYY-MM-DD"T"HH24:MI:SS"Z"'));
+
     return [
       ResTarget(ColumnRef('_status'), 'status'),
       ResTarget(ColumnRef('_version'), 'version'),
       ResTarget(ColumnRef('_record_id'), 'id'),
-      ResTarget(FuncCall('to_char', [ ColumnRef('_server_created_at'), AConst(StringValue('YYYY-MM-DD"T"HH24:MI:SS"Z"')) ]), 'created_at'),
-      ResTarget(FuncCall('to_char', [ ColumnRef('_server_updated_at'), AConst(StringValue('YYYY-MM-DD"T"HH24:MI:SS"Z"')) ]), 'updated_at'),
-      ResTarget(FuncCall('to_char', [ ColumnRef('_created_at'), AConst(StringValue('YYYY-MM-DD"T"HH24:MI:SS"Z"')) ]), 'client_created_at'),
-      ResTarget(FuncCall('to_char', [ ColumnRef('_updated_at'), AConst(StringValue('YYYY-MM-DD"T"HH24:MI:SS"Z"')) ]), 'client_updated_at'),
+      ResTarget(FuncCall('to_char', [ timeZoneCast(ColumnRef('_server_created_at')),
+                                      timeZoneFormat ]), 'created_at'),
+      ResTarget(FuncCall('to_char', [ timeZoneCast(ColumnRef('_server_updated_at')),
+                                      timeZoneFormat ]), 'updated_at'),
+      ResTarget(FuncCall('to_char', [ timeZoneCast(ColumnRef('_created_at')),
+                                      timeZoneFormat ]), 'client_created_at'),
+      ResTarget(FuncCall('to_char', [ timeZoneCast(ColumnRef('_updated_at')),
+                                      timeZoneFormat ]), 'client_updated_at'),
       ResTarget(ColumnRef('_created_by_id'), 'created_by_id'),
       ResTarget(ColumnRef('name', 'created_by'), 'created_by'),
       ResTarget(ColumnRef('_updated_by_id'), 'updated_by_id'),
