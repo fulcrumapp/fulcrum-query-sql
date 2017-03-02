@@ -234,11 +234,6 @@ var Expression = exports.Expression = function () {
       return null;
     }
   }, {
-    key: 'expressions',
-    get: function get() {
-      return this._expressions;
-    }
-  }, {
     key: 'startDate',
     get: function get() {
       return this._value && this._value[0];

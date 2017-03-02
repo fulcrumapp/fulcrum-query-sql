@@ -42,7 +42,7 @@ var Sort = exports.Sort = function () {
   _createClass(Sort, [{
     key: 'isValid',
     get: function get() {
-      return !this.column;
+      return !!this.column;
     }
   }, {
     key: 'direction',

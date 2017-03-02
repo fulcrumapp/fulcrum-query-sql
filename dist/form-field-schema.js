@@ -26,14 +26,17 @@ var FormFieldSchema = function () {
     this.fullSchema = fullSchema;
   }
 
-  FormFieldSchema.prototype.addSystemColumn = function addSystemColumn(label, attribute, columnName, type, accessor) {
+  FormFieldSchema.prototype.addSystemColumn = function addSystemColumn(label, attribute, columnName, type, accessor, join) {
     var column = new _simpleColumn2.default({ name: label,
       attributeName: attribute,
       columnName: columnName,
       type: type,
-      accessor: accessor });
+      accessor: accessor,
+      join: join });
     this._columns.push(column);
-    this._columnsByKey[columnName] = column;
+    this._columnsByKey[column.id] = column;
+
+    return column;
   };
 
   FormFieldSchema.prototype.addElementColumn = function addElementColumn(element, part, type) {
@@ -46,7 +49,7 @@ var FormFieldSchema = function () {
     //   throw new Error('Column not found for element ' + columnKey + Object.keys(this._rawColumnsByKey));
     // }
 
-    this.addRawElementColumn(element, rawColumn, null, type || rawColumn.type, part, columnKey);
+    return this.addRawElementColumn(element, rawColumn, null, type || rawColumn.type, part, columnKey);
   };
 
   FormFieldSchema.prototype.addRawElementColumn = function addRawElementColumn(element, rawColumn, id, type, part, columnKey) {
@@ -54,6 +57,8 @@ var FormFieldSchema = function () {
 
     this._columns.push(columnObject);
     this._columnsByKey[columnKey] = columnObject;
+
+    return columnObject;
   };
 
   FormFieldSchema.prototype.setupElementColumns = function setupElementColumns() {

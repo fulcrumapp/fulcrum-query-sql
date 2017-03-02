@@ -8,6 +8,10 @@ var _column = require('./column');
 
 var _column2 = _interopRequireDefault(_column);
 
+var _join = require('./join');
+
+var _join2 = _interopRequireDefault(_join);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defaults(obj, defaults) { var keys = Object.getOwnPropertyNames(defaults); for (var i = 0; i < keys.length; i++) { var key = keys[i]; var value = Object.getOwnPropertyDescriptor(defaults, key); if (value && value.configurable && obj[key] === undefined) { Object.defineProperty(obj, key, value); } } return obj; }
@@ -28,7 +32,9 @@ var SimpleColumn = function (_Column) {
         _ref$type = _ref.type,
         type = _ref$type === undefined ? null : _ref$type,
         _ref$accessor = _ref.accessor,
-        accessor = _ref$accessor === undefined ? null : _ref$accessor;
+        accessor = _ref$accessor === undefined ? null : _ref$accessor,
+        _ref$join = _ref.join,
+        join = _ref$join === undefined ? null : _ref$join;
 
     _classCallCheck(this, SimpleColumn);
 
@@ -43,6 +49,10 @@ var SimpleColumn = function (_Column) {
     _this._attributeName = attributeName;
     _this._columnName = columnName;
     _this._accessor = accessor || _this.defaultAccessor;
+
+    if (join) {
+      _this._join = new _join2.default(join);
+    }
     return _this;
   }
 
@@ -72,8 +82,31 @@ var SimpleColumn = function (_Column) {
       return this._name;
     }
   }, {
+    key: 'join',
+    get: function get() {
+      return this._join;
+    }
+  }, {
+    key: 'source',
+    get: function get() {
+      if (this.join) {
+        return this._columnName.split('.')[0];
+      }
+
+      return null;
+    }
+  }, {
+    key: 'joinedColumnName',
+    get: function get() {
+      return this.columnName;
+    }
+  }, {
     key: 'columnName',
     get: function get() {
+      if (this.join) {
+        return this._columnName.split('.')[1];
+      }
+
       return this._columnName;
     }
   }, {

@@ -18,7 +18,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-// import { SelectStmt } from './ast/helpers';
+var columnRef = function columnRef(column) {
+  return (0, _helpers.ColumnRef)(column.columnName, column.source);
+};
 
 var Converter = function () {
   function Converter() {
@@ -53,11 +55,11 @@ var Converter = function () {
     };
 
     this.NotEmptyConverter = function (expression) {
-      return (0, _helpers.NullTest)(1, (0, _helpers.ColumnRef)(expression.columnName));
+      return (0, _helpers.NullTest)(1, columnRef(expression.column));
     };
 
     this.EmptyConverter = function (expression) {
-      return (0, _helpers.NullTest)(0, (0, _helpers.ColumnRef)(expression.columnName));
+      return (0, _helpers.NullTest)(0, columnRef(expression.column));
     };
 
     this.EqualConverter = function (expression) {
@@ -117,11 +119,11 @@ var Converter = function () {
         return _this.ConstValue(expression.column, v);
       });
 
-      return (0, _helpers.AExpr)(6, '<>', (0, _helpers.ColumnRef)(expression.columnName), values);
+      return (0, _helpers.AExpr)(6, '<>', columnRef(expression.column), values);
     };
 
     this.BinaryConverter = function (kind, operator, expression) {
-      return (0, _helpers.AExpr)(kind, operator, (0, _helpers.ColumnRef)(expression.columnName), _this.ConstValue(expression.column, expression.scalarValue));
+      return (0, _helpers.AExpr)(kind, operator, columnRef(expression.column), _this.ConstValue(expression.column, expression.scalarValue));
     };
 
     this.FieldConverter = function (expression) {
@@ -133,35 +135,35 @@ var Converter = function () {
     };
 
     this.TextEqualConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '~~*', (0, _helpers.ColumnRef)(expression.columnName), _this.ConstValue(expression.column, expression.scalarValue));
+      return (0, _helpers.AExpr)(8, '~~*', columnRef(expression.column), _this.ConstValue(expression.column, expression.scalarValue));
     };
 
     this.TextNotEqualConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '!~~*', (0, _helpers.ColumnRef)(expression.columnName), _this.ConstValue(expression.column, expression.scalarValue));
+      return (0, _helpers.AExpr)(8, '!~~*', columnRef(expression.column), _this.ConstValue(expression.column, expression.scalarValue));
     };
 
     this.TextContainConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '~~*', (0, _helpers.ColumnRef)(expression.columnName), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue) + '%')));
+      return (0, _helpers.AExpr)(8, '~~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue) + '%')));
     };
 
     this.TextNotContainConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '!~~*', (0, _helpers.ColumnRef)(expression.columnName), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue) + '%')));
+      return (0, _helpers.AExpr)(8, '!~~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue) + '%')));
     };
 
     this.TextStartsWithConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '~~*', (0, _helpers.ColumnRef)(expression.columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(_this.escapeLikePercent(expression.scalarValue) + '%')));
+      return (0, _helpers.AExpr)(8, '~~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(_this.escapeLikePercent(expression.scalarValue) + '%')));
     };
 
     this.TextEndsWithConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '~~*', (0, _helpers.ColumnRef)(expression.columnName), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue))));
+      return (0, _helpers.AExpr)(8, '~~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue))));
     };
 
     this.TextMatchConverter = function (expression) {
-      return (0, _helpers.AExpr)(0, '~*', (0, _helpers.ColumnRef)(expression.columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
+      return (0, _helpers.AExpr)(0, '~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
     };
 
     this.TextNotMatchConverter = function (expression) {
-      return (0, _helpers.AExpr)(0, '!~*', (0, _helpers.ColumnRef)(expression.columnName), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
+      return (0, _helpers.AExpr)(0, '!~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
     };
 
     this.ArrayAnyOfConverter = function (expression) {
@@ -173,7 +175,7 @@ var Converter = function () {
         return _this.ConstValue(expression.column, v);
       }));
 
-      return (0, _helpers.AExpr)(0, '@>', (0, _helpers.ColumnRef)(expression.columnName), values);
+      return (0, _helpers.AExpr)(0, '@>', columnRef(expression.column), values);
     };
 
     this.ArrayEqualConverter = function (expression) {
@@ -181,9 +183,9 @@ var Converter = function () {
         return _this.ConstValue(expression.column, v);
       }));
 
-      var a = (0, _helpers.AExpr)(0, '<@', (0, _helpers.ColumnRef)(expression.columnName), values);
+      var a = (0, _helpers.AExpr)(0, '<@', columnRef(expression.column), values);
 
-      var b = (0, _helpers.AExpr)(0, '@>', (0, _helpers.ColumnRef)(expression.columnName), values);
+      var b = (0, _helpers.AExpr)(0, '@>', columnRef(expression.column), values);
 
       return (0, _helpers.BoolExpr)(0, [a, b]);
     };
@@ -191,7 +193,7 @@ var Converter = function () {
     this.SearchConverter = function (expression) {
       var rhs = (0, _helpers.FuncCall)('to_tsquery', [_this.ConstValue(expression.column, expression.scalarValue)]);
 
-      return (0, _helpers.AExpr)(0, '@@', (0, _helpers.ColumnRef)(expression.columnName), rhs);
+      return (0, _helpers.AExpr)(0, '@@', columnRef(expression.column), rhs);
     };
 
     this.DynamicDateConverter = function (expression, options) {
@@ -211,11 +213,11 @@ var Converter = function () {
 
     this.NotBetween = function (column, value1, value2) {
       if (value1 != null && value2 != null) {
-        return (0, _helpers.AExpr)(11, 'NOT BETWEEN', (0, _helpers.ColumnRef)(column.columnName), [_this.ConstValue(column, value1), _this.ConstValue(column, value2)]);
+        return (0, _helpers.AExpr)(11, 'NOT BETWEEN', columnRef(column), [_this.ConstValue(column, value1), _this.ConstValue(column, value2)]);
       } else if (value1 != null) {
-        return (0, _helpers.AExpr)(0, '<', (0, _helpers.ColumnRef)(column.columnName), _this.ConstValue(column, value1));
+        return (0, _helpers.AExpr)(0, '<', columnRef(column), _this.ConstValue(column, value1));
       } else if (value2 != null) {
-        return (0, _helpers.AExpr)(0, '>', (0, _helpers.ColumnRef)(column.columnName), _this.ConstValue(column, value2));
+        return (0, _helpers.AExpr)(0, '>', columnRef(column), _this.ConstValue(column, value2));
       }
 
       return null;
@@ -226,7 +228,7 @@ var Converter = function () {
         return _this.ConstValue(column, v);
       }));
 
-      return (0, _helpers.AExpr)(0, '&&', (0, _helpers.ColumnRef)(column.columnName), arrayValues);
+      return (0, _helpers.AExpr)(0, '&&', columnRef(column), arrayValues);
     };
 
     this.In = function (column, values) {
@@ -234,16 +236,16 @@ var Converter = function () {
         return _this.ConstValue(column, v);
       });
 
-      return (0, _helpers.AExpr)(6, '=', (0, _helpers.ColumnRef)(column.columnName), arrayValues);
+      return (0, _helpers.AExpr)(6, '=', columnRef(column), arrayValues);
     };
 
     this.Between = function (column, value1, value2) {
       if (value1 != null && value2 != null) {
-        return (0, _helpers.AExpr)(10, 'BETWEEN', (0, _helpers.ColumnRef)(column.columnName), [_this.ConstValue(column, value1), _this.ConstValue(column, value2)]);
+        return (0, _helpers.AExpr)(10, 'BETWEEN', columnRef(column), [_this.ConstValue(column, value1), _this.ConstValue(column, value2)]);
       } else if (value1 != null) {
-        return (0, _helpers.AExpr)(0, '>=', (0, _helpers.ColumnRef)(column.columnName), _this.ConstValue(column, value1));
+        return (0, _helpers.AExpr)(0, '>=', columnRef(column), _this.ConstValue(column, value1));
       } else if (value2 != null) {
-        return (0, _helpers.AExpr)(0, '<=', (0, _helpers.ColumnRef)(column.columnName), _this.ConstValue(column, value2));
+        return (0, _helpers.AExpr)(0, '<=', columnRef(column), _this.ConstValue(column, value2));
       }
 
       return null;
@@ -288,7 +290,11 @@ var Converter = function () {
 
     var targetList = this.targetList(query, sort);
 
-    var fromClause = this.fromClause(query);
+    var joins = query.joinColumnsWithSorting.map(function (o) {
+      return o.join;
+    });
+
+    var fromClause = this.fromClause(query, joins);
 
     var whereClause = this.whereClause(query, boundingBox, searchFilter);
 
@@ -307,7 +313,11 @@ var Converter = function () {
 
     var targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))]), 'total_count')];
 
-    var fromClause = this.fromClause(query);
+    var joins = query.joinColumns.map(function (o) {
+      return o.join;
+    });
+
+    var fromClause = this.fromClause(query, joins);
 
     var whereClause = this.whereClause(query, boundingBox, searchFilter);
 
@@ -375,11 +385,13 @@ var Converter = function () {
   Converter.prototype.toDistinctValuesAST = function toDistinctValuesAST(query) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    var targetList = options.array ? [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('unnest', [(0, _helpers.ColumnRef)(options.name)]), 'value')] : [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)(options.name), 'value')];
+    var targetList = options.column.isArray ? [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('unnest', [columnRef(options.column)]), 'value')] : [(0, _helpers.ResTarget)(columnRef(options.column), 'value')];
 
     targetList.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))]), 'count'));
 
-    var fromClause = this.fromClause(query);
+    var joins = options.column.join ? [options.column.join] : null;
+
+    var fromClause = this.fromClause(query, joins);
 
     // const whereClause = null; // options.all ? null : this.whereClause(query);
     // TODO(zhm) need to pass the bbox and search here?
@@ -439,11 +451,62 @@ var Converter = function () {
   };
 
   Converter.prototype.targetList = function targetList(query, sort) {
-    return [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)())), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, (0, _helpers.WindowDef)(sort, 530)), '_row_number')];
+    var list = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)()))];
+
+    var subJoinColumns = query.joinColumnsWithSorting;
+
+    if (subJoinColumns.indexOf(query.schema.createdByColumn) !== -1) {
+      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'created_by'), 'created_by.name'));
+    }
+
+    if (subJoinColumns.indexOf(query.schema.updatedByColumn) !== -1) {
+      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'updated_by'), 'updated_by.name'));
+    }
+
+    if (subJoinColumns.indexOf(query.schema.assignedToColumn) !== -1) {
+      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'assigned_to'), 'assigned_to.name'));
+    }
+
+    if (subJoinColumns.indexOf(query.schema.projectColumn) !== -1) {
+      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'project'), 'project.name'));
+    }
+
+    list.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, (0, _helpers.WindowDef)(sort, 530)), '_row_number'));
+
+    return list;
   };
 
   Converter.prototype.fromClause = function fromClause(query) {
-    return [(0, _helpers.RangeVar)(query.form.id + '/_full')];
+    var leftJoins = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+    var baseQuery = (0, _helpers.RangeVar)(query.form.id + '/_full', (0, _helpers.Alias)('records'));
+
+    var visitedTables = {};
+
+    if (leftJoins) {
+      for (var _iterator = leftJoins, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+        var _ref5;
+
+        if (_isArray) {
+          if (_i >= _iterator.length) break;
+          _ref5 = _iterator[_i++];
+        } else {
+          _i = _iterator.next();
+          if (_i.done) break;
+          _ref5 = _i.value;
+        }
+
+        var join = _ref5;
+
+        if (!visitedTables[join.alias]) {
+          visitedTables[join.alias] = join;
+
+          baseQuery = Converter.leftJoinClause(baseQuery, join.tableName, join.alias, join.sourceColumn, join.joinColumn);
+        }
+      }
+    }
+
+    return [baseQuery];
   };
 
   Converter.prototype.whereClause = function whereClause(query, boundingBox, search) {
@@ -467,19 +530,19 @@ var Converter = function () {
     systemParts.push(this.createExpressionForColumnFilter(query.projectFilter, options));
     systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
 
-    for (var _iterator = query.columnSettings.columns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-      var _ref5;
+    for (var _iterator2 = query.columnSettings.columns, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
+      var _ref6;
 
-      if (_isArray) {
-        if (_i >= _iterator.length) break;
-        _ref5 = _iterator[_i++];
+      if (_isArray2) {
+        if (_i2 >= _iterator2.length) break;
+        _ref6 = _iterator2[_i2++];
       } else {
-        _i = _iterator.next();
-        if (_i.done) break;
-        _ref5 = _i.value;
+        _i2 = _iterator2.next();
+        if (_i2.done) break;
+        _ref6 = _i2.value;
       }
 
-      var item = _ref5;
+      var item = _ref6;
 
       if (item.hasFilter) {
         var expression = this.createExpressionForColumnFilter(item.filter, options);
@@ -490,7 +553,7 @@ var Converter = function () {
       }
 
       if (item.search) {
-        systemParts.push((0, _helpers.AExpr)(8, '~~*', (0, _helpers.ColumnRef)(item.column.columnName), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
+        systemParts.push((0, _helpers.AExpr)(8, '~~*', columnRef(item.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
       }
 
       if (item.expression.isValid) {
@@ -513,6 +576,10 @@ var Converter = function () {
     }
 
     return filterNode;
+  };
+
+  Converter.leftJoinClause = function leftJoinClause(baseQuery, table, alias, sourceColumn, tableColumn) {
+    return (0, _helpers.JoinExpr)(1, baseQuery, (0, _helpers.RangeVar)(table, (0, _helpers.Alias)(alias)), (0, _helpers.AExpr)(0, '=', (0, _helpers.ColumnRef)(sourceColumn, 'records'), (0, _helpers.ColumnRef)(tableColumn, alias)));
   };
 
   Converter.prototype.createExpressionForColumnFilter = function createExpressionForColumnFilter(filter, options) {
@@ -545,10 +612,10 @@ var Converter = function () {
           }
 
           if (hasNull) {
-            expression = (0, _helpers.BoolExpr)(1, [(0, _helpers.NullTest)(0, (0, _helpers.ColumnRef)(filter.columnName)), expression]);
+            expression = (0, _helpers.BoolExpr)(1, [(0, _helpers.NullTest)(0, columnRef(filter.column)), expression]);
           }
         } else if (hasNull) {
-          expression = (0, _helpers.NullTest)(0, (0, _helpers.ColumnRef)(filter.columnName));
+          expression = (0, _helpers.NullTest)(0, columnRef(filter.column));
         }
       })();
     } else if (filter.isEmptySet) {
