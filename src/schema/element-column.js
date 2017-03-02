@@ -72,4 +72,15 @@ export default class ElementColumn extends Column {
 
     return null;
   }
+
+  get isSortable() {
+    if (this.element.isPhotoElement ||
+        this.element.isVideoElement ||
+        this.element.isAudioElement ||
+        this.element.isSignatureElement) {
+      return false;
+    }
+
+    return true;
+  }
 }

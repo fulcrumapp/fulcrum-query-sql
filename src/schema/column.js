@@ -23,6 +23,10 @@ export default class Column {
     return this.isNumber || this.isDate;
   }
 
+  get isSortable() {
+    return true;
+  }
+
   toJSON() {
     return {
       id: this.id
