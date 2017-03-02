@@ -1,7 +1,7 @@
 'use strict';
 
 exports.__esModule = true;
-exports.PhotoColumn = exports.ElementColumn = exports.SimpleColumn = exports.Column = exports.FormSchema = exports.Query = undefined;
+exports.ElementColumn = exports.SimpleColumn = exports.Column = exports.FormSchema = exports.Query = undefined;
 
 var _expression = require('./expression');
 
@@ -59,10 +59,6 @@ var _elementColumn = require('./schema/element-column');
 
 var _elementColumn2 = _interopRequireDefault(_elementColumn);
 
-var _photoColumn = require('./schema/photo-column');
-
-var _photoColumn2 = _interopRequireDefault(_photoColumn);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.Query = _query2.default;
@@ -70,5 +66,4 @@ exports.FormSchema = _formSchema2.default;
 exports.Column = _column2.default;
 exports.SimpleColumn = _simpleColumn2.default;
 exports.ElementColumn = _elementColumn2.default;
-exports.PhotoColumn = _photoColumn2.default;
 //# sourceMappingURL=index.js.map

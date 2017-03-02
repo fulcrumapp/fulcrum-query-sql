@@ -47,6 +47,11 @@ var Column = function () {
     get: function get() {
       return this.isNumber || this.isDate;
     }
+  }, {
+    key: 'isSortable',
+    get: function get() {
+      return true;
+    }
   }]);
 
   return Column;

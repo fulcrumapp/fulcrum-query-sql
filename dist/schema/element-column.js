@@ -111,6 +111,15 @@ var ElementColumn = function (_Column) {
     get: function get() {
       return this._part;
     }
+  }, {
+    key: 'isSortable',
+    get: function get() {
+      if (this.element.isPhotoElement || this.element.isVideoElement || this.element.isAudioElement || this.element.isSignatureElement) {
+        return false;
+      }
+
+      return true;
+    }
   }]);
 
   return ElementColumn;
