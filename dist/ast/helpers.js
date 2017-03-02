@@ -109,7 +109,7 @@ function ResTarget(node) {
 function FuncCall(name, args, over) {
   return {
     FuncCall: {
-      funcname: [StringValue(name)],
+      funcname: Array.isArray(name) ? name : [StringValue(name)],
       args: args,
       over: over
     }
