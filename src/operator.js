@@ -405,7 +405,6 @@ export const DYNAMIC_DATE_OPERATORS = [
 export const FRIENDLY_DATE_OPERATORS = [
   OperatorType.DateToday,
   OperatorType.DateYesterday,
-  OperatorType.DateTomorrow,
   OperatorType.DateLast7Days,
   OperatorType.DateLast30Days,
   OperatorType.DateCurrentCalendarMonth,
