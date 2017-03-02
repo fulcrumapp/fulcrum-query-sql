@@ -15,7 +15,7 @@ export class Sort {
   }
 
   get isValid() {
-    return !this.column;
+    return !!this.column;
   }
 
   get direction() {

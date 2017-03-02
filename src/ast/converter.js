@@ -29,13 +29,17 @@ import { ConditionType } from '../condition';
 import { OperatorType, calculateDateRange } from '../operator';
 import moment from 'moment-timezone';
 
-// import { SelectStmt } from './ast/helpers';
+const columnRef = (column) => {
+  return ColumnRef(column.columnName, column.source);
+};
 
 export default class Converter {
   toAST(query, {sort, pageSize, pageIndex, boundingBox, searchFilter}) {
     const targetList = this.targetList(query, sort);
 
-    const fromClause = this.fromClause(query);
+    const joins = query.joinColumnsWithSorting.map(o => o.join);
+
+    const fromClause = this.fromClause(query, joins);
 
     const whereClause = this.whereClause(query, boundingBox, searchFilter);
 
@@ -51,7 +55,9 @@ export default class Converter {
   toCountAST(query, {boundingBox, searchFilter}) {
     const targetList = [ ResTarget(FuncCall('count', [ AConst(IntegerValue(1)) ]), 'total_count') ];
 
-    const fromClause = this.fromClause(query);
+    const joins = query.joinColumns.map(o => o.join);
+
+    const fromClause = this.fromClause(query, joins);
 
     const whereClause = this.whereClause(query, boundingBox, searchFilter);
 
@@ -137,12 +143,14 @@ export default class Converter {
   }
 
   toDistinctValuesAST(query, options = {}) {
-    const targetList = options.array ? [ ResTarget(FuncCall('unnest', [ ColumnRef(options.name) ]), 'value') ]
-                                     : [ ResTarget(ColumnRef(options.name), 'value') ];
+    const targetList = options.column.isArray ? [ ResTarget(FuncCall('unnest', [ columnRef(options.column) ]), 'value') ]
+                                              : [ ResTarget(columnRef(options.column), 'value') ];
 
     targetList.push(ResTarget(FuncCall('count', [ AConst(IntegerValue(1)) ]), 'count'));
 
-    const fromClause = this.fromClause(query);
+    const joins = options.column.join ? [ options.column.join ] : null;
+
+    const fromClause = this.fromClause(query, joins);
 
     // const whereClause = null; // options.all ? null : this.whereClause(query);
     // TODO(zhm) need to pass the bbox and search here?
@@ -210,14 +218,49 @@ export default class Converter {
   }
 
   targetList(query, sort) {
-    return [
-      ResTarget(ColumnRef(AStar())),
-      ResTarget(FuncCall('row_number', null, WindowDef(sort, 530)), '_row_number')
+    const list = [
+      ResTarget(ColumnRef(AStar()))
     ];
+
+    const subJoinColumns = query.joinColumnsWithSorting;
+
+    if (subJoinColumns.indexOf(query.schema.createdByColumn) !== -1) {
+      list.push(ResTarget(ColumnRef('name', 'created_by'), 'created_by.name'));
+    }
+
+    if (subJoinColumns.indexOf(query.schema.updatedByColumn) !== -1) {
+      list.push(ResTarget(ColumnRef('name', 'updated_by'), 'updated_by.name'));
+    }
+
+    if (subJoinColumns.indexOf(query.schema.assignedToColumn) !== -1) {
+      list.push(ResTarget(ColumnRef('name', 'assigned_to'), 'assigned_to.name'));
+    }
+
+    if (subJoinColumns.indexOf(query.schema.projectColumn) !== -1) {
+      list.push(ResTarget(ColumnRef('name', 'project'), 'project.name'));
+    }
+
+    list.push(ResTarget(FuncCall('row_number', null, WindowDef(sort, 530)), '_row_number'));
+
+    return list;
   }
 
-  fromClause(query) {
-    return [ RangeVar(query.form.id + '/_full') ];
+  fromClause(query, leftJoins = []) {
+    let baseQuery = RangeVar(query.form.id + '/_full', Alias('records'));
+
+    const visitedTables = {};
+
+    if (leftJoins) {
+      for (const join of leftJoins) {
+        if (!visitedTables[join.alias]) {
+          visitedTables[join.alias] = join;
+
+          baseQuery = Converter.leftJoinClause(baseQuery, join.tableName, join.alias, join.sourceColumn, join.joinColumn);
+        }
+      }
+    }
+
+    return [ baseQuery ];
   }
 
   whereClause(query, boundingBox, search, options = {}) {
@@ -249,7 +292,7 @@ export default class Converter {
       }
 
       if (item.search) {
-        systemParts.push(AExpr(8, '~~*', ColumnRef(item.column.columnName),
+        systemParts.push(AExpr(8, '~~*', columnRef(item.column),
                                          AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
       }
 
@@ -271,6 +314,13 @@ export default class Converter {
     }
 
     return filterNode;
+  }
+
+  static leftJoinClause(baseQuery, table, alias, sourceColumn, tableColumn) {
+    return JoinExpr(1,
+                    baseQuery,
+                    RangeVar(table, Alias(alias)),
+                    AExpr(0, '=', ColumnRef(sourceColumn, 'records'), ColumnRef(tableColumn, alias)));
   }
 
   createExpressionForColumnFilter(filter, options) {
@@ -300,10 +350,10 @@ export default class Converter {
         }
 
         if (hasNull) {
-          expression = BoolExpr(1, [ NullTest(0, ColumnRef(filter.columnName)), expression ]);
+          expression = BoolExpr(1, [ NullTest(0, columnRef(filter.column)), expression ]);
         }
       } else if (hasNull) {
-        expression = NullTest(0, ColumnRef(filter.columnName));
+        expression = NullTest(0, columnRef(filter.column));
       }
     } else if (filter.isEmptySet) {
       // add 1 = 0 clause to return 0 rows
@@ -511,11 +561,11 @@ export default class Converter {
   }
 
   NotEmptyConverter = (expression) => {
-    return NullTest(1, ColumnRef(expression.columnName));
+    return NullTest(1, columnRef(expression.column));
   }
 
   EmptyConverter = (expression) => {
-    return NullTest(0, ColumnRef(expression.columnName));
+    return NullTest(0, columnRef(expression.column));
   }
 
   EqualConverter = (expression) => {
@@ -573,12 +623,12 @@ export default class Converter {
   NotInConverter = (expression) => {
     const values = expression.value.map(v => this.ConstValue(expression.column, v));
 
-    return AExpr(6, '<>', ColumnRef(expression.columnName),
+    return AExpr(6, '<>', columnRef(expression.column),
                  values);
   }
 
   BinaryConverter = (kind, operator, expression) => {
-    return AExpr(kind, operator, ColumnRef(expression.columnName),
+    return AExpr(kind, operator, columnRef(expression.column),
                  this.ConstValue(expression.column, expression.scalarValue));
   }
 
@@ -591,42 +641,42 @@ export default class Converter {
   }
 
   TextEqualConverter = (expression) => {
-    return AExpr(8, '~~*', ColumnRef(expression.columnName),
+    return AExpr(8, '~~*', columnRef(expression.column),
                  this.ConstValue(expression.column, expression.scalarValue));
   }
 
   TextNotEqualConverter = (expression) => {
-    return AExpr(8, '!~~*', ColumnRef(expression.columnName),
+    return AExpr(8, '!~~*', columnRef(expression.column),
                  this.ConstValue(expression.column, expression.scalarValue));
   }
 
   TextContainConverter = (expression) => {
-    return AExpr(8, '~~*', ColumnRef(expression.columnName),
+    return AExpr(8, '~~*', columnRef(expression.column),
                  AConst(StringValue('%' + this.escapeLikePercent(expression.scalarValue) + '%')));
   }
 
   TextNotContainConverter = (expression) => {
-    return AExpr(8, '!~~*', ColumnRef(expression.columnName),
+    return AExpr(8, '!~~*', columnRef(expression.column),
                  AConst(StringValue('%' + this.escapeLikePercent(expression.scalarValue) + '%')));
   }
 
   TextStartsWithConverter = (expression) => {
-    return AExpr(8, '~~*', ColumnRef(expression.columnName),
+    return AExpr(8, '~~*', columnRef(expression.column),
                  AConst(StringValue(this.escapeLikePercent(expression.scalarValue) + '%')));
   }
 
   TextEndsWithConverter = (expression) => {
-    return AExpr(8, '~~*', ColumnRef(expression.columnName),
+    return AExpr(8, '~~*', columnRef(expression.column),
                  AConst(StringValue('%' + this.escapeLikePercent(expression.scalarValue))));
   }
 
   TextMatchConverter = (expression) => {
-    return AExpr(0, '~*', ColumnRef(expression.columnName),
+    return AExpr(0, '~*', columnRef(expression.column),
                  AConst(StringValue(expression.scalarValue)));
   }
 
   TextNotMatchConverter = (expression) => {
-    return AExpr(0, '!~*', ColumnRef(expression.columnName),
+    return AExpr(0, '!~*', columnRef(expression.column),
                  AConst(StringValue(expression.scalarValue)));
   }
 
@@ -637,17 +687,17 @@ export default class Converter {
   ArrayAllOfConverter = (expression) => {
     const values = AArrayExpr(expression.value.map(v => this.ConstValue(expression.column, v)));
 
-    return AExpr(0, '@>', ColumnRef(expression.columnName),
+    return AExpr(0, '@>', columnRef(expression.column),
                  values);
   }
 
   ArrayEqualConverter = (expression) => {
     const values = AArrayExpr(expression.value.map(v => this.ConstValue(expression.column, v)));
 
-    const a = AExpr(0, '<@', ColumnRef(expression.columnName),
+    const a = AExpr(0, '<@', columnRef(expression.column),
                     values);
 
-    const b = AExpr(0, '@>', ColumnRef(expression.columnName),
+    const b = AExpr(0, '@>', columnRef(expression.column),
                     values);
 
     return BoolExpr(0, [ a, b ]);
@@ -656,7 +706,7 @@ export default class Converter {
   SearchConverter = (expression) => {
     const rhs = FuncCall('to_tsquery', [ this.ConstValue(expression.column, expression.scalarValue) ]);
 
-    return AExpr(0, '@@', ColumnRef(expression.columnName),
+    return AExpr(0, '@@', columnRef(expression.column),
                  rhs);
   }
 
@@ -677,11 +727,11 @@ export default class Converter {
 
   NotBetween = (column, value1, value2) => {
     if (value1 != null && value2 != null) {
-      return AExpr(11, 'NOT BETWEEN', ColumnRef(column.columnName), [ this.ConstValue(column, value1), this.ConstValue(column, value2) ]);
+      return AExpr(11, 'NOT BETWEEN', columnRef(column), [ this.ConstValue(column, value1), this.ConstValue(column, value2) ]);
     } else if (value1 != null) {
-      return AExpr(0, '<', ColumnRef(column.columnName), this.ConstValue(column, value1));
+      return AExpr(0, '<', columnRef(column), this.ConstValue(column, value1));
     } else if (value2 != null) {
-      return AExpr(0, '>', ColumnRef(column.columnName), this.ConstValue(column, value2));
+      return AExpr(0, '>', columnRef(column), this.ConstValue(column, value2));
     }
 
     return null;
@@ -690,22 +740,22 @@ export default class Converter {
   AnyOf = (column, values) => {
     const arrayValues = AArrayExpr(values.map(v => this.ConstValue(column, v)));
 
-    return AExpr(0, '&&', ColumnRef(column.columnName), arrayValues);
+    return AExpr(0, '&&', columnRef(column), arrayValues);
   }
 
   In = (column, values) => {
     const arrayValues = values.map(v => this.ConstValue(column, v));
 
-    return AExpr(6, '=', ColumnRef(column.columnName), arrayValues);
+    return AExpr(6, '=', columnRef(column), arrayValues);
   }
 
   Between = (column, value1, value2) => {
     if (value1 != null && value2 != null) {
-      return AExpr(10, 'BETWEEN', ColumnRef(column.columnName), [ this.ConstValue(column, value1), this.ConstValue(column, value2) ]);
+      return AExpr(10, 'BETWEEN', columnRef(column), [ this.ConstValue(column, value1), this.ConstValue(column, value2) ]);
     } else if (value1 != null) {
-      return AExpr(0, '>=', ColumnRef(column.columnName), this.ConstValue(column, value1));
+      return AExpr(0, '>=', columnRef(column), this.ConstValue(column, value1));
     } else if (value2 != null) {
-      return AExpr(0, '<=', ColumnRef(column.columnName), this.ConstValue(column, value2));
+      return AExpr(0, '<=', columnRef(column), this.ConstValue(column, value2));
     }
 
     return null;

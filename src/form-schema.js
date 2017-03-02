@@ -96,15 +96,48 @@ export default class FormSchema extends FormFieldSchema {
     this.addSystemColumn('Device Updated', 'clientUpdatedAt', '_updated_at', 'timestamp');
 
     if (this.form.isProjectEnabled) {
-      this.addSystemColumn('Project', 'project', '_project_id', 'string');
+      this.projectColumn = this.addSystemColumn('Project',
+                                                'projectName',
+                                                'project.name',
+                                                'string',
+                                                null,
+                                                {tableName: 'projects',
+                                                 alias: 'project',
+                                                 sourceColumn: '_project_id',
+                                                 joinColumn: 'project_id'});
     }
 
     if (this.form.isAssignmentEnabled) {
-      this.addSystemColumn('Assigned', 'assignedTo', '_assigned_to_id', 'string');
+      this.assignedToColumn = this.addSystemColumn('Assigned',
+                                                   'assignedToName',
+                                                   'assigned_to.name',
+                                                   'string',
+                                                   null,
+                                                   {tableName: 'memberships',
+                                                    alias: 'assigned_to',
+                                                    sourceColumn: '_assigned_to_id',
+                                                    joinColumn: 'user_id'});
     }
 
-    this.addSystemColumn('Created By', 'createdByName', '_created_by', 'string');
-    this.addSystemColumn('Updated By', 'updatedByName', '_updated_by', 'string');
+    this.createdByColumn = this.addSystemColumn('Created By',
+                                                'createdByName',
+                                                'created_by.name',
+                                                'string',
+                                                null,
+                                                {tableName: 'memberships',
+                                                 alias: 'created_by',
+                                                 sourceColumn: '_created_by_id',
+                                                 joinColumn: 'user_id'});
+
+    this.updatedByColumn = this.addSystemColumn('Updated By',
+                                                'updatedByName',
+                                                'updated_by.name',
+                                                'string',
+                                                null,
+                                                {tableName: 'memberships',
+                                                 alias: 'updated_by',
+                                                 sourceColumn: '_updated_by_id',
+                                                 joinColumn: 'user_id'});
 
     if (this.fullSchema) {
       this.addSystemColumn('Geometry', 'geometryAsGeoJSON', '_geometry', 'geometry');

@@ -82,6 +82,20 @@ export class Condition {
     };
   }
 
+  get allExpressions() {
+    const expressions = [];
+
+    for (const o of this.expressions) {
+      if (o.expressions) {
+        expressions.push.apply(expressions, o.allExpressions);
+      } else {
+        expressions.push(o);
+      }
+    }
+
+    return expressions;
+  }
+
   toHumanDescription(topLevel = false) {
     if (this.expressions.length === 0) {
       return null;

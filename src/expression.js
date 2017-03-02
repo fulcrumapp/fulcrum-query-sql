@@ -108,10 +108,6 @@ export class Expression {
     return null;
   }
 
-  get expressions() {
-    return this._expressions;
-  }
-
   toggleValue(value) {
     if (!this._value) {
       this._value = [];

@@ -6,14 +6,17 @@ export default class FormFieldSchema {
     this.fullSchema = fullSchema;
   }
 
-  addSystemColumn(label, attribute, columnName, type, accessor) {
+  addSystemColumn(label, attribute, columnName, type, accessor, join) {
     const column = new SimpleColumn({name: label,
                                      attributeName: attribute,
                                      columnName: columnName,
                                      type: type,
-                                     accessor: accessor});
+                                     accessor: accessor,
+                                     join});
     this._columns.push(column);
-    this._columnsByKey[columnName] = column;
+    this._columnsByKey[column.id] = column;
+
+    return column;
   }
 
   addElementColumn(element, part, type) {
@@ -26,7 +29,7 @@ export default class FormFieldSchema {
     //   throw new Error('Column not found for element ' + columnKey + Object.keys(this._rawColumnsByKey));
     // }
 
-    this.addRawElementColumn(element, rawColumn, null, type || rawColumn.type, part, columnKey);
+    return this.addRawElementColumn(element, rawColumn, null, type || rawColumn.type, part, columnKey);
   }
 
   addRawElementColumn(element, rawColumn, id, type, part, columnKey) {
@@ -34,6 +37,8 @@ export default class FormFieldSchema {
 
     this._columns.push(columnObject);
     this._columnsByKey[columnKey] = columnObject;
+
+    return columnObject;
   }
 
   setupElementColumns() {
