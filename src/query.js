@@ -142,6 +142,12 @@ export default class Query {
       return o.isValid;
     }).map(o => o.column));
 
+    if (this.sorting.hasSort) {
+      columns.push.apply(columns, this.sorting.expressions.filter((o) => {
+        return o.isValid;
+      }).map(o => o.column));
+    }
+
     return columns;
   }
 
@@ -397,7 +403,7 @@ export default class Query {
 
       if (this.ast) {
         return [
-          SortBy(AConst(IntegerValue(sort.column.index + 1)), direction, 0)
+          SortBy(ColumnRef(sort.column.id, sort.column.source), direction, 0)
         ];
       }
 
@@ -480,33 +486,8 @@ export default class Query {
       // query.
       const geometryColumn = geometryColumns[0];
 
-      let geometryResTarget = this.findResTarget(geometryColumn);
-
-      if (geometryResTarget) {
-        geometryResTarget = JSON.parse(JSON.stringify(geometryResTarget));
-        geometryResTarget.ResTarget.name = '__geometry';
-      } else {
-        geometryResTarget = ResTarget(ColumnRef(geometryColumn.columnName, geometryColumn.source), '__geometry');
-      }
-
-      this.ast.SelectStmt.targetList.push(geometryResTarget);
+      Converter.duplicateResTargetWithExactName(this, this.ast.SelectStmt.targetList,
+                                                geometryColumn, '__geometry');
     }
-  }
-
-  findResTarget(column) {
-    // the simple case is when there is no * in the query
-    if (this.ast.SelectStmt.targetList.length === this.schema.columns.length) {
-      return this.ast.SelectStmt.targetList[column.index];
-    }
-
-    const exactMatch = this.ast.SelectStmt.targetList.find((target) => {
-      return target.name === column.name;
-    });
-
-    if (exactMatch) {
-      return exactMatch;
-    }
-
-    return null;
   }
 }

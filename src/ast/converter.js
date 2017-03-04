@@ -295,12 +295,14 @@ export default class Converter {
       //   SELECT * FROM(SELECT *, *, *, id AS __value FROM table) WHERE __value = ...
       //
       // Given arbitrary subqueries, we must be able to reference columns in them exactly even when there are duplicates.
-      //
+      // We can't assume they're all simple ColumnRef's either. Some ResTarget's might be entire graphs of expressions which
+      // needs to be duplicated to ensure uniqueness.
       if (referencedColumns.length) {
         queryAST = JSON.parse(JSON.stringify(queryAST));
 
         for (const column of referencedColumns) {
-          queryAST.SelectStmt.targetList.push(ResTarget(ColumnRef(column.columnName, column.source), column.id));
+          Converter.duplicateResTargetWithExactName(query, queryAST.SelectStmt.targetList,
+                                                    column, column.id);
         }
       }
 
@@ -387,6 +389,40 @@ export default class Converter {
                     baseQuery,
                     RangeVar(table, Alias(alias)),
                     AExpr(0, '=', ColumnRef(sourceColumn, 'records'), ColumnRef(tableColumn, alias)));
+  }
+
+  static duplicateResTargetWithExactName(query, targetList, column, exactName) {
+    let resTarget = Converter.findResTarget(query, column);
+
+    // If a column is referenced more than once don't add it again
+    for (const existing of targetList) {
+      if (existing.ResTarget.name === exactName) {
+        return;
+      }
+    }
+
+    // If we found a matching restarget, copy the entire node and give it a new name
+    if (resTarget) {
+      resTarget = JSON.parse(JSON.stringify(resTarget));
+      resTarget.ResTarget.name = exactName;
+    } else {
+      resTarget = ResTarget(ColumnRef(column.columnName, column.source), exactName);
+    }
+
+    targetList.push(resTarget);
+  }
+
+  static findResTarget(query, column) {
+    // the simple case is when there is no * in the query
+    if (query.ast.SelectStmt.targetList.length === query.schema.columns.length) {
+      return query.ast.SelectStmt.targetList[column.index];
+    }
+
+    // Find the ResTarget node by name, or else return null, which means the column
+    // must be coming from a * node and we can just use a simple ResTarget + ColumnRef
+    return query.ast.SelectStmt.targetList.find((target) => {
+      return target.ResTarget.name === column.name;
+    });
   }
 
   createExpressionForColumnFilter(filter, options) {
