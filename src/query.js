@@ -425,7 +425,7 @@ export default class Query {
   }
 
   get outerSortClause() {
-    return [ SortBy(ColumnRef('_row_number'), 1, 0) ];
+    return [ SortBy(ColumnRef('__row_number'), 1, 0) ];
   }
 
   toHumanDescription() {

@@ -270,7 +270,7 @@ export default class Converter {
       list.push(ResTarget(ColumnRef('name', 'project'), 'project.name'));
     }
 
-    list.push(ResTarget(FuncCall('row_number', null, WindowDef(sort, 530)), '_row_number'));
+    list.push(ResTarget(FuncCall('row_number', null, WindowDef(sort, 530)), '__row_number'));
 
     return list;
   }
