@@ -327,7 +327,15 @@ var Converter = function () {
   Converter.prototype.toTileAST = function toTileAST(query, _ref3) {
     var searchFilter = _ref3.searchFilter;
 
-    var targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id')), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('st_x', [(0, _helpers.ColumnRef)('_geometry')]), 'x'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('st_y', [(0, _helpers.ColumnRef)('_geometry')]), 'y'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_status')), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(query.form.id))), 'form_id')];
+    var targetList = null;
+
+    if (query.ast) {
+      var sort = [(0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), 0, 0)];
+
+      targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, (0, _helpers.WindowDef)(sort, 530)), '__id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('__geometry'))];
+    } else {
+      targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_geometry'), 'geometry'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_status'), 'status'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(query.form.id))), 'form_id')];
+    }
 
     var fromClause = this.fromClause(query);
 
@@ -421,7 +429,14 @@ var Converter = function () {
       recordsTargetList = [(0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('float8')]), (0, _helpers.ColumnRef)(columnName)), 'value')];
     }
 
-    var recordsFromClause = [(0, _helpers.RangeVar)(query.form.id + '/_full')];
+    var recordsFromClause = null;
+
+    if (query.ast) {
+      recordsFromClause = [(0, _helpers.RangeSubselect)(query.ast, (0, _helpers.Alias)('records'))];
+    } else {
+      recordsFromClause = [(0, _helpers.RangeVar)(query.form.id + '/_full')];
+    }
+
     var recordsSelect = (0, _helpers.SelectStmt)({ targetList: recordsTargetList, fromClause: recordsFromClause });
     var recordsExpr = (0, _helpers.CommonTableExpr)('__records', recordsSelect);
 
@@ -432,6 +447,16 @@ var Converter = function () {
     var statsExpr = (0, _helpers.CommonTableExpr)('__stats', statsSelect);
 
     return (0, _helpers.WithClause)([recordsExpr, statsExpr]);
+  };
+
+  Converter.prototype.toSchemaAST = function toSchemaAST(query) {
+    // wrap the query in a subquery with 1=0
+
+    var targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)()))];
+    var fromClause = [(0, _helpers.RangeSubselect)(query, (0, _helpers.Alias)('wrapped'))];
+    var whereClause = (0, _helpers.AExpr)(0, '=', (0, _helpers.AConst)((0, _helpers.IntegerValue)(0)), (0, _helpers.AConst)((0, _helpers.IntegerValue)(1)));
+
+    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause });
   };
 
   Converter.prototype.limitOffset = function limitOffset(pageSize, pageIndex) {
@@ -450,7 +475,7 @@ var Converter = function () {
     return null;
   };
 
-  Converter.prototype.targetList = function targetList(query, sort) {
+  Converter.prototype.targetList = function targetList(query, sort, boundingBox) {
     var list = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)()))];
 
     var subJoinColumns = query.joinColumnsWithSorting;
@@ -479,7 +504,13 @@ var Converter = function () {
   Converter.prototype.fromClause = function fromClause(query) {
     var leftJoins = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
-    var baseQuery = (0, _helpers.RangeVar)(query.form.id + '/_full', (0, _helpers.Alias)('records'));
+    var baseQuery = null;
+
+    if (query.ast) {
+      return [(0, _helpers.RangeSubselect)(query.ast, (0, _helpers.Alias)('records'))];
+    }
+
+    baseQuery = (0, _helpers.RangeVar)(query.form.id + '/_full', (0, _helpers.Alias)('records'));
 
     var visitedTables = {};
 
@@ -518,11 +549,11 @@ var Converter = function () {
     var filterNode = this.nodeForCondition(query.filter, options);
 
     if (boundingBox) {
-      systemParts.push(this.boundingBoxFilter(boundingBox));
+      systemParts.push(this.boundingBoxFilter(query, boundingBox));
     }
 
     if (search && search.trim().length) {
-      systemParts.push(this.searchFilter(search));
+      systemParts.push(this.searchFilter(query, search));
     }
 
     systemParts.push(this.nodeForExpression(query.dateFilter, options));
@@ -553,7 +584,11 @@ var Converter = function () {
       }
 
       if (item.search) {
-        systemParts.push((0, _helpers.AExpr)(8, '~~*', columnRef(item.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
+        if (item.column.isArray) {
+          systemParts.push((0, _helpers.AExpr)(8, '~~*', (0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), columnRef(item.column)), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
+        } else {
+          systemParts.push((0, _helpers.AExpr)(8, '~~*', columnRef(item.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
+        }
       }
 
       if (item.expression.isValid) {
@@ -626,19 +661,21 @@ var Converter = function () {
     return expression;
   };
 
-  Converter.prototype.boundingBoxFilter = function boundingBoxFilter(boundingBox) {
+  Converter.prototype.boundingBoxFilter = function boundingBoxFilter(query, boundingBox) {
     var args = [(0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[0])), (0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[1])), (0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[2])), (0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[3])), (0, _helpers.AConst)((0, _helpers.IntegerValue)(4326))];
 
     var rhs = (0, _helpers.FuncCall)('st_makeenvelope', args);
 
-    return (0, _helpers.AExpr)(0, '&&', (0, _helpers.ColumnRef)('_geometry'), rhs);
+    var columnName = query.ast ? '__geometry' : '_geometry';
+
+    return (0, _helpers.AExpr)(0, '&&', (0, _helpers.ColumnRef)(columnName), rhs);
   };
 
   Converter.prototype.escapeLikePercent = function escapeLikePercent(value) {
-    return value.replace(/\%/g, '\\%');
+    return value.replace(/\%/g, '\\%').replace(/_/g, '\\_%');
   };
 
-  Converter.prototype.searchFilter = function searchFilter(search) {
+  Converter.prototype.searchFilter = function searchFilter(query, search) {
     /*
        Search takes the general form:
         SELECT ...
@@ -656,6 +693,11 @@ var Converter = function () {
     */
 
     search = search.trim();
+
+    // if it's a fully custom SQL statement, use a simpler form with no index
+    if (query.ast) {
+      return (0, _helpers.AExpr)(8, '~~*', (0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.ColumnRef)('records')), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(search) + '%')));
+    }
 
     var toTsQuery = function toTsQuery(dictionary, term) {
       var args = [(0, _helpers.AConst)((0, _helpers.StringValue)(dictionary)), (0, _helpers.AConst)((0, _helpers.StringValue)("'" + term + "':*"))];

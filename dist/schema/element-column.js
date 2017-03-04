@@ -28,7 +28,8 @@ var ElementColumn = function (_Column) {
         rawColumn = _ref.rawColumn,
         type = _ref.type,
         id = _ref.id,
-        part = _ref.part;
+        part = _ref.part,
+        index = _ref.index;
 
     _classCallCheck(this, ElementColumn);
 
@@ -39,6 +40,7 @@ var ElementColumn = function (_Column) {
     _this._rawColumn = rawColumn;
     _this._id = id || element.key;
     _this._part = part;
+    _this._index = index;
 
     if (part) {
       _this._id += '_' + part;

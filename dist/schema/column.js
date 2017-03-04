@@ -43,6 +43,11 @@ var Column = function () {
       return this.type === 'integer';
     }
   }, {
+    key: 'isGeometry',
+    get: function get() {
+      return this.type === 'geometry';
+    }
+  }, {
     key: 'supportsRanges',
     get: function get() {
       return this.isNumber || this.isDate;
@@ -51,6 +56,11 @@ var Column = function () {
     key: 'isSortable',
     get: function get() {
       return true;
+    }
+  }, {
+    key: 'index',
+    get: function get() {
+      return this._index;
     }
   }]);
 

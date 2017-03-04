@@ -48,6 +48,7 @@ var Query = function () {
   function Query(attrs) {
     _classCallCheck(this, Query);
 
+    this._ast = attrs.ast;
     this._form = attrs.form;
     this._outputs = [];
     this._schema = attrs.schema;
@@ -61,6 +62,8 @@ var Query = function () {
     this._assignmentFilter = new _columnFilter2.default(_extends({}, attrs.assignment_filter, { field: 'assigned_to.name' }), this._schema);
     this._options = new _queryOptions2.default(attrs.options || {});
     this._columnSettings = new _columnSettings2.default(this._schema, attrs.columns);
+
+    this.setup();
   }
 
   Query.prototype.clearAllFilters = function clearAllFilters() {
@@ -140,6 +143,11 @@ var Query = function () {
     });
   };
 
+  Query.prototype.toSchemaSQL = function toSchemaSQL(ast, options) {
+    var wrapped = new _converter2.default().toSchemaAST(ast, options);
+    return new _pgQueryDeparser2.default().deparse(wrapped);
+  };
+
   Query.prototype.toDistinctValuesSQL = function toDistinctValuesSQL(options) {
     return new _pgQueryDeparser2.default().deparse(this.toDistinctValuesAST(options));
   };
@@ -173,7 +181,7 @@ var Query = function () {
   };
 
   Query.prototype.targetList = function targetList() {
-    if (this.schema.isSQL) {
+    if (this.ast) {
       return [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)()))];
     }
 
@@ -226,6 +234,10 @@ var Query = function () {
     var ast = applySort ? this.toRawAST({ sort: this.sortClause, pageSize: pageSize, pageIndex: pageIndex, boundingBox: boundingBox, searchFilter: searchFilter }) : this.toRawAST({ boundingBox: boundingBox, searchFilter: searchFilter });
 
     var baseQuery = (0, _helpers.RangeSubselect)(ast, (0, _helpers.Alias)('records'));
+
+    if (this.ast) {
+      return [baseQuery];
+    }
 
     // The "subJoinColumns" are joins that need to happen in the inner sub-select from Converter.
     // We don't need to join them in the outer part.
@@ -311,7 +323,30 @@ var Query = function () {
     return parts.join(', ');
   };
 
+  Query.prototype.setup = function setup() {
+    var geometryColumns = this.schema.geometryColumns;
+
+    if (geometryColumns.length) {
+      // For custom SQL, we need to add a column called __geometry at the end that evaluates to the
+      // exact same expression as the first geometry column. This is needed so that queries like
+      // SELECT geom, * FROM table will work when we need to reference the geom column from an outer
+      // query.
+      var geometryResTarget = this.ast.SelectStmt.targetList[geometryColumns[0].index];
+
+      var geometryResTargetCopy = JSON.parse(JSON.stringify(geometryResTarget));
+
+      geometryResTargetCopy.ResTarget.name = '__geometry';
+
+      this.ast.SelectStmt.targetList.push(geometryResTargetCopy);
+    }
+  };
+
   _createClass(Query, [{
+    key: 'ast',
+    get: function get() {
+      return this._ast;
+    }
+  }, {
     key: 'form',
     get: function get() {
       return this._form;
@@ -445,6 +480,8 @@ var Query = function () {
   }, {
     key: 'sortClause',
     get: function get() {
+      var _this = this;
+
       if (this.sorting.isEmpty) {
         return this.systemSortClause;
       }
@@ -452,6 +489,10 @@ var Query = function () {
       // always add the record ID to the sorting so it's stable across executions
       var sorts = this.sorting.expressions.map(function (sort) {
         var direction = sort.direction === 'desc' ? 2 : 1;
+
+        if (_this.ast) {
+          return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)(sort.column.columnName, sort.column.source), direction, 0)];
+        }
 
         return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)(sort.column.columnName, sort.column.source), direction, 0), (0, _helpers.SortBy)((0, _helpers.ColumnRef)('_record_id'), direction, 0)];
       });
@@ -461,6 +502,10 @@ var Query = function () {
   }, {
     key: 'systemSortClause',
     get: function get() {
+      if (this.ast) {
+        return [(0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), 2, 0)];
+      }
+
       return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)('_server_updated_at'), 2, 0)];
     }
   }, {

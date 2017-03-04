@@ -24,7 +24,7 @@ var SQLQuerySchema = function (_FormFieldSchema) {
   function SQLQuerySchema(rawColumns, tableName) {
     _classCallCheck(this, SQLQuerySchema);
 
-    var _this = _possibleConstructorReturn(this, _FormFieldSchema.call(this));
+    var _this = _possibleConstructorReturn(this, _FormFieldSchema.call(this, {}));
 
     _this._tableName = tableName || 'query';
 
@@ -70,14 +70,7 @@ var SQLQuerySchema = function (_FormFieldSchema) {
 
       var column = _ref2;
 
-      var attrs = {
-        name: column.name,
-        attributeName: column.name,
-        columnName: column.name,
-        type: column.type
-      };
-
-      this.addSystemColumn(attrs);
+      this.addSystemColumn(column.name, column.name, column.name, column.type, null, null, true);
     }
   };
 

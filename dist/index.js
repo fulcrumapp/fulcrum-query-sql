@@ -1,7 +1,7 @@
 'use strict';
 
 exports.__esModule = true;
-exports.ElementColumn = exports.SimpleColumn = exports.Column = exports.FormSchema = exports.Query = undefined;
+exports.ElementColumn = exports.SimpleColumn = exports.Column = exports.SQLQuerySchema = exports.FormSchema = exports.Query = undefined;
 
 var _expression = require('./expression');
 
@@ -47,6 +47,10 @@ var _formSchema = require('./form-schema');
 
 var _formSchema2 = _interopRequireDefault(_formSchema);
 
+var _sqlQuerySchema = require('./sql-query-schema');
+
+var _sqlQuerySchema2 = _interopRequireDefault(_sqlQuerySchema);
+
 var _column = require('./schema/column');
 
 var _column2 = _interopRequireDefault(_column);
@@ -63,6 +67,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.Query = _query2.default;
 exports.FormSchema = _formSchema2.default;
+exports.SQLQuerySchema = _sqlQuerySchema2.default;
 exports.Column = _column2.default;
 exports.SimpleColumn = _simpleColumn2.default;
 exports.ElementColumn = _elementColumn2.default;

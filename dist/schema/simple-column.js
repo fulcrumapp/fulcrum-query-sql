@@ -34,7 +34,10 @@ var SimpleColumn = function (_Column) {
         _ref$accessor = _ref.accessor,
         accessor = _ref$accessor === undefined ? null : _ref$accessor,
         _ref$join = _ref.join,
-        join = _ref$join === undefined ? null : _ref$join;
+        join = _ref$join === undefined ? null : _ref$join,
+        _ref$sql = _ref.sql,
+        sql = _ref$sql === undefined ? null : _ref$sql,
+        index = _ref.index;
 
     _classCallCheck(this, SimpleColumn);
 
@@ -49,6 +52,8 @@ var SimpleColumn = function (_Column) {
     _this._attributeName = attributeName;
     _this._columnName = columnName;
     _this._accessor = accessor || _this.defaultAccessor;
+    _this._sql = !!sql;
+    _this._index = index;
 
     if (join) {
       _this._join = new _join2.default(join);
@@ -113,6 +118,11 @@ var SimpleColumn = function (_Column) {
     key: 'attributeName',
     get: function get() {
       return this._attributeName;
+    }
+  }, {
+    key: 'isSQL',
+    get: function get() {
+      return this._sql;
     }
   }]);
 

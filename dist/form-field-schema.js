@@ -26,13 +26,15 @@ var FormFieldSchema = function () {
     this.fullSchema = fullSchema;
   }
 
-  FormFieldSchema.prototype.addSystemColumn = function addSystemColumn(label, attribute, columnName, type, accessor, join) {
+  FormFieldSchema.prototype.addSystemColumn = function addSystemColumn(label, attribute, columnName, type, accessor, join, sql) {
     var column = new _simpleColumn2.default({ name: label,
       attributeName: attribute,
       columnName: columnName,
       type: type,
       accessor: accessor,
-      join: join });
+      join: join,
+      sql: sql,
+      index: this._columns.length });
     this._columns.push(column);
     this._columnsByKey[column.id] = column;
 
@@ -53,7 +55,7 @@ var FormFieldSchema = function () {
   };
 
   FormFieldSchema.prototype.addRawElementColumn = function addRawElementColumn(element, rawColumn, id, type, part, columnKey) {
-    var columnObject = new _elementColumn2.default({ element: element, rawColumn: rawColumn, type: type, id: id, part: part });
+    var columnObject = new _elementColumn2.default({ element: element, rawColumn: rawColumn, type: type, id: id, part: part, index: this._columns.length });
 
     this._columns.push(columnObject);
     this._columnsByKey[columnKey] = columnObject;
@@ -119,6 +121,13 @@ var FormFieldSchema = function () {
   };
 
   _createClass(FormFieldSchema, [{
+    key: 'geometryColumns',
+    get: function get() {
+      return this._columns.filter(function (c) {
+        return c.isGeometry;
+      });
+    }
+  }, {
     key: 'columns',
     get: function get() {
       return this._columns;
