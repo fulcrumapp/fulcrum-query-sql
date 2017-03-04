@@ -23,6 +23,9 @@ export default class SimpleColumn extends Column {
   }
 
   get id() {
+    if (this._sql) {
+      return this._index + ':' + this._columnName;
+    }
     return this._columnName;
   }
 

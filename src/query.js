@@ -123,6 +123,28 @@ export default class Query {
     return joins;
   }
 
+  get referencedColumns() {
+    const columns = [];
+
+    if (this.projectFilter.hasFilter) {
+      columns.push(this.projectFilter.column);
+    }
+
+    if (this.assignmentFilter.hasFilter) {
+      columns.push(this.assignmentFilter.column);
+    }
+
+    columns.push.apply(columns, this.columnSettings.columns.filter((o) => {
+      return o.hasFilter;
+    }).map(o => o.column));
+
+    columns.push.apply(columns, this.filter.allExpressions.filter((o) => {
+      return o.isValid;
+    }).map(o => o.column));
+
+    return columns;
+  }
+
   get joinColumnsWithSorting() {
     const joins = this.joinColumns;
 
@@ -375,7 +397,7 @@ export default class Query {
 
       if (this.ast) {
         return [
-          SortBy(ColumnRef(sort.column.columnName, sort.column.source), direction, 0)
+          SortBy(AConst(IntegerValue(sort.column.index + 1)), direction, 0)
         ];
       }
 
@@ -456,13 +478,35 @@ export default class Query {
       // exact same expression as the first geometry column. This is needed so that queries like
       // SELECT geom, * FROM table will work when we need to reference the geom column from an outer
       // query.
-      const geometryResTarget = this.ast.SelectStmt.targetList[geometryColumns[0].index];
+      const geometryColumn = geometryColumns[0];
 
-      const geometryResTargetCopy = JSON.parse(JSON.stringify(geometryResTarget));
+      let geometryResTarget = this.findResTarget(geometryColumn);
 
-      geometryResTargetCopy.ResTarget.name = '__geometry';
+      if (geometryResTarget) {
+        geometryResTarget = JSON.parse(JSON.stringify(geometryResTarget));
+        geometryResTarget.ResTarget.name = '__geometry';
+      } else {
+        geometryResTarget = ResTarget(ColumnRef(geometryColumn.columnName, geometryColumn.source), '__geometry');
+      }
 
-      this.ast.SelectStmt.targetList.push(geometryResTargetCopy);
+      this.ast.SelectStmt.targetList.push(geometryResTarget);
     }
+  }
+
+  findResTarget(column) {
+    // the simple case is when there is no * in the query
+    if (this.ast.SelectStmt.targetList.length === this.schema.columns.length) {
+      return this.ast.SelectStmt.targetList[column.index];
+    }
+
+    const exactMatch = this.ast.SelectStmt.targetList.find((target) => {
+      return target.name === column.name;
+    });
+
+    if (exactMatch) {
+      return exactMatch;
+    }
+
+    return null;
   }
 }

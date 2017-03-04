@@ -30,7 +30,8 @@ import { OperatorType, calculateDateRange } from '../operator';
 import moment from 'moment-timezone';
 
 const columnRef = (column) => {
-  return ColumnRef(column.columnName, column.source);
+  return column.isSQL ? ColumnRef(column.id, column.source)
+                      : ColumnRef(column.columnName, column.source);
 };
 
 export default class Converter {
@@ -153,14 +154,16 @@ export default class Converter {
   }
 
   toDistinctValuesAST(query, options = {}) {
-    const targetList = options.column.isArray ? [ ResTarget(FuncCall('unnest', [ columnRef(options.column) ]), 'value') ]
-                                              : [ ResTarget(columnRef(options.column), 'value') ];
+    const valueColumn = query.ast ? ColumnRef(options.column.id) : columnRef(options.column);
+
+    const targetList = options.column.isArray ? [ ResTarget(FuncCall('unnest', [ valueColumn ]), 'value') ]
+                                              : [ ResTarget(valueColumn, 'value') ];
 
     targetList.push(ResTarget(FuncCall('count', [ AConst(IntegerValue(1)) ]), 'count'));
 
     const joins = options.column.join ? [ options.column.join ] : null;
 
-    const fromClause = this.fromClause(query, joins);
+    const fromClause = this.fromClause(query, joins, [ options.column ]);
 
     // const whereClause = null; // options.all ? null : this.whereClause(query);
     // TODO(zhm) need to pass the bbox and search here?
@@ -272,11 +275,36 @@ export default class Converter {
     return list;
   }
 
-  fromClause(query, leftJoins = []) {
+  fromClause(query, leftJoins = [], exactColumns) {
     let baseQuery = null;
 
     if (query.ast) {
-      return [ RangeSubselect(query.ast, Alias('records')) ];
+      let queryAST = query.ast;
+
+      const referencedColumns = query.referencedColumns.concat(exactColumns || []);
+
+      // If there's an `exactColumn`, pick it out specifically with a guaranteed unique alias so it can be
+      // referenced with certainty in outer queries. The following is an oversimplified example of the problem:
+      //
+      // if `id` is part of the table and needs to be references in the outer query, it must be called out specifically:
+      //
+      // INVALID:
+      //   SELECT * FROM(SELECT *, *, * FROM table) WHERE id = ...
+      //
+      // VALID:
+      //   SELECT * FROM(SELECT *, *, *, id AS __value FROM table) WHERE __value = ...
+      //
+      // Given arbitrary subqueries, we must be able to reference columns in them exactly even when there are duplicates.
+      //
+      if (referencedColumns.length) {
+        queryAST = JSON.parse(JSON.stringify(queryAST));
+
+        for (const column of referencedColumns) {
+          queryAST.SelectStmt.targetList.push(ResTarget(ColumnRef(column.columnName, column.source), column.id));
+        }
+      }
+
+      return [ RangeSubselect(queryAST, Alias('records')) ];
     }
 
     baseQuery = RangeVar(query.form.id + '/_full', Alias('records'));
