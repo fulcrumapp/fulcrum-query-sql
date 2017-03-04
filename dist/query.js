@@ -324,6 +324,10 @@ var Query = function () {
   };
 
   Query.prototype.setup = function setup() {
+    if (!this.ast) {
+      return;
+    }
+
     var geometryColumns = this.schema.geometryColumns;
 
     if (geometryColumns.length) {
