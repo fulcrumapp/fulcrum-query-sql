@@ -19,7 +19,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var columnRef = function columnRef(column) {
-  return (0, _helpers.ColumnRef)(column.columnName, column.source);
+  return column.isSQL ? (0, _helpers.ColumnRef)(column.id, column.source) : (0, _helpers.ColumnRef)(column.columnName, column.source);
 };
 
 var Converter = function () {
@@ -393,13 +393,15 @@ var Converter = function () {
   Converter.prototype.toDistinctValuesAST = function toDistinctValuesAST(query) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    var targetList = options.column.isArray ? [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('unnest', [columnRef(options.column)]), 'value')] : [(0, _helpers.ResTarget)(columnRef(options.column), 'value')];
+    var valueColumn = query.ast ? (0, _helpers.ColumnRef)(options.column.id) : columnRef(options.column);
+
+    var targetList = options.column.isArray ? [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('unnest', [valueColumn]), 'value')] : [(0, _helpers.ResTarget)(valueColumn, 'value')];
 
     targetList.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))]), 'count'));
 
     var joins = options.column.join ? [options.column.join] : null;
 
-    var fromClause = this.fromClause(query, joins);
+    var fromClause = this.fromClause(query, joins, [options.column]);
 
     // const whereClause = null; // options.all ? null : this.whereClause(query);
     // TODO(zhm) need to pass the bbox and search here?
@@ -503,11 +505,50 @@ var Converter = function () {
 
   Converter.prototype.fromClause = function fromClause(query) {
     var leftJoins = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var exactColumns = arguments[2];
 
     var baseQuery = null;
 
     if (query.ast) {
-      return [(0, _helpers.RangeSubselect)(query.ast, (0, _helpers.Alias)('records'))];
+      var queryAST = query.ast;
+
+      var referencedColumns = query.referencedColumns.concat(exactColumns || []);
+
+      // If there's an `exactColumn`, pick it out specifically with a guaranteed unique alias so it can be
+      // referenced with certainty in outer queries. The following is an oversimplified example of the problem:
+      //
+      // if `id` is part of the table and needs to be references in the outer query, it must be called out specifically:
+      //
+      // INVALID:
+      //   SELECT * FROM(SELECT *, *, * FROM table) WHERE id = ...
+      //
+      // VALID:
+      //   SELECT * FROM(SELECT *, *, *, id AS __value FROM table) WHERE __value = ...
+      //
+      // Given arbitrary subqueries, we must be able to reference columns in them exactly even when there are duplicates.
+      //
+      if (referencedColumns.length) {
+        queryAST = JSON.parse(JSON.stringify(queryAST));
+
+        for (var _iterator = referencedColumns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+          var _ref5;
+
+          if (_isArray) {
+            if (_i >= _iterator.length) break;
+            _ref5 = _iterator[_i++];
+          } else {
+            _i = _iterator.next();
+            if (_i.done) break;
+            _ref5 = _i.value;
+          }
+
+          var column = _ref5;
+
+          queryAST.SelectStmt.targetList.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)(column.columnName, column.source), column.id));
+        }
+      }
+
+      return [(0, _helpers.RangeSubselect)(queryAST, (0, _helpers.Alias)('records'))];
     }
 
     baseQuery = (0, _helpers.RangeVar)(query.form.id + '/_full', (0, _helpers.Alias)('records'));
@@ -515,19 +556,19 @@ var Converter = function () {
     var visitedTables = {};
 
     if (leftJoins) {
-      for (var _iterator = leftJoins, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-        var _ref5;
+      for (var _iterator2 = leftJoins, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
+        var _ref6;
 
-        if (_isArray) {
-          if (_i >= _iterator.length) break;
-          _ref5 = _iterator[_i++];
+        if (_isArray2) {
+          if (_i2 >= _iterator2.length) break;
+          _ref6 = _iterator2[_i2++];
         } else {
-          _i = _iterator.next();
-          if (_i.done) break;
-          _ref5 = _i.value;
+          _i2 = _iterator2.next();
+          if (_i2.done) break;
+          _ref6 = _i2.value;
         }
 
-        var join = _ref5;
+        var join = _ref6;
 
         if (!visitedTables[join.alias]) {
           visitedTables[join.alias] = join;
@@ -561,19 +602,19 @@ var Converter = function () {
     systemParts.push(this.createExpressionForColumnFilter(query.projectFilter, options));
     systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
 
-    for (var _iterator2 = query.columnSettings.columns, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
-      var _ref6;
+    for (var _iterator3 = query.columnSettings.columns, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator]();;) {
+      var _ref7;
 
-      if (_isArray2) {
-        if (_i2 >= _iterator2.length) break;
-        _ref6 = _iterator2[_i2++];
+      if (_isArray3) {
+        if (_i3 >= _iterator3.length) break;
+        _ref7 = _iterator3[_i3++];
       } else {
-        _i2 = _iterator2.next();
-        if (_i2.done) break;
-        _ref6 = _i2.value;
+        _i3 = _iterator3.next();
+        if (_i3.done) break;
+        _ref7 = _i3.value;
       }
 
-      var item = _ref6;
+      var item = _ref7;
 
       if (item.hasFilter) {
         var expression = this.createExpressionForColumnFilter(item.filter, options);

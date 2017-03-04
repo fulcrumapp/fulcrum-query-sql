@@ -335,14 +335,36 @@ var Query = function () {
       // exact same expression as the first geometry column. This is needed so that queries like
       // SELECT geom, * FROM table will work when we need to reference the geom column from an outer
       // query.
-      var geometryResTarget = this.ast.SelectStmt.targetList[geometryColumns[0].index];
+      var geometryColumn = geometryColumns[0];
 
-      var geometryResTargetCopy = JSON.parse(JSON.stringify(geometryResTarget));
+      var geometryResTarget = this.findResTarget(geometryColumn);
 
-      geometryResTargetCopy.ResTarget.name = '__geometry';
+      if (geometryResTarget) {
+        geometryResTarget = JSON.parse(JSON.stringify(geometryResTarget));
+        geometryResTarget.ResTarget.name = '__geometry';
+      } else {
+        geometryResTarget = (0, _helpers.ResTarget)((0, _helpers.ColumnRef)(geometryColumn.columnName, geometryColumn.source), '__geometry');
+      }
 
-      this.ast.SelectStmt.targetList.push(geometryResTargetCopy);
+      this.ast.SelectStmt.targetList.push(geometryResTarget);
     }
+  };
+
+  Query.prototype.findResTarget = function findResTarget(column) {
+    // the simple case is when there is no * in the query
+    if (this.ast.SelectStmt.targetList.length === this.schema.columns.length) {
+      return this.ast.SelectStmt.targetList[column.index];
+    }
+
+    var exactMatch = this.ast.SelectStmt.targetList.find(function (target) {
+      return target.name === column.name;
+    });
+
+    if (exactMatch) {
+      return exactMatch;
+    }
+
+    return null;
   };
 
   _createClass(Query, [{
@@ -442,6 +464,33 @@ var Query = function () {
       return joins;
     }
   }, {
+    key: 'referencedColumns',
+    get: function get() {
+      var columns = [];
+
+      if (this.projectFilter.hasFilter) {
+        columns.push(this.projectFilter.column);
+      }
+
+      if (this.assignmentFilter.hasFilter) {
+        columns.push(this.assignmentFilter.column);
+      }
+
+      columns.push.apply(columns, this.columnSettings.columns.filter(function (o) {
+        return o.hasFilter;
+      }).map(function (o) {
+        return o.column;
+      }));
+
+      columns.push.apply(columns, this.filter.allExpressions.filter(function (o) {
+        return o.isValid;
+      }).map(function (o) {
+        return o.column;
+      }));
+
+      return columns;
+    }
+  }, {
     key: 'joinColumnsWithSorting',
     get: function get() {
       var joins = this.joinColumns;
@@ -495,7 +544,7 @@ var Query = function () {
         var direction = sort.direction === 'desc' ? 2 : 1;
 
         if (_this.ast) {
-          return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)(sort.column.columnName, sort.column.source), direction, 0)];
+          return [(0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(sort.column.index + 1)), direction, 0)];
         }
 
         return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)(sort.column.columnName, sort.column.source), direction, 0), (0, _helpers.SortBy)((0, _helpers.ColumnRef)('_record_id'), direction, 0)];
