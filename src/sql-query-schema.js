@@ -2,7 +2,7 @@ import FormFieldSchema from './form-field-schema';
 
 export default class SQLQuerySchema extends FormFieldSchema {
   constructor(rawColumns, tableName) {
-    super();
+    super({});
 
     this._tableName = tableName || 'query';
 
@@ -21,14 +21,7 @@ export default class SQLQuerySchema extends FormFieldSchema {
 
   setupColumns() {
     for (const column of this._rawColumns) {
-      const attrs = {
-        name: column.name,
-        attributeName: column.name,
-        columnName: column.name,
-        type: column.type
-      };
-
-      this.addSystemColumn(attrs);
+      this.addSystemColumn(column.name, column.name, column.name, column.type, null, null, true);
     }
   }
 

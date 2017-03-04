@@ -35,7 +35,7 @@ const columnRef = (column) => {
 
 export default class Converter {
   toAST(query, {sort, pageSize, pageIndex, boundingBox, searchFilter}) {
-    const targetList = this.targetList(query, sort);
+    const targetList = this.targetList(query, sort, boundingBox);
 
     const joins = query.joinColumnsWithSorting.map(o => o.join);
 
@@ -65,13 +65,23 @@ export default class Converter {
   }
 
   toTileAST(query, {searchFilter}) {
-    const targetList = [
-      ResTarget(ColumnRef('_record_id')),
-      ResTarget(FuncCall('st_x', [ ColumnRef('_geometry') ]), 'x'),
-      ResTarget(FuncCall('st_y', [ ColumnRef('_geometry') ]), 'y'),
-      ResTarget(ColumnRef('_status')),
-      ResTarget(TypeCast(TypeName('text'), AConst(StringValue(query.form.id))), 'form_id')
-    ];
+    let targetList = null;
+
+    if (query.ast) {
+      const sort = [ SortBy(AConst(IntegerValue(1)), 0, 0) ];
+
+      targetList = [
+        ResTarget(FuncCall('row_number', null, WindowDef(sort, 530)), '__id'),
+        ResTarget(ColumnRef('__geometry'))
+      ];
+    } else {
+      targetList = [
+        ResTarget(ColumnRef('_record_id'), 'id'),
+        ResTarget(ColumnRef('_geometry'), 'geometry'),
+        ResTarget(ColumnRef('_status'), 'status'),
+        ResTarget(TypeCast(TypeName('text'), AConst(StringValue(query.form.id))), 'form_id')
+      ];
+    }
 
     const fromClause = this.fromClause(query);
 
@@ -183,7 +193,14 @@ export default class Converter {
       recordsTargetList = [ ResTarget(TypeCast(TypeName([ StringValue('pg_catalog'), StringValue('float8') ]), ColumnRef(columnName)), 'value') ];
     }
 
-    const recordsFromClause = [ RangeVar(query.form.id + '/_full') ];
+    let recordsFromClause = null;
+
+    if (query.ast) {
+      recordsFromClause = [ RangeSubselect(query.ast, Alias('records')) ];
+    } else {
+      recordsFromClause = [ RangeVar(query.form.id + '/_full') ];
+    }
+
     const recordsSelect = SelectStmt({targetList: recordsTargetList, fromClause: recordsFromClause});
     const recordsExpr = CommonTableExpr('__records', recordsSelect);
 
@@ -199,6 +216,16 @@ export default class Converter {
     const statsExpr = CommonTableExpr('__stats', statsSelect);
 
     return WithClause([ recordsExpr, statsExpr ]);
+  }
+
+  toSchemaAST(query) {
+    // wrap the query in a subquery with 1=0
+
+    const targetList = [ ResTarget(ColumnRef(AStar())) ];
+    const fromClause = [ RangeSubselect(query, Alias('wrapped')) ];
+    const whereClause = AExpr(0, '=', AConst(IntegerValue(0)), AConst(IntegerValue(1)));
+
+    return SelectStmt({targetList, fromClause, whereClause});
   }
 
   limitOffset(pageSize, pageIndex) {
@@ -217,7 +244,7 @@ export default class Converter {
     return null;
   }
 
-  targetList(query, sort) {
+  targetList(query, sort, boundingBox) {
     const list = [
       ResTarget(ColumnRef(AStar()))
     ];
@@ -246,7 +273,13 @@ export default class Converter {
   }
 
   fromClause(query, leftJoins = []) {
-    let baseQuery = RangeVar(query.form.id + '/_full', Alias('records'));
+    let baseQuery = null;
+
+    if (query.ast) {
+      return [ RangeSubselect(query.ast, Alias('records')) ];
+    }
+
+    baseQuery = RangeVar(query.form.id + '/_full', Alias('records'));
 
     const visitedTables = {};
 
@@ -270,11 +303,11 @@ export default class Converter {
     const filterNode = this.nodeForCondition(query.filter, options);
 
     if (boundingBox) {
-      systemParts.push(this.boundingBoxFilter(boundingBox));
+      systemParts.push(this.boundingBoxFilter(query, boundingBox));
     }
 
     if (search && search.trim().length) {
-      systemParts.push(this.searchFilter(search));
+      systemParts.push(this.searchFilter(query, search));
     }
 
     systemParts.push(this.nodeForExpression(query.dateFilter, options));
@@ -292,8 +325,13 @@ export default class Converter {
       }
 
       if (item.search) {
-        systemParts.push(AExpr(8, '~~*', columnRef(item.column),
-                                         AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
+        if (item.column.isArray) {
+          systemParts.push(AExpr(8, '~~*', TypeCast(TypeName('text'), columnRef(item.column)),
+                                           AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
+        } else {
+          systemParts.push(AExpr(8, '~~*', columnRef(item.column),
+                                           AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
+        }
       }
 
       if (item.expression.isValid) {
@@ -364,7 +402,7 @@ export default class Converter {
     return expression;
   }
 
-  boundingBoxFilter(boundingBox) {
+  boundingBoxFilter(query, boundingBox) {
     const args = [
       AConst(FloatValue(boundingBox[0])),
       AConst(FloatValue(boundingBox[1])),
@@ -375,14 +413,16 @@ export default class Converter {
 
     const rhs = FuncCall('st_makeenvelope', args);
 
-    return AExpr(0, '&&', ColumnRef('_geometry'), rhs);
+    const columnName = query.ast ? '__geometry' : '_geometry';
+
+    return AExpr(0, '&&', ColumnRef(columnName), rhs);
   }
 
   escapeLikePercent(value) {
-    return value.replace(/\%/g, '\\%');
+    return value.replace(/\%/g, '\\%').replace(/_/g, '\\_%');
   }
 
-  searchFilter(search) {
+  searchFilter(query, search) {
     /*
        Search takes the general form:
 
@@ -404,6 +444,12 @@ export default class Converter {
     */
 
     search = search.trim();
+
+    // if it's a fully custom SQL statement, use a simpler form with no index
+    if (query.ast) {
+      return AExpr(8, '~~*', TypeCast(TypeName('text'), ColumnRef('records')),
+                             AConst(StringValue('%' + this.escapeLikePercent(search) + '%')));
+    }
 
     const toTsQuery = (dictionary, term) => {
       const args = [ AConst(StringValue(dictionary)), AConst(StringValue("'" + term + "':*")) ];

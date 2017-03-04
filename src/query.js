@@ -24,6 +24,7 @@ import { ResTarget,
 
 export default class Query {
   constructor(attrs) {
+    this._ast = attrs.ast;
     this._form = attrs.form;
     this._outputs = [];
     this._schema = attrs.schema;
@@ -37,6 +38,12 @@ export default class Query {
     this._assignmentFilter = new ColumnFilter({...attrs.assignment_filter, field: 'assigned_to.name'}, this._schema);
     this._options = new QueryOptions(attrs.options || {});
     this._columnSettings = new ColumnSettings(this._schema, attrs.columns);
+
+    this.setup();
+  }
+
+  get ast() {
+    return this._ast;
   }
 
   get form() {
@@ -218,6 +225,11 @@ export default class Query {
     });
   }
 
+  toSchemaSQL(ast, options) {
+    const wrapped = new Converter().toSchemaAST(ast, options);
+    return new Deparse().deparse(wrapped);
+  }
+
   toDistinctValuesSQL(options) {
     return new Deparse().deparse(this.toDistinctValuesAST(options));
   }
@@ -247,7 +259,7 @@ export default class Query {
   }
 
   targetList() {
-    if (this.schema.isSQL) {
+    if (this.ast) {
       return [ ResTarget(ColumnRef(AStar())) ];
     }
 
@@ -325,6 +337,10 @@ export default class Query {
 
     let baseQuery = RangeSubselect(ast, Alias('records'));
 
+    if (this.ast) {
+      return [ baseQuery ];
+    }
+
     // The "subJoinColumns" are joins that need to happen in the inner sub-select from Converter.
     // We don't need to join them in the outer part.
     const subJoinColumns = this.joinColumnsWithSorting;
@@ -357,6 +373,12 @@ export default class Query {
     const sorts = this.sorting.expressions.map((sort) => {
       const direction = sort.direction === 'desc' ? 2 : 1;
 
+      if (this.ast) {
+        return [
+          SortBy(ColumnRef(sort.column.columnName, sort.column.source), direction, 0)
+        ];
+      }
+
       return [
         SortBy(ColumnRef(sort.column.columnName, sort.column.source), direction, 0),
         SortBy(ColumnRef('_record_id'), direction, 0)
@@ -367,6 +389,10 @@ export default class Query {
   }
 
   get systemSortClause() {
+    if (this.ast) {
+      return [ SortBy(AConst(IntegerValue(1)), 2, 0) ];
+    }
+
     return [ SortBy(ColumnRef('_server_updated_at'), 2, 0) ];
   }
 
@@ -416,5 +442,23 @@ export default class Query {
     }
 
     return parts.join(', ');
+  }
+
+  setup() {
+    const geometryColumns = this.schema.geometryColumns;
+
+    if (geometryColumns.length) {
+      // For custom SQL, we need to add a column called __geometry at the end that evaluates to the
+      // exact same expression as the first geometry column. This is needed so that queries like
+      // SELECT geom, * FROM table will work when we need to reference the geom column from an outer
+      // query.
+      const geometryResTarget = this.ast.SelectStmt.targetList[geometryColumns[0].index];
+
+      const geometryResTargetCopy = JSON.parse(JSON.stringify(geometryResTarget));
+
+      geometryResTargetCopy.ResTarget.name = '__geometry';
+
+      this.ast.SelectStmt.targetList.push(geometryResTargetCopy);
+    }
   }
 }

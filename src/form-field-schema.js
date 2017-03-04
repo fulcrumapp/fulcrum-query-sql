@@ -6,13 +6,15 @@ export default class FormFieldSchema {
     this.fullSchema = fullSchema;
   }
 
-  addSystemColumn(label, attribute, columnName, type, accessor, join) {
+  addSystemColumn(label, attribute, columnName, type, accessor, join, sql) {
     const column = new SimpleColumn({name: label,
                                      attributeName: attribute,
                                      columnName: columnName,
                                      type: type,
                                      accessor: accessor,
-                                     join});
+                                     join,
+                                     sql,
+                                     index: this._columns.length});
     this._columns.push(column);
     this._columnsByKey[column.id] = column;
 
@@ -33,7 +35,7 @@ export default class FormFieldSchema {
   }
 
   addRawElementColumn(element, rawColumn, id, type, part, columnKey) {
-    const columnObject = new ElementColumn({element, rawColumn, type, id, part});
+    const columnObject = new ElementColumn({element, rawColumn, type, id, part, index: this._columns.length});
 
     this._columns.push(columnObject);
     this._columnsByKey[columnKey] = columnObject;
@@ -81,6 +83,10 @@ export default class FormFieldSchema {
     }
 
     return this._columnsByKey[fieldKey];
+  }
+
+  get geometryColumns() {
+    return this._columns.filter(c => c.isGeometry);
   }
 
   get columns() {

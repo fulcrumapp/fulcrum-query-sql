@@ -2,7 +2,7 @@ import Column from './column';
 import Join from './join';
 
 export default class SimpleColumn extends Column {
-  constructor({name, attributeName, columnName, type = null, accessor = null, join = null}) {
+  constructor({name, attributeName, columnName, type = null, accessor = null, join = null, sql = null, index}) {
     super();
 
     this._type = type || 'string';
@@ -10,6 +10,8 @@ export default class SimpleColumn extends Column {
     this._attributeName = attributeName;
     this._columnName = columnName;
     this._accessor = accessor || this.defaultAccessor;
+    this._sql = !!sql;
+    this._index = index;
 
     if (join) {
       this._join = new Join(join);
@@ -66,5 +68,9 @@ export default class SimpleColumn extends Column {
 
   exportValue(object, options = {}) {
     return this._accessor(object, options);
+  }
+
+  get isSQL() {
+    return this._sql;
   }
 }

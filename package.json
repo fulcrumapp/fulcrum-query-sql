@@ -1,6 +1,6 @@
 {
   "name": "fulcrum-query-sql",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Fulcrum Query SQL Utilities",
   "homepage": "http://github.com/fulcrumapp/fulcrum-query-sql",
   "main": "dist/index.js",

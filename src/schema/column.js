@@ -19,6 +19,10 @@ export default class Column {
     return this.type === 'integer';
   }
 
+  get isGeometry() {
+    return this.type === 'geometry';
+  }
+
   get supportsRanges() {
     return this.isNumber || this.isDate;
   }
@@ -31,5 +35,9 @@ export default class Column {
     return {
       id: this.id
     };
+  }
+
+  get index() {
+    return this._index;
   }
 }

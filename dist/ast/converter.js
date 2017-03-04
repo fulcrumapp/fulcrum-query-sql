@@ -288,7 +288,7 @@ var Converter = function () {
         boundingBox = _ref.boundingBox,
         searchFilter = _ref.searchFilter;
 
-    var targetList = this.targetList(query, sort);
+    var targetList = this.targetList(query, sort, boundingBox);
 
     var joins = query.joinColumnsWithSorting.map(function (o) {
       return o.join;
