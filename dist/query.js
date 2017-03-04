@@ -337,34 +337,8 @@ var Query = function () {
       // query.
       var geometryColumn = geometryColumns[0];
 
-      var geometryResTarget = this.findResTarget(geometryColumn);
-
-      if (geometryResTarget) {
-        geometryResTarget = JSON.parse(JSON.stringify(geometryResTarget));
-        geometryResTarget.ResTarget.name = '__geometry';
-      } else {
-        geometryResTarget = (0, _helpers.ResTarget)((0, _helpers.ColumnRef)(geometryColumn.columnName, geometryColumn.source), '__geometry');
-      }
-
-      this.ast.SelectStmt.targetList.push(geometryResTarget);
+      _converter2.default.duplicateResTargetWithExactName(this, this.ast.SelectStmt.targetList, geometryColumn, '__geometry');
     }
-  };
-
-  Query.prototype.findResTarget = function findResTarget(column) {
-    // the simple case is when there is no * in the query
-    if (this.ast.SelectStmt.targetList.length === this.schema.columns.length) {
-      return this.ast.SelectStmt.targetList[column.index];
-    }
-
-    var exactMatch = this.ast.SelectStmt.targetList.find(function (target) {
-      return target.name === column.name;
-    });
-
-    if (exactMatch) {
-      return exactMatch;
-    }
-
-    return null;
   };
 
   _createClass(Query, [{
@@ -488,6 +462,14 @@ var Query = function () {
         return o.column;
       }));
 
+      if (this.sorting.hasSort) {
+        columns.push.apply(columns, this.sorting.expressions.filter(function (o) {
+          return o.isValid;
+        }).map(function (o) {
+          return o.column;
+        }));
+      }
+
       return columns;
     }
   }, {
@@ -544,7 +526,7 @@ var Query = function () {
         var direction = sort.direction === 'desc' ? 2 : 1;
 
         if (_this.ast) {
-          return [(0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(sort.column.index + 1)), direction, 0)];
+          return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)(sort.column.id, sort.column.source), direction, 0)];
         }
 
         return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)(sort.column.columnName, sort.column.source), direction, 0), (0, _helpers.SortBy)((0, _helpers.ColumnRef)('_record_id'), direction, 0)];
@@ -564,7 +546,7 @@ var Query = function () {
   }, {
     key: 'outerSortClause',
     get: function get() {
-      return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)('_row_number'), 1, 0)];
+      return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)('__row_number'), 1, 0)];
     }
   }]);
 

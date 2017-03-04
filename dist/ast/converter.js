@@ -498,7 +498,7 @@ var Converter = function () {
       list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'project'), 'project.name'));
     }
 
-    list.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, (0, _helpers.WindowDef)(sort, 530)), '_row_number'));
+    list.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, (0, _helpers.WindowDef)(sort, 530)), '__row_number'));
 
     return list;
   };
@@ -526,7 +526,8 @@ var Converter = function () {
       //   SELECT * FROM(SELECT *, *, *, id AS __value FROM table) WHERE __value = ...
       //
       // Given arbitrary subqueries, we must be able to reference columns in them exactly even when there are duplicates.
-      //
+      // We can't assume they're all simple ColumnRef's either. Some ResTarget's might be entire graphs of expressions which
+      // needs to be duplicated to ensure uniqueness.
       if (referencedColumns.length) {
         queryAST = JSON.parse(JSON.stringify(queryAST));
 
@@ -544,7 +545,7 @@ var Converter = function () {
 
           var column = _ref5;
 
-          queryAST.SelectStmt.targetList.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)(column.columnName, column.source), column.id));
+          Converter.duplicateResTargetWithExactName(query, queryAST.SelectStmt.targetList, column, column.id);
         }
       }
 
@@ -656,6 +657,53 @@ var Converter = function () {
 
   Converter.leftJoinClause = function leftJoinClause(baseQuery, table, alias, sourceColumn, tableColumn) {
     return (0, _helpers.JoinExpr)(1, baseQuery, (0, _helpers.RangeVar)(table, (0, _helpers.Alias)(alias)), (0, _helpers.AExpr)(0, '=', (0, _helpers.ColumnRef)(sourceColumn, 'records'), (0, _helpers.ColumnRef)(tableColumn, alias)));
+  };
+
+  Converter.duplicateResTargetWithExactName = function duplicateResTargetWithExactName(query, targetList, column, exactName) {
+    var resTarget = Converter.findResTarget(query, column);
+
+    // If a column is referenced more than once don't add it again
+    for (var _iterator4 = targetList, _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : _iterator4[Symbol.iterator]();;) {
+      var _ref8;
+
+      if (_isArray4) {
+        if (_i4 >= _iterator4.length) break;
+        _ref8 = _iterator4[_i4++];
+      } else {
+        _i4 = _iterator4.next();
+        if (_i4.done) break;
+        _ref8 = _i4.value;
+      }
+
+      var existing = _ref8;
+
+      if (existing.ResTarget.name === exactName) {
+        return;
+      }
+    }
+
+    // If we found a matching restarget, copy the entire node and give it a new name
+    if (resTarget) {
+      resTarget = JSON.parse(JSON.stringify(resTarget));
+      resTarget.ResTarget.name = exactName;
+    } else {
+      resTarget = (0, _helpers.ResTarget)((0, _helpers.ColumnRef)(column.columnName, column.source), exactName);
+    }
+
+    targetList.push(resTarget);
+  };
+
+  Converter.findResTarget = function findResTarget(query, column) {
+    // the simple case is when there is no * in the query
+    if (query.ast.SelectStmt.targetList.length === query.schema.columns.length) {
+      return query.ast.SelectStmt.targetList[column.index];
+    }
+
+    // Find the ResTarget node by name, or else return null, which means the column
+    // must be coming from a * node and we can just use a simple ResTarget + ColumnRef
+    return query.ast.SelectStmt.targetList.find(function (target) {
+      return target.ResTarget.name === column.name;
+    });
   };
 
   Converter.prototype.createExpressionForColumnFilter = function createExpressionForColumnFilter(filter, options) {

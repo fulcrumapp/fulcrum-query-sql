@@ -80,7 +80,8 @@ var SimpleColumn = function (_Column) {
     key: 'id',
     get: function get() {
       if (this._sql) {
-        return this._index + ':' + this._columnName;
+        // The double underscore is the marker for an internal column id
+        return '__' + this._index + ':' + this._columnName;
       }
       return this._columnName;
     }
