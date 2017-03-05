@@ -253,9 +253,12 @@ export default class Query {
     });
   }
 
-  toSchemaSQL(ast, options) {
-    const wrapped = new Converter().toSchemaAST(ast, options);
-    return new Deparse().deparse(wrapped);
+  deparse(ast) {
+    return new Deparse().deparse(ast);
+  }
+
+  toSchemaAST(ast, options) {
+    return new Converter().toSchemaAST(ast, options);
   }
 
   toDistinctValuesSQL(options) {

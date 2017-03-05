@@ -221,12 +221,13 @@ export default class Converter {
     return WithClause([ recordsExpr, statsExpr ]);
   }
 
-  toSchemaAST(query) {
+  toSchemaAST(query, {schemaOnly} = {}) {
     // wrap the query in a subquery with 1=0
 
     const targetList = [ ResTarget(ColumnRef(AStar())) ];
     const fromClause = [ RangeSubselect(query, Alias('wrapped')) ];
-    const whereClause = AExpr(0, '=', AConst(IntegerValue(0)), AConst(IntegerValue(1)));
+    const whereClause = schemaOnly ? AExpr(0, '=', AConst(IntegerValue(0)), AConst(IntegerValue(1)))
+                                   : null;
 
     return SelectStmt({targetList, fromClause, whereClause});
   }
@@ -413,8 +414,25 @@ export default class Converter {
   }
 
   static findResTarget(query, column) {
+    // UNION's don't have targetList's
+    if (!query.ast.SelectStmt.targetList) {
+      return null;
+    }
+
+    // look for any A_Star nodes, a SELECT * modifies how we process the res targets. If there's
+    // an A_Star node in the targetList, it means that we can't just get the column by index because
+    // the * might expand to columns that cause the indexes to be different.
+    const hasStar = query.ast.SelectStmt.targetList.find((target) => {
+      return target.ResTarget &&
+             target.ResTarget.val &&
+             target.ResTarget.val.ColumnRef &&
+             target.ResTarget.val.ColumnRef.fields &&
+             target.ResTarget.val.ColumnRef.fields[0] &&
+             target.ResTarget.val.ColumnRef.fields[0].A_Star;
+    });
+
     // the simple case is when there is no * in the query
-    if (query.ast.SelectStmt.targetList.length === query.schema.columns.length) {
+    if (!hasStar && query.ast.SelectStmt.targetList.length === query.schema.columns.length) {
       return query.ast.SelectStmt.targetList[column.index];
     }
 

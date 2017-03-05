@@ -571,6 +571,17 @@ export function availableOperatorsForColumn(column) {
           element.isSignatureElement) {
       operators.push.apply(operators, MEDIA_OPERATORS);
     }
+  } else if (column.isSQL) {
+    // custom types
+    if (column.isNumeric) {
+      operators.push.apply(operators, NUMERIC_OPERATORS);
+    } else if (column.isArray) {
+      operators.push.apply(operators, ARRAY_OPERATORS);
+    } else if (column.isDate) {
+      operators.push.apply(operators, DATE_OPERATORS);
+    } else {
+      operators.push.apply(operators, TEXTUAL_OPERATORS);
+    }
   }
 
   return operators;
