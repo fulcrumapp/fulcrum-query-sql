@@ -143,9 +143,12 @@ var Query = function () {
     });
   };
 
-  Query.prototype.toSchemaSQL = function toSchemaSQL(ast, options) {
-    var wrapped = new _converter2.default().toSchemaAST(ast, options);
-    return new _pgQueryDeparser2.default().deparse(wrapped);
+  Query.prototype.deparse = function deparse(ast) {
+    return new _pgQueryDeparser2.default().deparse(ast);
+  };
+
+  Query.prototype.toSchemaAST = function toSchemaAST(ast, options) {
+    return new _converter2.default().toSchemaAST(ast, options);
   };
 
   Query.prototype.toDistinctValuesSQL = function toDistinctValuesSQL(options) {

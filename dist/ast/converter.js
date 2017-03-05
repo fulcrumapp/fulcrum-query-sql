@@ -452,11 +452,14 @@ var Converter = function () {
   };
 
   Converter.prototype.toSchemaAST = function toSchemaAST(query) {
+    var _ref5 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        schemaOnly = _ref5.schemaOnly;
+
     // wrap the query in a subquery with 1=0
 
     var targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)()))];
     var fromClause = [(0, _helpers.RangeSubselect)(query, (0, _helpers.Alias)('wrapped'))];
-    var whereClause = (0, _helpers.AExpr)(0, '=', (0, _helpers.AConst)((0, _helpers.IntegerValue)(0)), (0, _helpers.AConst)((0, _helpers.IntegerValue)(1)));
+    var whereClause = schemaOnly ? (0, _helpers.AExpr)(0, '=', (0, _helpers.AConst)((0, _helpers.IntegerValue)(0)), (0, _helpers.AConst)((0, _helpers.IntegerValue)(1))) : null;
 
     return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause });
   };
@@ -532,18 +535,18 @@ var Converter = function () {
         queryAST = JSON.parse(JSON.stringify(queryAST));
 
         for (var _iterator = referencedColumns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-          var _ref5;
+          var _ref6;
 
           if (_isArray) {
             if (_i >= _iterator.length) break;
-            _ref5 = _iterator[_i++];
+            _ref6 = _iterator[_i++];
           } else {
             _i = _iterator.next();
             if (_i.done) break;
-            _ref5 = _i.value;
+            _ref6 = _i.value;
           }
 
-          var column = _ref5;
+          var column = _ref6;
 
           Converter.duplicateResTargetWithExactName(query, queryAST.SelectStmt.targetList, column, column.id);
         }
@@ -558,18 +561,18 @@ var Converter = function () {
 
     if (leftJoins) {
       for (var _iterator2 = leftJoins, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
-        var _ref6;
+        var _ref7;
 
         if (_isArray2) {
           if (_i2 >= _iterator2.length) break;
-          _ref6 = _iterator2[_i2++];
+          _ref7 = _iterator2[_i2++];
         } else {
           _i2 = _iterator2.next();
           if (_i2.done) break;
-          _ref6 = _i2.value;
+          _ref7 = _i2.value;
         }
 
-        var join = _ref6;
+        var join = _ref7;
 
         if (!visitedTables[join.alias]) {
           visitedTables[join.alias] = join;
@@ -604,18 +607,18 @@ var Converter = function () {
     systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
 
     for (var _iterator3 = query.columnSettings.columns, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator]();;) {
-      var _ref7;
+      var _ref8;
 
       if (_isArray3) {
         if (_i3 >= _iterator3.length) break;
-        _ref7 = _iterator3[_i3++];
+        _ref8 = _iterator3[_i3++];
       } else {
         _i3 = _iterator3.next();
         if (_i3.done) break;
-        _ref7 = _i3.value;
+        _ref8 = _i3.value;
       }
 
-      var item = _ref7;
+      var item = _ref8;
 
       if (item.hasFilter) {
         var expression = this.createExpressionForColumnFilter(item.filter, options);
@@ -664,18 +667,18 @@ var Converter = function () {
 
     // If a column is referenced more than once don't add it again
     for (var _iterator4 = targetList, _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : _iterator4[Symbol.iterator]();;) {
-      var _ref8;
+      var _ref9;
 
       if (_isArray4) {
         if (_i4 >= _iterator4.length) break;
-        _ref8 = _iterator4[_i4++];
+        _ref9 = _iterator4[_i4++];
       } else {
         _i4 = _iterator4.next();
         if (_i4.done) break;
-        _ref8 = _i4.value;
+        _ref9 = _i4.value;
       }
 
-      var existing = _ref8;
+      var existing = _ref9;
 
       if (existing.ResTarget.name === exactName) {
         return;
@@ -694,8 +697,20 @@ var Converter = function () {
   };
 
   Converter.findResTarget = function findResTarget(query, column) {
+    // UNION's don't have targetList's
+    if (!query.ast.SelectStmt.targetList) {
+      return null;
+    }
+
+    // look for any A_Star nodes, a SELECT * modifies how we process the res targets. If there's
+    // an A_Star node in the targetList, it means that we can't just get the column by index because
+    // the * might expand to columns that cause the indexes to be different.
+    var hasStar = query.ast.SelectStmt.targetList.find(function (target) {
+      return target.ResTarget && target.ResTarget.val && target.ResTarget.val.ColumnRef && target.ResTarget.val.ColumnRef.fields && target.ResTarget.val.ColumnRef.fields[0] && target.ResTarget.val.ColumnRef.fields[0].A_Star;
+    });
+
     // the simple case is when there is no * in the query
-    if (query.ast.SelectStmt.targetList.length === query.schema.columns.length) {
+    if (!hasStar && query.ast.SelectStmt.targetList.length === query.schema.columns.length) {
       return query.ast.SelectStmt.targetList[column.index];
     }
 
