@@ -436,7 +436,7 @@ var Converter = function () {
     if (query.ast) {
       recordsFromClause = [(0, _helpers.RangeSubselect)(query.ast, (0, _helpers.Alias)('records'))];
     } else {
-      recordsFromClause = [(0, _helpers.RangeVar)(query.form.id + '/_full')];
+      recordsFromClause = [this.formQueryRangeVar(query)];
     }
 
     var recordsSelect = (0, _helpers.SelectStmt)({ targetList: recordsTargetList, fromClause: recordsFromClause });
@@ -555,7 +555,7 @@ var Converter = function () {
       return [(0, _helpers.RangeSubselect)(queryAST, (0, _helpers.Alias)('records'))];
     }
 
-    baseQuery = (0, _helpers.RangeVar)(query.form.id + '/_full', (0, _helpers.Alias)('records'));
+    baseQuery = this.formQueryRangeVar(query);
 
     var visitedTables = {};
 
@@ -719,6 +719,14 @@ var Converter = function () {
     return query.ast.SelectStmt.targetList.find(function (target) {
       return target.ResTarget.name === column.name;
     });
+  };
+
+  Converter.prototype.formQueryRangeVar = function formQueryRangeVar(query) {
+    if (query.repeatableKey) {
+      return (0, _helpers.RangeVar)(query.form.id + '/' + query.repeatableKey + '/_full', (0, _helpers.Alias)('records'));
+    }
+
+    return (0, _helpers.RangeVar)(query.form.id + '/_full', (0, _helpers.Alias)('records'));
   };
 
   Converter.prototype.createExpressionForColumnFilter = function createExpressionForColumnFilter(filter, options) {

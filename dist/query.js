@@ -50,6 +50,7 @@ var Query = function () {
 
     this._ast = attrs.ast;
     this._form = attrs.form;
+    this._repeatableKey = attrs.repeatableKey;
     this._outputs = [];
     this._schema = attrs.schema;
     this._filter = new _condition.Condition(attrs.filter, attrs.schema);
@@ -57,11 +58,11 @@ var Query = function () {
     this._boundingBox = attrs.bounding_box || null;
     this._searchFilter = '';
     this._dateFilter = new _expression.Expression(attrs.date_filter || { field: '_server_updated_at' }, attrs.schema);
-    this._statusFilter = new _columnFilter2.default(_extends({}, attrs.status_filter, { field: '_status' }), this._schema);
-    this._projectFilter = new _columnFilter2.default(_extends({}, attrs.project_filter, { field: 'project.name' }), this._schema);
-    this._assignmentFilter = new _columnFilter2.default(_extends({}, attrs.assignment_filter, { field: 'assigned_to.name' }), this._schema);
     this._options = new _queryOptions2.default(attrs.options || {});
     this._columnSettings = new _columnSettings2.default(this._schema, attrs.columns);
+    this._statusFilter = new _columnFilter2.default(_extends({}, attrs.status_filter, { field: attrs.repeatableKey ? '_record_status' : '_status' }), this._schema);
+    this._projectFilter = new _columnFilter2.default(_extends({}, attrs.project_filter, { field: 'project.name' }), this._schema);
+    this._assignmentFilter = new _columnFilter2.default(_extends({}, attrs.assignment_filter, { field: 'assigned_to.name' }), this._schema);
 
     this.setup();
   }
@@ -200,28 +201,44 @@ var Query = function () {
     // We don't need to join them in the outer part.
     var subJoinColumns = this.joinColumnsWithSorting;
 
-    if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
-      joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'created_by'), 'created_by'));
-    } else {
-      joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('created_by.name'), 'created_by'));
+    if (this.schema.createdByColumn) {
+      if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'created_by'), 'created_by'));
+      } else {
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('created_by.name'), 'created_by'));
+      }
     }
 
-    if (subJoinColumns.indexOf(this.schema.updatedByColumn) === -1) {
-      joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'updated_by'), 'updated_by'));
-    } else {
-      joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('updated_by.name'), 'updated_by'));
+    if (this.schema.updatedByColumn) {
+      if (subJoinColumns.indexOf(this.schema.updatedByColumn) === -1) {
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'updated_by'), 'updated_by'));
+      } else {
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('updated_by.name'), 'updated_by'));
+      }
     }
 
-    if (subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
-      joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'assigned_to'), 'assigned_to'));
-    } else {
-      joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('assigned_to.name'), 'assigned_to'));
+    if (this.schema.assignedToColumn) {
+      var alias = this.repeatableKey ? 'record_assigned_to' : 'assigned_to';
+
+      if (subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'assigned_to'), alias));
+      } else {
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('assigned_to.name'), alias));
+      }
     }
 
-    if (subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
-      joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'project'), 'project'));
-    } else {
-      joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('project.name'), 'project'));
+    if (this.schema.projectColumn) {
+      var _alias = this.repeatableKey ? 'record_project' : 'project';
+
+      if (subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'project'), _alias));
+      } else {
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('project.name'), _alias));
+      }
+    }
+
+    if (this.repeatableKey) {
+      return [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_status'), 'record_status'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_version'), 'version'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_child_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'record_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_parent_id'), 'parent_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_index'), 'index'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('date_part')], [(0, _helpers.AConst)((0, _helpers.StringValue)('epoch')), timeZoneCast((0, _helpers.ColumnRef)('_server_created_at'))]), 'created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('date_part')], [(0, _helpers.AConst)((0, _helpers.StringValue)('epoch')), timeZoneCast((0, _helpers.ColumnRef)('_server_updated_at'))]), 'updated_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('date_part')], [(0, _helpers.AConst)((0, _helpers.StringValue)('epoch')), timeZoneCast((0, _helpers.ColumnRef)('_created_at'))]), 'client_created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('date_part')], [(0, _helpers.AConst)((0, _helpers.StringValue)('epoch')), timeZoneCast((0, _helpers.ColumnRef)('_updated_at'))]), 'client_updated_at'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_by_id'), 'created_by_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_by_id'), 'updated_by_id'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(this.form.id))), 'form_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_project_id'), 'record_project_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_assigned_to_id'), 'record_assigned_to_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_form_values'), 'form_values'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_latitude'), 'latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_longitude'), 'longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_edited_duration'), 'edited_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_duration'), 'updated_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_duration'), 'created_duration')].concat(joinedColumns);
     }
 
     return [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_status'), 'status'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_version'), 'version'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_server_created_at')), timeZoneFormat]), 'created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_server_updated_at')), timeZoneFormat]), 'updated_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_created_at')), timeZoneFormat]), 'client_created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_updated_at')), timeZoneFormat]), 'client_updated_at'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_by_id'), 'created_by_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_by_id'), 'updated_by_id'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(this.form.id))), 'form_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_project_id'), 'project_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_assigned_to_id'), 'assigned_to_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_form_values'), 'form_values'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_latitude'), 'latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_longitude'), 'longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_altitude'), 'altitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_speed'), 'speed'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_course'), 'course'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_horizontal_accuracy'), 'horizontal_accuracy'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_vertical_accuracy'), 'vertical_accuracy'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_edited_duration'), 'edited_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_duration'), 'updated_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_duration'), 'created_duration')].concat(joinedColumns);
@@ -246,20 +263,24 @@ var Query = function () {
     // We don't need to join them in the outer part.
     var subJoinColumns = this.joinColumnsWithSorting;
 
-    if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
-      baseQuery = _converter2.default.leftJoinClause(baseQuery, 'memberships', 'created_by', '_created_by_id', 'user_id');
+    if (this.schema.createdByColumn && subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
+      var join = this.schema.createdByColumn.join;
+      baseQuery = _converter2.default.leftJoinClause(baseQuery, join.tableName, join.alias, join.sourceColumn, join.joinColumn);
     }
 
-    if (subJoinColumns.indexOf(this.schema.updatedByColumn) === -1) {
-      baseQuery = _converter2.default.leftJoinClause(baseQuery, 'memberships', 'updated_by', '_updated_by_id', 'user_id');
+    if (this.schema.updatedByColumn && subJoinColumns.indexOf(this.schema.updatedByColumn) === -1) {
+      var _join = this.schema.updatedByColumn.join;
+      baseQuery = _converter2.default.leftJoinClause(baseQuery, _join.tableName, _join.alias, _join.sourceColumn, _join.joinColumn);
     }
 
-    if (subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
-      baseQuery = _converter2.default.leftJoinClause(baseQuery, 'memberships', 'assigned_to', '_assigned_to_id', 'user_id');
+    if (this.schema.assignedToColumn && subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
+      var _join2 = this.schema.assignedToColumn.join;
+      baseQuery = _converter2.default.leftJoinClause(baseQuery, _join2.tableName, _join2.alias, _join2.sourceColumn, _join2.joinColumn);
     }
 
-    if (subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
-      baseQuery = _converter2.default.leftJoinClause(baseQuery, 'projects', 'project', '_project_id', 'project_id');
+    if (this.schema.projectColumn && subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
+      var _join3 = this.schema.projectColumn.join;
+      baseQuery = _converter2.default.leftJoinClause(baseQuery, _join3.tableName, _join3.alias, _join3.sourceColumn, _join3.joinColumn);
     }
 
     return [baseQuery];
@@ -353,6 +374,11 @@ var Query = function () {
     key: 'form',
     get: function get() {
       return this._form;
+    }
+  }, {
+    key: 'repeatableKey',
+    get: function get() {
+      return this._repeatableKey;
     }
   }, {
     key: 'schema',

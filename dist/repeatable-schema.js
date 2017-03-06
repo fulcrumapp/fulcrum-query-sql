@@ -69,14 +69,23 @@ var RepeatableSchema = function (_FormFieldSchema) {
 
   RepeatableSchema.prototype.setupColumns = function setupColumns() {
     if (this.fullSchema) {
-      this.addSystemColumn('Child ID', 'id', '_child_record_id', 'string');
+      this.addSystemColumn('Child Record ID', 'id', '_child_record_id', 'string');
 
       this.addSystemColumn('Record ID', null, '_record_id', 'string', function (feature, options) {
-        return options.record.id;
+        if (feature.recordID) {
+          return feature.recordID;
+        }
+
+        return options && options.record.id;
       });
 
       this.addSystemColumn('Parent ID', null, '_parent_id', 'string', function (feature, options) {
-        return options.parent.id;
+        if (feature.parentID) {
+          return feature.parentID;
+        }
+
+        console.log('PARENT', feature);
+        return options && options.parent.id;
       });
     }
 
@@ -84,31 +93,48 @@ var RepeatableSchema = function (_FormFieldSchema) {
       this.addRawElementColumn(this.formSchema.form.statusField, this._rawColumnsByKey._record_status, '_record_status', 'string', null, '_record_status');
     }
 
+    this.addSystemColumn('Version', 'version', '_version', 'integer');
+    this.addSystemColumn('Device Created', 'createdAt', '_created_at', 'timestamp');
+    this.addSystemColumn('Device Updated', 'updatedAt', '_updated_at', 'timestamp');
+
+    if (this.formSchema.form.isProjectEnabled) {
+      this.projectColumn = this.addSystemColumn('Project', 'recordProjectName', 'project.name', 'string', null, { tableName: 'projects',
+        alias: 'project',
+        sourceColumn: '_record_project_id',
+        joinColumn: 'project_id' });
+    }
+
+    if (this.formSchema.form.isAssignmentEnabled) {
+      this.assignedToColumn = this.addSystemColumn('Assigned', 'recordAssignedToName', 'assigned_to.name', 'string', null, { tableName: 'memberships',
+        alias: 'assigned_to',
+        sourceColumn: '_record_assigned_to_id',
+        joinColumn: 'user_id' });
+    }
+
+    this.createdByColumn = this.addSystemColumn('Created By', 'createdByName', 'created_by.name', 'string', null, { tableName: 'memberships',
+      alias: 'created_by',
+      sourceColumn: '_created_by_id',
+      joinColumn: 'user_id' });
+
+    this.updatedByColumn = this.addSystemColumn('Updated By', 'updatedByName', 'updated_by.name', 'string', null, { tableName: 'memberships',
+      alias: 'updated_by',
+      sourceColumn: '_updated_by_id',
+      joinColumn: 'user_id' });
+
     if (this.fullSchema) {
+      this.addSystemColumn('Item Index', 'index', '_index', 'integer');
       this.addSystemColumn('Geometry', 'geometryAsGeoJSON', '_geometry', 'geometry');
       this.addSystemColumn('Latitude', 'latitude', '_latitude', 'double');
       this.addSystemColumn('Longitude', 'longitude', '_longitude', 'double');
 
-      this.addSystemColumn('Changeset', 'changesetID', '_changeset_id', 'string');
+      this.addSystemColumn('Altitude', 'altitude', '_altitude', 'double');
+      this.addSystemColumn('Accuracy', 'horizontalAccuracy', '_horizontal_accuracy', 'double');
+      this.addSystemColumn('Changeset', 'changesetID', '_changeset_id', 'integer');
 
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
     }
-
-    this.addSystemColumn('Version', 'version', '_version', 'integer');
-    this.addSystemColumn('Created', 'createdAt', '_server_created_at', 'timestamp');
-    this.addSystemColumn('Updated', 'updatedAt', '_server_updated_at', 'timestamp');
-    this.addSystemColumn('Created By', 'createdBy', '_created_by_id', 'string');
-    this.addSystemColumn('Updated By', 'updatedBy', '_updated_by_id', 'string');
-
-    // if (this.form.isAssignmentEnabled) {
-    //   this.addSystemColumn('Assigned', 'assignedTo', '_assigned_to_id');
-    // }
-
-    // if (this.form.isProjectEnabled) {
-    //   this.addSystemColumn('Project', 'project', '_project_id');
-    // }
 
     this.setupElementColumns();
   };

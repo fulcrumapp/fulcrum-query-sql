@@ -66,8 +66,6 @@ var FormSchema = function (_FormFieldSchema) {
       }
     }
 
-    _this.setupColumns();
-
     _this.repeatableSchemas = [];
     _this.repeatableSchemasByKey = {};
 
@@ -92,6 +90,8 @@ var FormSchema = function (_FormFieldSchema) {
       _this.repeatableSchemas.push(childSchema);
       _this.repeatableSchemasByKey[repeatable.key] = childSchema;
     }
+
+    _this.setupColumns();
     return _this;
   }
 
