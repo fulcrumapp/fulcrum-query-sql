@@ -60,8 +60,6 @@ export default class FormSchema extends FormFieldSchema {
       }
     }
 
-    this.setupColumns();
-
     this.repeatableSchemas = [];
     this.repeatableSchemasByKey = {};
 
@@ -73,6 +71,8 @@ export default class FormSchema extends FormFieldSchema {
       this.repeatableSchemas.push(childSchema);
       this.repeatableSchemasByKey[repeatable.key] = childSchema;
     }
+
+    this.setupColumns();
   }
 
   setupColumns() {

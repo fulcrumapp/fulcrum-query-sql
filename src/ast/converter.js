@@ -201,7 +201,7 @@ export default class Converter {
     if (query.ast) {
       recordsFromClause = [ RangeSubselect(query.ast, Alias('records')) ];
     } else {
-      recordsFromClause = [ RangeVar(query.form.id + '/_full') ];
+      recordsFromClause = [ this.formQueryRangeVar(query) ];
     }
 
     const recordsSelect = SelectStmt({targetList: recordsTargetList, fromClause: recordsFromClause});
@@ -310,7 +310,7 @@ export default class Converter {
       return [ RangeSubselect(queryAST, Alias('records')) ];
     }
 
-    baseQuery = RangeVar(query.form.id + '/_full', Alias('records'));
+    baseQuery = this.formQueryRangeVar(query);
 
     const visitedTables = {};
 
@@ -441,6 +441,14 @@ export default class Converter {
     return query.ast.SelectStmt.targetList.find((target) => {
       return target.ResTarget.name === column.name;
     });
+  }
+
+  formQueryRangeVar(query) {
+    if (query.repeatableKey) {
+      return RangeVar(query.form.id + '/' + query.repeatableKey + '/_full', Alias('records'));
+    }
+
+    return RangeVar(query.form.id + '/_full', Alias('records'));
   }
 
   createExpressionForColumnFilter(filter, options) {
