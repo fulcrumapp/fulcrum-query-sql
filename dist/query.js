@@ -153,15 +153,15 @@ var Query = function () {
   };
 
   Query.prototype.toDistinctValuesSQL = function toDistinctValuesSQL(options) {
-    return new _pgQueryDeparser2.default().deparse(this.toDistinctValuesAST(options));
+    return this.deparse(this.toDistinctValuesAST(options));
   };
 
   Query.prototype.toHistogramSQL = function toHistogramSQL(options) {
-    return new _pgQueryDeparser2.default().deparse(this.toHistogramAST(options));
+    return this.deparse(this.toHistogramAST(options));
   };
 
   Query.prototype.toCountSQL = function toCountSQL() {
-    return new _pgQueryDeparser2.default().deparse(this.toCountAST(this.runtimeFilters));
+    return this.deparse(this.toCountAST(this.runtimeFilters));
   };
 
   Query.prototype.toSQL = function toSQL(_ref3) {
@@ -177,11 +177,16 @@ var Query = function () {
       outerLimit: outerLimit
     }, this.runtimeFilters);
 
-    return new _pgQueryDeparser2.default().deparse(this.toAST(options));
+    return this.deparse(this.toAST(options));
   };
 
   Query.prototype.toTileSQL = function toTileSQL() {
-    return new _pgQueryDeparser2.default().deparse(this.toTileAST(this.runtimeFilters));
+    return this.deparse(this.toTileAST(this.runtimeFilters));
+  };
+
+  Query.prototype.toSummarySQL = function toSummarySQL(columnSetting) {
+    var ast = new _converter2.default().toSummaryAST(this, columnSetting, this.runtimeFilters);
+    return this.deparse(ast);
   };
 
   Query.prototype.targetList = function targetList() {

@@ -39,6 +39,18 @@ Object.keys(_operator).forEach(function (key) {
   });
 });
 
+var _aggregate = require('./aggregate');
+
+Object.keys(_aggregate).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _aggregate[key];
+    }
+  });
+});
+
 var _query = require('./query');
 
 var _query2 = _interopRequireDefault(_query);

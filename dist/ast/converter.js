@@ -10,6 +10,8 @@ var _condition = require('../condition');
 
 var _operator = require('../operator');
 
+var _aggregate = require('../aggregate');
+
 var _momentTimezone = require('moment-timezone');
 
 var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
@@ -332,7 +334,7 @@ var Converter = function () {
     if (query.ast) {
       var sort = [(0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), 0, 0)];
 
-      targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, (0, _helpers.WindowDef)(sort, 530)), '__id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('__geometry'))];
+      targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, { over: (0, _helpers.WindowDef)(sort, 530) }), '__id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('__geometry'))];
     } else {
       targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_geometry'), 'geometry'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_status'), 'status'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(query.form.id))), 'form_id')];
     }
@@ -345,7 +347,7 @@ var Converter = function () {
   };
 
   Converter.prototype.toHistogramAST = function toHistogramAST(query, _ref4) {
-    var columnName = _ref4.columnName,
+    var column = _ref4.column,
         bucketSize = _ref4.bucketSize,
         type = _ref4.type,
         sort = _ref4.sort,
@@ -354,9 +356,20 @@ var Converter = function () {
         boundingBox = _ref4.boundingBox,
         searchFilter = _ref4.searchFilter;
 
-    var targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('series', 'series'), 'bucket'), (0, _helpers.ResTarget)((0, _helpers.CoalesceExpr)([(0, _helpers.ColumnRef)('count', 'sub'), (0, _helpers.AConst)((0, _helpers.IntegerValue)(0))]), 'count'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('min_value', 'sub'), 'min_value'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('max_value', 'sub'), 'max_value'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('avg_value', 'sub'), 'avg_value'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('sum_value', 'sub'), 'sum_value')];
+    var subLinkColumn = function subLinkColumn(col, table) {
+      return (0, _helpers.SubLink)(4, (0, _helpers.SelectStmt)({
+        targetList: [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)(col))],
+        fromClause: [(0, _helpers.RangeVar)(table)]
+      }));
+    };
 
-    var withClause = this.histogramWithClause(columnName, bucketSize, type, query);
+    var expr = function expr(lhs, op, rhs) {
+      return (0, _helpers.AExpr)(0, op, lhs, rhs);
+    };
+
+    var targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('series', 'series'), 'bucket'), (0, _helpers.ResTarget)((0, _helpers.CoalesceExpr)([(0, _helpers.ColumnRef)('count', 'sub'), (0, _helpers.AConst)((0, _helpers.IntegerValue)(0))]), 'count'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('min_value', 'sub'), 'min_value'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('max_value', 'sub'), 'max_value'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('avg_value', 'sub'), 'avg_value'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('sum_value', 'sub'), 'sum_value'), (0, _helpers.ResTarget)(expr(subLinkColumn('min_value', '__stats'), '+', expr(expr((0, _helpers.ColumnRef)('series', 'series'), '-', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1))), '*', subLinkColumn('bucket_width', '__stats'))), 'bucket_min'), (0, _helpers.ResTarget)(expr(subLinkColumn('min_value', '__stats'), '+', expr((0, _helpers.ColumnRef)('series', 'series'), '*', subLinkColumn('bucket_width', '__stats'))), 'bucket_max'), (0, _helpers.ResTarget)(subLinkColumn('range', '__stats'), 'range'), (0, _helpers.ResTarget)(subLinkColumn('bucket_width', '__stats'), 'bucket_width')];
+
+    var withClause = this.histogramWithClause(column, bucketSize, type, query, boundingBox, searchFilter);
 
     var seriesFunctionSublinkSelect = (0, _helpers.SelectStmt)({
       targetList: [(0, _helpers.ResTarget)((0, _helpers.AExpr)(0, '+', (0, _helpers.ColumnRef)('buckets'), (0, _helpers.AConst)((0, _helpers.IntegerValue)(1))))],
@@ -420,29 +433,62 @@ var Converter = function () {
     return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause, groupClause: groupClause, sortClause: sortClause });
   };
 
-  Converter.prototype.histogramWithClause = function histogramWithClause(columnName, bucketSize, type, query) {
+  Converter.prototype.toSummaryAST = function toSummaryAST(query, columnSetting, _ref5) {
+    var boundingBox = _ref5.boundingBox,
+        searchFilter = _ref5.searchFilter;
+
+    if (columnSetting.summary.aggregate === _aggregate.AggregateType.Histogram.name) {
+      var histogramAttributes = {
+        column: columnSetting.column,
+        bucketSize: 12,
+        type: columnSetting.column.isDate ? 'date' : 'number',
+        sort: null,
+        boundingBox: boundingBox,
+        searchFilter: searchFilter
+      };
+
+      return this.toHistogramAST(query, histogramAttributes);
+    }
+
+    var targetList = this.summaryTargetList(query, columnSetting);
+
+    var joins = query.joinColumns.map(function (o) {
+      return o.join;
+    });
+
+    if (columnSetting.column.join) {
+      joins.push(columnSetting.column.join);
+    }
+
+    var fromClause = this.fromClause(query, joins, null);
+
+    var whereClause = this.summaryWhereClause(query, columnSetting, { boundingBox: boundingBox, searchFilter: searchFilter });
+
+    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause });
+  };
+
+  Converter.prototype.histogramWithClause = function histogramWithClause(column, bucketSize, type, query, boundingBox, searchFilter) {
     var recordsTargetList = null;
 
     if (type === 'date') {
-      var datePartArgs = [(0, _helpers.AConst)((0, _helpers.StringValue)('epoch')), (0, _helpers.TypeCast)((0, _helpers.TypeName)('date'), (0, _helpers.ColumnRef)(columnName))];
+      var datePartArgs = [(0, _helpers.AConst)((0, _helpers.StringValue)('epoch')), (0, _helpers.TypeCast)((0, _helpers.TypeName)('date'), columnRef(column))];
 
       recordsTargetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('date_part', datePartArgs), 'value')];
     } else {
-      recordsTargetList = [(0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('float8')]), (0, _helpers.ColumnRef)(columnName)), 'value')];
+      recordsTargetList = [(0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('float8')]), columnRef(column)), 'value')];
     }
 
-    var recordsFromClause = null;
+    var joins = query.joinColumnsWithSorting.map(function (o) {
+      return o.join;
+    });
 
-    if (query.ast) {
-      recordsFromClause = [(0, _helpers.RangeSubselect)(query.ast, (0, _helpers.Alias)('records'))];
-    } else {
-      recordsFromClause = [this.formQueryRangeVar(query)];
-    }
+    var recordsFromClause = this.fromClause(query, joins, [column]);
 
-    var recordsSelect = (0, _helpers.SelectStmt)({ targetList: recordsTargetList, fromClause: recordsFromClause });
+    var recordsWhere = this.whereClause(query, boundingBox, searchFilter);
+    var recordsSelect = (0, _helpers.SelectStmt)({ targetList: recordsTargetList, fromClause: recordsFromClause, whereClause: recordsWhere });
     var recordsExpr = (0, _helpers.CommonTableExpr)('__records', recordsSelect);
 
-    var statsTargetList = [(0, _helpers.ResTarget)((0, _helpers.AConst)((0, _helpers.IntegerValue)(bucketSize)), 'buckets'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))]), 'count'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('min', [(0, _helpers.ColumnRef)('value')]), 'min_value'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('max', [(0, _helpers.ColumnRef)('value')]), 'max_value')];
+    var statsTargetList = [(0, _helpers.ResTarget)((0, _helpers.AConst)((0, _helpers.IntegerValue)(bucketSize)), 'buckets'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))]), 'count'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('min', [(0, _helpers.ColumnRef)('value')]), 'min_value'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('max', [(0, _helpers.ColumnRef)('value')]), 'max_value'), (0, _helpers.ResTarget)((0, _helpers.AExpr)(0, '-', (0, _helpers.FuncCall)('max', [(0, _helpers.ColumnRef)('value')]), (0, _helpers.FuncCall)('min', [(0, _helpers.ColumnRef)('value')])), 'range'), (0, _helpers.ResTarget)((0, _helpers.AExpr)(0, '/', (0, _helpers.AExpr)(0, '-', (0, _helpers.TypeCast)((0, _helpers.TypeName)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('float8')]), (0, _helpers.FuncCall)('max', [(0, _helpers.ColumnRef)('value')])), (0, _helpers.TypeCast)((0, _helpers.TypeName)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('float8')]), (0, _helpers.FuncCall)('min', [(0, _helpers.ColumnRef)('value')]))), (0, _helpers.AConst)((0, _helpers.FloatValue)(bucketSize))), 'bucket_width')];
 
     var statsFromClause = [(0, _helpers.RangeVar)('__records')];
     var statsSelect = (0, _helpers.SelectStmt)({ targetList: statsTargetList, fromClause: statsFromClause });
@@ -452,8 +498,8 @@ var Converter = function () {
   };
 
   Converter.prototype.toSchemaAST = function toSchemaAST(query) {
-    var _ref5 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        schemaOnly = _ref5.schemaOnly;
+    var _ref6 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        schemaOnly = _ref6.schemaOnly;
 
     // wrap the query in a subquery with 1=0
 
@@ -501,7 +547,7 @@ var Converter = function () {
       list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'project'), 'project.name'));
     }
 
-    list.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, (0, _helpers.WindowDef)(sort, 530)), '__row_number'));
+    list.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, { over: (0, _helpers.WindowDef)(sort, 530) }), '__row_number'));
 
     return list;
   };
@@ -535,18 +581,18 @@ var Converter = function () {
         queryAST = JSON.parse(JSON.stringify(queryAST));
 
         for (var _iterator = referencedColumns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-          var _ref6;
+          var _ref7;
 
           if (_isArray) {
             if (_i >= _iterator.length) break;
-            _ref6 = _iterator[_i++];
+            _ref7 = _iterator[_i++];
           } else {
             _i = _iterator.next();
             if (_i.done) break;
-            _ref6 = _i.value;
+            _ref7 = _i.value;
           }
 
-          var column = _ref6;
+          var column = _ref7;
 
           Converter.duplicateResTargetWithExactName(query, queryAST.SelectStmt.targetList, column, column.id);
         }
@@ -561,18 +607,18 @@ var Converter = function () {
 
     if (leftJoins) {
       for (var _iterator2 = leftJoins, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
-        var _ref7;
+        var _ref8;
 
         if (_isArray2) {
           if (_i2 >= _iterator2.length) break;
-          _ref7 = _iterator2[_i2++];
+          _ref8 = _iterator2[_i2++];
         } else {
           _i2 = _iterator2.next();
           if (_i2.done) break;
-          _ref7 = _i2.value;
+          _ref8 = _i2.value;
         }
 
-        var join = _ref7;
+        var join = _ref8;
 
         if (!visitedTables[join.alias]) {
           visitedTables[join.alias] = join;
@@ -607,18 +653,18 @@ var Converter = function () {
     systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
 
     for (var _iterator3 = query.columnSettings.columns, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator]();;) {
-      var _ref8;
+      var _ref9;
 
       if (_isArray3) {
         if (_i3 >= _iterator3.length) break;
-        _ref8 = _iterator3[_i3++];
+        _ref9 = _iterator3[_i3++];
       } else {
         _i3 = _iterator3.next();
         if (_i3.done) break;
-        _ref8 = _i3.value;
+        _ref9 = _i3.value;
       }
 
-      var item = _ref8;
+      var item = _ref9;
 
       if (item.hasFilter) {
         var expression = this.createExpressionForColumnFilter(item.filter, options);
@@ -645,6 +691,10 @@ var Converter = function () {
       }
     }
 
+    if (options.expressions) {
+      systemParts.push.apply(systemParts, options.expressions);
+    }
+
     var expressions = systemParts.filter(function (o) {
       return o != null;
     });
@@ -667,18 +717,18 @@ var Converter = function () {
 
     // If a column is referenced more than once don't add it again
     for (var _iterator4 = targetList, _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : _iterator4[Symbol.iterator]();;) {
-      var _ref9;
+      var _ref10;
 
       if (_isArray4) {
         if (_i4 >= _iterator4.length) break;
-        _ref9 = _iterator4[_i4++];
+        _ref10 = _iterator4[_i4++];
       } else {
         _i4 = _iterator4.next();
         if (_i4.done) break;
-        _ref9 = _i4.value;
+        _ref10 = _i4.value;
       }
 
-      var existing = _ref9;
+      var existing = _ref10;
 
       if (existing.ResTarget.name === exactName) {
         return;
@@ -843,6 +893,49 @@ var Converter = function () {
     return (0, _helpers.BoolExpr)(0, andArgs);
   };
 
+  Converter.prototype.summaryWhereClause = function summaryWhereClause(query, columnSetting, _ref11) {
+    var _converters;
+
+    var boundingBox = _ref11.boundingBox,
+        searchFilter = _ref11.searchFilter;
+
+    var expressions = [];
+
+    var converters = (_converters = {}, _converters[_aggregate.AggregateType.Empty.name] = function () {
+      return (0, _helpers.NullTest)(0, columnRef(columnSetting.column));
+    }, _converters[_aggregate.AggregateType.NotEmpty.name] = function () {
+      return (0, _helpers.NullTest)(1, columnRef(columnSetting.column));
+    }, _converters[_aggregate.AggregateType.PercentEmpty.name] = function () {
+      return (0, _helpers.NullTest)(0, columnRef(columnSetting.column));
+    }, _converters[_aggregate.AggregateType.PercentNotEmpty.name] = function () {
+      return (0, _helpers.NullTest)(1, columnRef(columnSetting.column));
+    }, _converters);
+
+    var expressionConverter = converters[columnSetting.summary.aggregate];
+
+    if (expressionConverter) {
+      expressions.push(expressionConverter());
+    }
+
+    return this.whereClause(query, boundingBox, searchFilter, { expressions: expressions });
+  };
+
+  Converter.prototype.summaryTargetList = function summaryTargetList(query, columnSetting) {
+    var _converter;
+
+    var simpleFunctionResTarget = function simpleFunctionResTarget(funcName, param) {
+      return function () {
+        return [(0, _helpers.ResTarget)((0, _helpers.FuncCall)(funcName, [param || columnRef(columnSetting.column)]), 'value')];
+      };
+    };
+
+    var converter = (_converter = {}, _converter[_aggregate.AggregateType.Sum.name] = simpleFunctionResTarget('sum'), _converter[_aggregate.AggregateType.Average.name] = simpleFunctionResTarget('avg'), _converter[_aggregate.AggregateType.Min.name] = simpleFunctionResTarget('min'), _converter[_aggregate.AggregateType.Max.name] = simpleFunctionResTarget('max'), _converter[_aggregate.AggregateType.StdDev.name] = simpleFunctionResTarget('stddev'), _converter[_aggregate.AggregateType.Histogram.name] = simpleFunctionResTarget('count'), _converter[_aggregate.AggregateType.Empty.name] = simpleFunctionResTarget('count', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1))), _converter[_aggregate.AggregateType.NotEmpty.name] = simpleFunctionResTarget('count', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1))), _converter[_aggregate.AggregateType.Unique.name] = function () {
+      return [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [columnRef(columnSetting.column)], { agg_distinct: true }), 'value')];
+    }, _converter[_aggregate.AggregateType.PercentEmpty.name] = simpleFunctionResTarget('count'), _converter[_aggregate.AggregateType.PercentNotEmpty.name] = simpleFunctionResTarget('count'), _converter[_aggregate.AggregateType.PercentUnique.name] = simpleFunctionResTarget('count'), _converter);
+
+    return converter[columnSetting.summary.aggregate]();
+  };
+
   Converter.prototype.nodeForExpressions = function nodeForExpressions(expressions, options) {
     var _this3 = this;
 
@@ -854,15 +947,15 @@ var Converter = function () {
   };
 
   Converter.prototype.nodeForCondition = function nodeForCondition(condition, options) {
-    var _converter;
+    var _converter2;
 
-    var converter = (_converter = {}, _converter[_condition.ConditionType.And] = this.AndConverter, _converter[_condition.ConditionType.Or] = this.OrConverter, _converter[_condition.ConditionType.Not] = this.NotConverter, _converter);
+    var converter = (_converter2 = {}, _converter2[_condition.ConditionType.And] = this.AndConverter, _converter2[_condition.ConditionType.Or] = this.OrConverter, _converter2[_condition.ConditionType.Not] = this.NotConverter, _converter2);
 
     return converter[condition.type](condition, options);
   };
 
   Converter.prototype.nodeForExpression = function nodeForExpression(expression, options) {
-    var _converter2;
+    var _converter3;
 
     if (expression.expressions) {
       return this.nodeForCondition(expression, options);
@@ -872,7 +965,7 @@ var Converter = function () {
       return null;
     }
 
-    var converter = (_converter2 = {}, _converter2[_operator.OperatorType.Empty.name] = this.EmptyConverter, _converter2[_operator.OperatorType.NotEmpty.name] = this.NotEmptyConverter, _converter2[_operator.OperatorType.Equal.name] = this.EqualConverter, _converter2[_operator.OperatorType.NotEqual.name] = this.NotEqualConverter, _converter2[_operator.OperatorType.GreaterThan.name] = this.GreaterThanConverter, _converter2[_operator.OperatorType.GreaterThanOrEqual.name] = this.GreaterThanOrEqualConverter, _converter2[_operator.OperatorType.LessThan.name] = this.LessThanConverter, _converter2[_operator.OperatorType.LessThanOrEqual.name] = this.LessThanOrEqualConverter, _converter2[_operator.OperatorType.Between.name] = this.BetweenConverter, _converter2[_operator.OperatorType.NotBetween.name] = this.NotBetweenConverter, _converter2[_operator.OperatorType.In.name] = this.InConverter, _converter2[_operator.OperatorType.NotIn.name] = this.NotInConverter, _converter2[_operator.OperatorType.TextContain.name] = this.TextContainConverter, _converter2[_operator.OperatorType.TextNotContain.name] = this.TextNotContainConverter, _converter2[_operator.OperatorType.TextStartsWith.name] = this.TextStartsWithConverter, _converter2[_operator.OperatorType.TextEndsWith.name] = this.TextEndsWithConverter, _converter2[_operator.OperatorType.TextEqual.name] = this.TextEqualConverter, _converter2[_operator.OperatorType.TextNotEqual.name] = this.TextNotEqualConverter, _converter2[_operator.OperatorType.TextMatch.name] = this.TextMatchConverter, _converter2[_operator.OperatorType.TextNotMatch.name] = this.TextNotMatchConverter, _converter2[_operator.OperatorType.DateEqual.name] = this.EqualConverter, _converter2[_operator.OperatorType.DateNotEqual.name] = this.NotEqualConverter, _converter2[_operator.OperatorType.DateAfter.name] = this.GreaterThanConverter, _converter2[_operator.OperatorType.DateOnOrAfter.name] = this.GreaterThanOrEqualConverter, _converter2[_operator.OperatorType.DateBefore.name] = this.LessThanConverter, _converter2[_operator.OperatorType.DateOnOrBefore.name] = this.LessThanOrEqualConverter, _converter2[_operator.OperatorType.DateBetween.name] = this.BetweenConverter, _converter2[_operator.OperatorType.DateNotBetween.name] = this.NotBetweenConverter, _converter2[_operator.OperatorType.ArrayAnyOf.name] = this.ArrayAnyOfConverter, _converter2[_operator.OperatorType.ArrayAllOf.name] = this.ArrayAllOfConverter, _converter2[_operator.OperatorType.ArrayEqual.name] = this.ArrayEqualConverter, _converter2[_operator.OperatorType.Search.name] = this.SearchConverter, _converter2[_operator.OperatorType.DateToday.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateYesterday.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateTomorrow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLast7Days.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLast30Days.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLast90Days.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLastMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateLastYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateCurrentCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DatePreviousCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarWeek.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarMonth.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateNextCalendarYear.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateDaysFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateWeeksFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateMonthsFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateYearsFromNow.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateDaysAgo.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateWeeksAgo.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateMonthsAgo.name] = this.DynamicDateConverter, _converter2[_operator.OperatorType.DateYearsAgo.name] = this.DynamicDateConverter, _converter2);
+    var converter = (_converter3 = {}, _converter3[_operator.OperatorType.Empty.name] = this.EmptyConverter, _converter3[_operator.OperatorType.NotEmpty.name] = this.NotEmptyConverter, _converter3[_operator.OperatorType.Equal.name] = this.EqualConverter, _converter3[_operator.OperatorType.NotEqual.name] = this.NotEqualConverter, _converter3[_operator.OperatorType.GreaterThan.name] = this.GreaterThanConverter, _converter3[_operator.OperatorType.GreaterThanOrEqual.name] = this.GreaterThanOrEqualConverter, _converter3[_operator.OperatorType.LessThan.name] = this.LessThanConverter, _converter3[_operator.OperatorType.LessThanOrEqual.name] = this.LessThanOrEqualConverter, _converter3[_operator.OperatorType.Between.name] = this.BetweenConverter, _converter3[_operator.OperatorType.NotBetween.name] = this.NotBetweenConverter, _converter3[_operator.OperatorType.In.name] = this.InConverter, _converter3[_operator.OperatorType.NotIn.name] = this.NotInConverter, _converter3[_operator.OperatorType.TextContain.name] = this.TextContainConverter, _converter3[_operator.OperatorType.TextNotContain.name] = this.TextNotContainConverter, _converter3[_operator.OperatorType.TextStartsWith.name] = this.TextStartsWithConverter, _converter3[_operator.OperatorType.TextEndsWith.name] = this.TextEndsWithConverter, _converter3[_operator.OperatorType.TextEqual.name] = this.TextEqualConverter, _converter3[_operator.OperatorType.TextNotEqual.name] = this.TextNotEqualConverter, _converter3[_operator.OperatorType.TextMatch.name] = this.TextMatchConverter, _converter3[_operator.OperatorType.TextNotMatch.name] = this.TextNotMatchConverter, _converter3[_operator.OperatorType.DateEqual.name] = this.EqualConverter, _converter3[_operator.OperatorType.DateNotEqual.name] = this.NotEqualConverter, _converter3[_operator.OperatorType.DateAfter.name] = this.GreaterThanConverter, _converter3[_operator.OperatorType.DateOnOrAfter.name] = this.GreaterThanOrEqualConverter, _converter3[_operator.OperatorType.DateBefore.name] = this.LessThanConverter, _converter3[_operator.OperatorType.DateOnOrBefore.name] = this.LessThanOrEqualConverter, _converter3[_operator.OperatorType.DateBetween.name] = this.BetweenConverter, _converter3[_operator.OperatorType.DateNotBetween.name] = this.NotBetweenConverter, _converter3[_operator.OperatorType.ArrayAnyOf.name] = this.ArrayAnyOfConverter, _converter3[_operator.OperatorType.ArrayAllOf.name] = this.ArrayAllOfConverter, _converter3[_operator.OperatorType.ArrayEqual.name] = this.ArrayEqualConverter, _converter3[_operator.OperatorType.Search.name] = this.SearchConverter, _converter3[_operator.OperatorType.DateToday.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateYesterday.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateTomorrow.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateLast7Days.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateLast30Days.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateLast90Days.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateLastMonth.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateLastYear.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateNextWeek.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateNextMonth.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateNextYear.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateCurrentCalendarWeek.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateCurrentCalendarMonth.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateCurrentCalendarYear.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DatePreviousCalendarWeek.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DatePreviousCalendarMonth.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DatePreviousCalendarYear.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateNextCalendarWeek.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateNextCalendarMonth.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateNextCalendarYear.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateDaysFromNow.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateWeeksFromNow.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateMonthsFromNow.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateYearsFromNow.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateDaysAgo.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateWeeksAgo.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateMonthsAgo.name] = this.DynamicDateConverter, _converter3[_operator.OperatorType.DateYearsAgo.name] = this.DynamicDateConverter, _converter3);
 
     if (!expression.isValid) {
       return null;

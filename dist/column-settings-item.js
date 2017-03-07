@@ -14,6 +14,10 @@ var _columnFilter = require('./column-filter');
 
 var _columnFilter2 = _interopRequireDefault(_columnFilter);
 
+var _columnSummary = require('./column-summary');
+
+var _columnSummary2 = _interopRequireDefault(_columnSummary);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -31,6 +35,7 @@ var ColumnSettingsItem = function () {
     this._range = new _expression.Expression(_extends({}, attrs.expression, {
       operator: attrs.column.isDate ? _operator.OperatorType.DateBetween.name : _operator.OperatorType.Between.name,
       field: attrs.column.id }), schema);
+    this._summary = new _columnSummary2.default(_extends({}, attrs.summary, { field: attrs.column.id }), this._schema);
   }
 
   ColumnSettingsItem.prototype.clear = function clear() {
@@ -89,6 +94,11 @@ var ColumnSettingsItem = function () {
     key: 'filter',
     get: function get() {
       return this._filter;
+    }
+  }, {
+    key: 'summary',
+    get: function get() {
+      return this._summary;
     }
   }, {
     key: 'isVisible',
