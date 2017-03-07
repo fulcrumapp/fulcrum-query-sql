@@ -20,6 +20,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var MAX_DISTINCT_VALUES = 1000;
+
 var columnRef = function columnRef(column) {
   return column.isSQL ? (0, _helpers.ColumnRef)(column.id, column.source) : (0, _helpers.ColumnRef)(column.columnName, column.source);
 };
@@ -430,7 +432,9 @@ var Converter = function () {
 
     sortClause.push((0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), 1, 0));
 
-    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause, groupClause: groupClause, sortClause: sortClause });
+    var limitClause = (0, _helpers.AConst)((0, _helpers.IntegerValue)(MAX_DISTINCT_VALUES));
+
+    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause, groupClause: groupClause, sortClause: sortClause, limitClause: limitClause });
   };
 
   Converter.prototype.toSummaryAST = function toSummaryAST(query, columnSetting, _ref5) {
@@ -675,7 +679,7 @@ var Converter = function () {
       }
 
       if (item.search) {
-        if (item.column.isArray) {
+        if (item.column.isArray || item.column.isDate || item.column.isNumber) {
           systemParts.push((0, _helpers.AExpr)(8, '~~*', (0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), columnRef(item.column)), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
         } else {
           systemParts.push((0, _helpers.AExpr)(8, '~~*', columnRef(item.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));

@@ -81,7 +81,9 @@ for (var _iterator = Object.keys(AggregateType), _isArray = Array.isArray(_itera
 
 var TEXTUAL_AGGREGATES = [AggregateType.Empty, AggregateType.NotEmpty, AggregateType.Unique];
 
-var NUMERIC_AGGREGATES = [AggregateType.Sum, AggregateType.Average, AggregateType.Median, AggregateType.Min, AggregateType.Max, AggregateType.StdDev, AggregateType.Histogram, AggregateType.Empty, AggregateType.NotEmpty, AggregateType.Unique];
+var NUMERIC_AGGREGATES = [AggregateType.Sum, AggregateType.Average,
+// AggregateType.Median,
+AggregateType.Min, AggregateType.Max, AggregateType.StdDev, AggregateType.Histogram, AggregateType.Empty, AggregateType.NotEmpty, AggregateType.Unique];
 
 var DATE_AGGREGATES = [AggregateType.Min, AggregateType.Max, AggregateType.Histogram, AggregateType.Empty, AggregateType.NotEmpty, AggregateType.Unique];
 
