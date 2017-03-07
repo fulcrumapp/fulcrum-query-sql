@@ -71,7 +71,7 @@ const TEXTUAL_AGGREGATES = [
 const NUMERIC_AGGREGATES = [
   AggregateType.Sum,
   AggregateType.Average,
-  AggregateType.Median,
+  // AggregateType.Median,
   AggregateType.Min,
   AggregateType.Max,
   AggregateType.StdDev,

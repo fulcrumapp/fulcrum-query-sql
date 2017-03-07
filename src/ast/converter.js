@@ -30,6 +30,8 @@ import { OperatorType, calculateDateRange } from '../operator';
 import { AggregateType } from '../aggregate';
 import moment from 'moment-timezone';
 
+const MAX_DISTINCT_VALUES = 1000;
+
 const columnRef = (column) => {
   return column.isSQL ? ColumnRef(column.id, column.source)
                       : ColumnRef(column.columnName, column.source);
@@ -208,7 +210,9 @@ export default class Converter {
 
     sortClause.push(SortBy(AConst(IntegerValue(1)), 1, 0));
 
-    return SelectStmt({targetList, fromClause, whereClause, groupClause, sortClause});
+    const limitClause = AConst(IntegerValue(MAX_DISTINCT_VALUES));
+
+    return SelectStmt({targetList, fromClause, whereClause, groupClause, sortClause, limitClause});
   }
 
   toSummaryAST(query, columnSetting, {boundingBox, searchFilter}) {
@@ -415,7 +419,7 @@ export default class Converter {
       }
 
       if (item.search) {
-        if (item.column.isArray) {
+        if (item.column.isArray || item.column.isDate || item.column.isNumber) {
           systemParts.push(AExpr(8, '~~*', TypeCast(TypeName('text'), columnRef(item.column)),
                                            AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
         } else {
