@@ -233,7 +233,7 @@ export default class Converter {
       joins.push(columnSetting.column.join);
     }
 
-    const fromClause = this.fromClause(query, joins, null);
+    const fromClause = this.fromClause(query, joins, [ columnSetting.column ]);
 
     const whereClause = this.summaryWhereClause(query, columnSetting, {boundingBox, searchFilter});
 
