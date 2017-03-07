@@ -573,7 +573,7 @@ export function availableOperatorsForColumn(column) {
     }
   } else if (column.isSQL) {
     // custom types
-    if (column.isNumeric) {
+    if (column.isNumber) {
       operators.push.apply(operators, NUMERIC_OPERATORS);
     } else if (column.isArray) {
       operators.push.apply(operators, ARRAY_OPERATORS);

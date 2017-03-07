@@ -27,6 +27,7 @@ import { ColumnRef,
 
 import { ConditionType } from '../condition';
 import { OperatorType, calculateDateRange } from '../operator';
+import { AggregateType } from '../aggregate';
 import moment from 'moment-timezone';
 
 const columnRef = (column) => {
@@ -72,7 +73,7 @@ export default class Converter {
       const sort = [ SortBy(AConst(IntegerValue(1)), 0, 0) ];
 
       targetList = [
-        ResTarget(FuncCall('row_number', null, WindowDef(sort, 530)), '__id'),
+        ResTarget(FuncCall('row_number', null, {over: WindowDef(sort, 530)}), '__id'),
         ResTarget(ColumnRef('__geometry'))
       ];
     } else {
@@ -91,17 +92,45 @@ export default class Converter {
     return SelectStmt({targetList, fromClause, whereClause});
   }
 
-  toHistogramAST(query, {columnName, bucketSize, type, sort, pageSize, pageIndex, boundingBox, searchFilter}) {
+  toHistogramAST(query, {column, bucketSize, type, sort, pageSize, pageIndex, boundingBox, searchFilter}) {
+    const subLinkColumn = (col, table) => {
+      return SubLink(4, SelectStmt({
+        targetList: [ ResTarget(ColumnRef(col)) ],
+        fromClause: [ RangeVar(table) ]
+      }));
+    };
+
+    const expr = (lhs, op, rhs) => {
+      return AExpr(0, op, lhs, rhs);
+    };
+
     const targetList = [
       ResTarget(ColumnRef('series', 'series'), 'bucket'),
       ResTarget(CoalesceExpr([ ColumnRef('count', 'sub'), AConst(IntegerValue(0)) ]), 'count'),
       ResTarget(ColumnRef('min_value', 'sub'), 'min_value'),
       ResTarget(ColumnRef('max_value', 'sub'), 'max_value'),
       ResTarget(ColumnRef('avg_value', 'sub'), 'avg_value'),
-      ResTarget(ColumnRef('sum_value', 'sub'), 'sum_value')
+      ResTarget(ColumnRef('sum_value', 'sub'), 'sum_value'),
+
+      ResTarget(expr(subLinkColumn('min_value', '__stats'),
+                     '+',
+                     expr(expr(ColumnRef('series', 'series'),
+                               '-',
+                               AConst(IntegerValue(1))),
+                          '*',
+                          subLinkColumn('bucket_width', '__stats'))), 'bucket_min'),
+
+      ResTarget(expr(subLinkColumn('min_value', '__stats'),
+                     '+',
+                     expr(ColumnRef('series', 'series'),
+                          '*',
+                          subLinkColumn('bucket_width', '__stats'))), 'bucket_max'),
+
+      ResTarget(subLinkColumn('range', '__stats'), 'range'),
+      ResTarget(subLinkColumn('bucket_width', '__stats'), 'bucket_width')
     ];
 
-    const withClause = this.histogramWithClause(columnName, bucketSize, type, query);
+    const withClause = this.histogramWithClause(column, bucketSize, type, query, boundingBox, searchFilter);
 
     const seriesFunctionSublinkSelect = SelectStmt({
       targetList: [ ResTarget(AExpr(0, '+', ColumnRef('buckets'), AConst(IntegerValue(1)))) ],
@@ -182,36 +211,66 @@ export default class Converter {
     return SelectStmt({targetList, fromClause, whereClause, groupClause, sortClause});
   }
 
-  histogramWithClause(columnName, bucketSize, type, query) {
+  toSummaryAST(query, columnSetting, {boundingBox, searchFilter}) {
+    if (columnSetting.summary.aggregate === AggregateType.Histogram.name) {
+      const histogramAttributes = {
+        column: columnSetting.column,
+        bucketSize: 12,
+        type: columnSetting.column.isDate ? 'date' : 'number',
+        sort: null,
+        boundingBox,
+        searchFilter
+      };
+
+      return this.toHistogramAST(query, histogramAttributes);
+    }
+
+    const targetList = this.summaryTargetList(query, columnSetting);
+
+    const joins = query.joinColumns.map(o => o.join);
+
+    if (columnSetting.column.join) {
+      joins.push(columnSetting.column.join);
+    }
+
+    const fromClause = this.fromClause(query, joins, null);
+
+    const whereClause = this.summaryWhereClause(query, columnSetting, {boundingBox, searchFilter});
+
+    return SelectStmt({targetList, fromClause, whereClause});
+  }
+
+  histogramWithClause(column, bucketSize, type, query, boundingBox, searchFilter) {
     let recordsTargetList = null;
 
     if (type === 'date') {
       const datePartArgs = [
         AConst(StringValue('epoch')),
-        TypeCast(TypeName('date'), ColumnRef(columnName))
+        TypeCast(TypeName('date'), columnRef(column))
       ];
 
       recordsTargetList = [ ResTarget(FuncCall('date_part', datePartArgs), 'value') ];
     } else {
-      recordsTargetList = [ ResTarget(TypeCast(TypeName([ StringValue('pg_catalog'), StringValue('float8') ]), ColumnRef(columnName)), 'value') ];
+      recordsTargetList = [ ResTarget(TypeCast(TypeName([ StringValue('pg_catalog'), StringValue('float8') ]), columnRef(column)), 'value') ];
     }
 
-    let recordsFromClause = null;
+    const joins = query.joinColumnsWithSorting.map(o => o.join);
 
-    if (query.ast) {
-      recordsFromClause = [ RangeSubselect(query.ast, Alias('records')) ];
-    } else {
-      recordsFromClause = [ this.formQueryRangeVar(query) ];
-    }
+    const recordsFromClause = this.fromClause(query, joins, [ column ]);
 
-    const recordsSelect = SelectStmt({targetList: recordsTargetList, fromClause: recordsFromClause});
+    const recordsWhere = this.whereClause(query, boundingBox, searchFilter);
+    const recordsSelect = SelectStmt({targetList: recordsTargetList, fromClause: recordsFromClause, whereClause: recordsWhere});
     const recordsExpr = CommonTableExpr('__records', recordsSelect);
 
     const statsTargetList = [
       ResTarget(AConst(IntegerValue(bucketSize)), 'buckets'),
       ResTarget(FuncCall('count', [ AConst(IntegerValue(1)) ]), 'count'),
       ResTarget(FuncCall('min', [ ColumnRef('value') ]), 'min_value'),
-      ResTarget(FuncCall('max', [ ColumnRef('value') ]), 'max_value')
+      ResTarget(FuncCall('max', [ ColumnRef('value') ]), 'max_value'),
+      ResTarget(AExpr(0, '-', FuncCall('max', [ ColumnRef('value') ]), FuncCall('min', [ ColumnRef('value') ])), 'range'),
+      ResTarget(AExpr(0, '/', AExpr(0, '-', TypeCast(TypeName([ StringValue('pg_catalog'), StringValue('float8') ]), FuncCall('max', [ ColumnRef('value') ])),
+                                            TypeCast(TypeName([ StringValue('pg_catalog'), StringValue('float8') ]), FuncCall('min', [ ColumnRef('value') ]))),
+                              AConst(FloatValue(bucketSize))), 'bucket_width')
     ];
 
     const statsFromClause = [ RangeVar('__records') ];
@@ -271,7 +330,7 @@ export default class Converter {
       list.push(ResTarget(ColumnRef('name', 'project'), 'project.name'));
     }
 
-    list.push(ResTarget(FuncCall('row_number', null, WindowDef(sort, 530)), '__row_number'));
+    list.push(ResTarget(FuncCall('row_number', null, {over: WindowDef(sort, 530)}), '__row_number'));
 
     return list;
   }
@@ -372,6 +431,10 @@ export default class Converter {
       if (item.range.isValid) {
         systemParts.push(this.nodeForExpression(item.range, options));
       }
+    }
+
+    if (options.expressions) {
+      systemParts.push.apply(systemParts, options.expressions);
     }
 
     const expressions = systemParts.filter(o => o != null);
@@ -574,6 +637,60 @@ export default class Converter {
     ];
 
     return BoolExpr(0, andArgs);
+  }
+
+  summaryWhereClause(query, columnSetting, {boundingBox, searchFilter}) {
+    const expressions = [];
+
+    const converters = {
+      [AggregateType.Empty.name]: () => {
+        return NullTest(0, columnRef(columnSetting.column));
+      },
+      [AggregateType.NotEmpty.name]: () => {
+        return NullTest(1, columnRef(columnSetting.column));
+      },
+      [AggregateType.PercentEmpty.name]: () => {
+        return NullTest(0, columnRef(columnSetting.column));
+      },
+      [AggregateType.PercentNotEmpty.name]: () => {
+        return NullTest(1, columnRef(columnSetting.column));
+      }
+    };
+
+    const expressionConverter = converters[columnSetting.summary.aggregate];
+
+    if (expressionConverter) {
+      expressions.push(expressionConverter());
+    }
+
+    return this.whereClause(query, boundingBox, searchFilter, {expressions});
+  }
+
+  summaryTargetList(query, columnSetting) {
+    const simpleFunctionResTarget = (funcName, param) => {
+      return () => {
+        return [ ResTarget(FuncCall(funcName, [ param || columnRef(columnSetting.column) ]), 'value') ];
+      };
+    };
+
+    const converter = {
+      [AggregateType.Sum.name]: simpleFunctionResTarget('sum'),
+      [AggregateType.Average.name]: simpleFunctionResTarget('avg'),
+      [AggregateType.Min.name]: simpleFunctionResTarget('min'),
+      [AggregateType.Max.name]: simpleFunctionResTarget('max'),
+      [AggregateType.StdDev.name]: simpleFunctionResTarget('stddev'),
+      [AggregateType.Histogram.name]: simpleFunctionResTarget('count'),
+      [AggregateType.Empty.name]: simpleFunctionResTarget('count', AConst(IntegerValue(1))),
+      [AggregateType.NotEmpty.name]: simpleFunctionResTarget('count', AConst(IntegerValue(1))),
+      [AggregateType.Unique.name]: () => {
+        return [ ResTarget(FuncCall('count', [ columnRef(columnSetting.column) ], {agg_distinct: true}), 'value') ];
+      },
+      [AggregateType.PercentEmpty.name]: simpleFunctionResTarget('count'),
+      [AggregateType.PercentNotEmpty.name]: simpleFunctionResTarget('count'),
+      [AggregateType.PercentUnique.name]: simpleFunctionResTarget('count')
+    };
+
+    return converter[columnSetting.summary.aggregate]();
   }
 
   nodeForExpressions(expressions, options) {

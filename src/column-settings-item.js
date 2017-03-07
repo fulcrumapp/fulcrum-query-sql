@@ -1,6 +1,7 @@
 import { Expression } from './expression';
 import { OperatorType } from './operator';
 import ColumnFilter from './column-filter';
+import ColumnSummary from './column-summary';
 
 export default class ColumnSettingsItem {
   constructor(attrs, schema) {
@@ -14,6 +15,7 @@ export default class ColumnSettingsItem {
                                   operator: attrs.column.isDate ? OperatorType.DateBetween.name
                                                                 : OperatorType.Between.name,
                                   field: attrs.column.id}, schema);
+    this._summary = new ColumnSummary({...attrs.summary, field: attrs.column.id}, this._schema);
   }
 
   clear() {
@@ -71,6 +73,10 @@ export default class ColumnSettingsItem {
 
   get filter() {
     return this._filter;
+  }
+
+  get summary() {
+    return this._summary;
   }
 
   get isVisible() {

@@ -7,3 +7,4 @@ export ElementColumn from './schema/element-column';
 export * from './expression';
 export * from './condition';
 export * from './operator';
+export * from './aggregate';

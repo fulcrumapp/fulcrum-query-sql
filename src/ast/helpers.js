@@ -66,12 +66,12 @@ export function ResTarget(node, name = null) {
   };
 }
 
-export function FuncCall(name, args, over) {
+export function FuncCall(name, args, options) {
   return {
     FuncCall: {
       funcname: Array.isArray(name) ? name : [ StringValue(name) ],
       args: args,
-      over: over
+      ...options
     }
   };
 }

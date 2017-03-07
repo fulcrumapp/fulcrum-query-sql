@@ -267,15 +267,15 @@ export default class Query {
   }
 
   toDistinctValuesSQL(options) {
-    return new Deparse().deparse(this.toDistinctValuesAST(options));
+    return this.deparse(this.toDistinctValuesAST(options));
   }
 
   toHistogramSQL(options) {
-    return new Deparse().deparse(this.toHistogramAST(options));
+    return this.deparse(this.toHistogramAST(options));
   }
 
   toCountSQL() {
-    return new Deparse().deparse(this.toCountAST(this.runtimeFilters));
+    return this.deparse(this.toCountAST(this.runtimeFilters));
   }
 
   toSQL({applySort, pageSize, pageIndex, outerLimit}) {
@@ -287,11 +287,16 @@ export default class Query {
       ...this.runtimeFilters
     };
 
-    return new Deparse().deparse(this.toAST(options));
+    return this.deparse(this.toAST(options));
   }
 
   toTileSQL() {
-    return new Deparse().deparse(this.toTileAST(this.runtimeFilters));
+    return this.deparse(this.toTileAST(this.runtimeFilters));
+  }
+
+  toSummarySQL(columnSetting) {
+    const ast = new Converter().toSummaryAST(this, columnSetting, this.runtimeFilters);
+    return this.deparse(ast);
   }
 
   targetList() {
