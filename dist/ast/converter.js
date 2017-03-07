@@ -460,7 +460,7 @@ var Converter = function () {
       joins.push(columnSetting.column.join);
     }
 
-    var fromClause = this.fromClause(query, joins, null);
+    var fromClause = this.fromClause(query, joins, [columnSetting.column]);
 
     var whereClause = this.summaryWhereClause(query, columnSetting, { boundingBox: boundingBox, searchFilter: searchFilter });
 
