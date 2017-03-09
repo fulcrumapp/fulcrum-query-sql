@@ -16,7 +16,7 @@ export class Condition {
     this._expressions = [];
 
     if (attrs.expressions) {
-      this._expressions = attrs.expressions.map((o) => {
+      this._expressions = attrs.expressions.filter(o => o).map((o) => {
         if (o.expressions) {
           return new Condition(o, schema);
         }
@@ -76,9 +76,15 @@ export class Condition {
   }
 
   toJSON() {
+    const expressions = this.expressions.map(o => o.toJSON()).filter(o => o);
+
+    if (!expressions.length) {
+      return null;
+    }
+
     return {
       type: this.type,
-      expressions: this.expressions ? this.expressions.map(o => o.toJSON()) : null
+      expressions: expressions
     };
   }
 
