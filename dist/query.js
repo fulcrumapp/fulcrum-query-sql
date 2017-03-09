@@ -51,12 +51,11 @@ var Query = function () {
     this._ast = attrs.ast;
     this._form = attrs.form;
     this._repeatableKey = attrs.repeatableKey;
-    this._outputs = [];
     this._schema = attrs.schema;
     this._filter = new _condition.Condition(attrs.filter, attrs.schema);
-    this._sorting = new _sortExpressions2.default(attrs.sort, attrs.schema);
+    this._sorting = new _sortExpressions2.default(attrs.sorting, attrs.schema);
     this._boundingBox = attrs.bounding_box || null;
-    this._searchFilter = '';
+    this._searchFilter = attrs.search_filter;
     this._dateFilter = new _expression.Expression(attrs.date_filter || { field: '_server_updated_at' }, attrs.schema);
     this._options = new _queryOptions2.default(attrs.options || {});
     this._columnSettings = new _columnSettings2.default(this._schema, attrs.columns);
@@ -87,9 +86,6 @@ var Query = function () {
         boundingBox = _ref$boundingBox === undefined ? false : _ref$boundingBox;
 
     return {
-      outputs: this.outputs.map(function (o) {
-        return o.toJSON();
-      }),
       filter: this.filter.toJSON(),
       sorting: this.sorting.toJSON(),
       options: this.options.toJSON(),
@@ -99,8 +95,7 @@ var Query = function () {
       columns: this.columnSettings.toJSON(),
       status_filter: this.statusFilter.toJSON(),
       project_filter: this.projectFilter.toJSON(),
-      assignment_filter: this.assignmentFilter.toJSON(),
-      column_settings: this.columnSettings.toJSON()
+      assignment_filter: this.assignmentFilter.toJSON()
     };
   };
 
@@ -389,11 +384,6 @@ var Query = function () {
     key: 'schema',
     get: function get() {
       return this._schema;
-    }
-  }, {
-    key: 'outputs',
-    get: function get() {
-      return this._outputs;
     }
   }, {
     key: 'filter',

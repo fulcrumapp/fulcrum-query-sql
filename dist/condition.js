@@ -32,7 +32,9 @@ var Condition = exports.Condition = function () {
     this._expressions = [];
 
     if (attrs.expressions) {
-      this._expressions = attrs.expressions.map(function (o) {
+      this._expressions = attrs.expressions.filter(function (o) {
+        return o;
+      }).map(function (o) {
         if (o.expressions) {
           return new Condition(o, schema);
         }
@@ -93,11 +95,19 @@ var Condition = exports.Condition = function () {
   };
 
   Condition.prototype.toJSON = function toJSON() {
+    var expressions = this.expressions.map(function (o) {
+      return o.toJSON();
+    }).filter(function (o) {
+      return o;
+    });
+
+    if (!expressions.length) {
+      return null;
+    }
+
     return {
       type: this.type,
-      expressions: this.expressions ? this.expressions.map(function (o) {
-        return o.toJSON();
-      }) : null
+      expressions: expressions
     };
   };
 
