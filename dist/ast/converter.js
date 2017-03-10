@@ -341,7 +341,11 @@ var Converter = function () {
       targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_geometry'), 'geometry'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_status'), 'status'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(query.form.id))), 'form_id')];
     }
 
-    var fromClause = this.fromClause(query);
+    var joins = query.joinColumns.map(function (o) {
+      return o.join;
+    });
+
+    var fromClause = this.fromClause(query, joins);
 
     var whereClause = this.whereClause(query, null, searchFilter);
 
@@ -414,7 +418,13 @@ var Converter = function () {
 
     targetList.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))]), 'count'));
 
-    var joins = options.column.join ? [options.column.join] : null;
+    var joins = query.joinColumns.map(function (o) {
+      return o.join;
+    });
+
+    if (options.column.join) {
+      joins.push(options.column.join);
+    }
 
     var fromClause = this.fromClause(query, joins, [options.column]);
 
