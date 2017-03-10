@@ -87,7 +87,9 @@ export default class Converter {
       ];
     }
 
-    const fromClause = this.fromClause(query);
+    const joins = query.joinColumns.map(o => o.join);
+
+    const fromClause = this.fromClause(query, joins);
 
     const whereClause = this.whereClause(query, null, searchFilter);
 
@@ -192,7 +194,11 @@ export default class Converter {
 
     targetList.push(ResTarget(FuncCall('count', [ AConst(IntegerValue(1)) ]), 'count'));
 
-    const joins = options.column.join ? [ options.column.join ] : null;
+    const joins = query.joinColumns.map(o => o.join);
+
+    if (options.column.join) {
+      joins.push(options.column.join);
+    }
 
     const fromClause = this.fromClause(query, joins, [ options.column ]);
 
