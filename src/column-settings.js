@@ -41,7 +41,11 @@ export default class ColumnSettings {
   }
 
   get enabledColumns() {
-    return this.columns.filter(c => c.isVisible).map(c => c.column);
+    return this.enabledColumnSettings.map(c => c.column);
+  }
+
+  get enabledColumnSettings() {
+    return this.columns.filter(c => c.isVisible);
   }
 
   get columns() {
