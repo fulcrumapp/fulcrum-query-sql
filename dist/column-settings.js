@@ -96,10 +96,15 @@ var ColumnSettings = function () {
   _createClass(ColumnSettings, [{
     key: 'enabledColumns',
     get: function get() {
+      return this.enabledColumnSettings.map(function (c) {
+        return c.column;
+      });
+    }
+  }, {
+    key: 'enabledColumnSettings',
+    get: function get() {
       return this.columns.filter(function (c) {
         return c.isVisible;
-      }).map(function (c) {
-        return c.column;
       });
     }
   }, {
