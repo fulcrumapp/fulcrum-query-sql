@@ -47,7 +47,9 @@ var SortExpressions = function () {
   _createClass(SortExpressions, [{
     key: 'isEmpty',
     get: function get() {
-      return this._expressions.length === 0;
+      return this._expressions.find(function (e) {
+        return e.isValid;
+      }).length !== 0;
     }
   }, {
     key: 'hasSort',

@@ -17,7 +17,7 @@ export default class SortExpressions {
   }
 
   get isEmpty() {
-    return this._expressions.length === 0;
+    return this._expressions.find(e => e.isValid).length !== 0;
   }
 
   get hasSort() {
