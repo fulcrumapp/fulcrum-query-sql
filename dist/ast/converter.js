@@ -419,7 +419,7 @@ var Converter = function () {
     var isLinkedRecord = options.column.element && options.column.element.isRecordLinkElement;
 
     if (isLinkedRecord) {
-      targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('linked_record_id', '__join'), 'value')];
+      targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('linked_record_id', '__linked_join'), 'value')];
     } else if (options.column.isArray) {
       targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('unnest', [valueColumn]), 'value')];
     } else {
@@ -429,7 +429,7 @@ var Converter = function () {
     targetList.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))]), 'count'));
 
     if (isLinkedRecord) {
-      targetList.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_title', '__linked'), 'label'));
+      targetList.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('__title', '__linked'), 'label'));
     }
 
     var joins = query.joinColumns.map(function (o) {
@@ -443,16 +443,23 @@ var Converter = function () {
     if (isLinkedRecord) {
       joins.push({ inner: false,
         tableName: query.form.id + '/' + options.column.element.key,
-        alias: '__join',
+        alias: '__linked_join',
         sourceColumn: '_record_id',
         joinColumn: 'source_record_id' });
 
+      var subQuery = (0, _helpers.SelectStmt)({
+        targetList: [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_title'), '__title'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), '__record_id')],
+        fromClause: [(0, _helpers.RangeVar)('' + options.column.element.form.id)]
+      });
+
+      var linkedSubselect = (0, _helpers.RangeSubselect)(subQuery, (0, _helpers.Alias)('__linked'));
+
       joins.push({ inner: false,
-        tableName: '' + options.column.element.form.id,
+        rarg: linkedSubselect,
         alias: '__linked',
-        sourceTableName: '__join',
+        sourceTableName: '__linked_join',
         sourceColumn: 'linked_record_id',
-        joinColumn: '_record_id' });
+        joinColumn: '__record_id' });
     }
 
     var fromClause = this.fromClause(query, joins, [options.column]);
@@ -765,9 +772,10 @@ var Converter = function () {
         alias = _ref10.alias,
         sourceColumn = _ref10.sourceColumn,
         joinColumn = _ref10.joinColumn,
-        sourceTableName = _ref10.sourceTableName;
+        sourceTableName = _ref10.sourceTableName,
+        rarg = _ref10.rarg;
 
-    return (0, _helpers.JoinExpr)(inner ? 0 : 1, baseQuery, (0, _helpers.RangeVar)(tableName, (0, _helpers.Alias)(alias)), (0, _helpers.AExpr)(0, '=', (0, _helpers.ColumnRef)(sourceColumn, sourceTableName || 'records'), (0, _helpers.ColumnRef)(joinColumn, alias)));
+    return (0, _helpers.JoinExpr)(inner ? 0 : 1, baseQuery, rarg || (0, _helpers.RangeVar)(tableName, (0, _helpers.Alias)(alias)), (0, _helpers.AExpr)(0, '=', (0, _helpers.ColumnRef)(sourceColumn, sourceTableName || 'records'), (0, _helpers.ColumnRef)(joinColumn, alias)));
   };
 
   Converter.duplicateResTargetWithExactName = function duplicateResTargetWithExactName(query, targetList, column, exactName) {
