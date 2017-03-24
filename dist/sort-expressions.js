@@ -49,7 +49,7 @@ var SortExpressions = function () {
     get: function get() {
       return this._expressions.find(function (e) {
         return e.isValid;
-      }).length !== 0;
+      }).length === 0;
     }
   }, {
     key: 'hasSort',
