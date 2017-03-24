@@ -414,9 +414,23 @@ var Converter = function () {
 
     var valueColumn = query.ast ? (0, _helpers.ColumnRef)(options.column.id) : columnRef(options.column);
 
-    var targetList = options.column.isArray ? [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('unnest', [valueColumn]), 'value')] : [(0, _helpers.ResTarget)(valueColumn, 'value')];
+    var targetList = null;
+
+    var isLinkedRecord = options.column.element && options.column.element.isRecordLinkElement;
+
+    if (isLinkedRecord) {
+      targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('linked_record_id', '__join'), 'value')];
+    } else if (options.column.isArray) {
+      targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('unnest', [valueColumn]), 'value')];
+    } else {
+      targetList = [(0, _helpers.ResTarget)(valueColumn, 'value')];
+    }
 
     targetList.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))]), 'count'));
+
+    if (isLinkedRecord) {
+      targetList.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_title', '__linked'), 'label'));
+    }
 
     var joins = query.joinColumns.map(function (o) {
       return o.join;
@@ -424,6 +438,21 @@ var Converter = function () {
 
     if (options.column.join) {
       joins.push(options.column.join);
+    }
+
+    if (isLinkedRecord) {
+      joins.push({ inner: false,
+        tableName: query.form.id + '/' + options.column.element.key,
+        alias: '__join',
+        sourceColumn: '_record_id',
+        joinColumn: 'source_record_id' });
+
+      joins.push({ inner: false,
+        tableName: '' + options.column.element.form.id,
+        alias: '__linked',
+        sourceTableName: '__join',
+        sourceColumn: 'linked_record_id',
+        joinColumn: '_record_id' });
     }
 
     var fromClause = this.fromClause(query, joins, [options.column]);
@@ -434,10 +463,18 @@ var Converter = function () {
 
     var groupClause = [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))];
 
+    if (isLinkedRecord) {
+      groupClause.push((0, _helpers.AConst)((0, _helpers.IntegerValue)(3)));
+    }
+
     var sortClause = [];
 
     if (options.by === 'frequency') {
       sortClause.push((0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(2)), 2, 0));
+    }
+
+    if (isLinkedRecord) {
+      sortClause.push((0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(3)), 1, 0));
     }
 
     sortClause.push((0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), 1, 0));
@@ -637,7 +674,7 @@ var Converter = function () {
         if (!visitedTables[join.alias]) {
           visitedTables[join.alias] = join;
 
-          baseQuery = Converter.leftJoinClause(baseQuery, join.tableName, join.alias, join.sourceColumn, join.joinColumn);
+          baseQuery = Converter.joinClause(baseQuery, join);
         }
       }
     }
@@ -722,8 +759,15 @@ var Converter = function () {
     return filterNode;
   };
 
-  Converter.leftJoinClause = function leftJoinClause(baseQuery, table, alias, sourceColumn, tableColumn) {
-    return (0, _helpers.JoinExpr)(1, baseQuery, (0, _helpers.RangeVar)(table, (0, _helpers.Alias)(alias)), (0, _helpers.AExpr)(0, '=', (0, _helpers.ColumnRef)(sourceColumn, 'records'), (0, _helpers.ColumnRef)(tableColumn, alias)));
+  Converter.joinClause = function joinClause(baseQuery, _ref10) {
+    var inner = _ref10.inner,
+        tableName = _ref10.tableName,
+        alias = _ref10.alias,
+        sourceColumn = _ref10.sourceColumn,
+        joinColumn = _ref10.joinColumn,
+        sourceTableName = _ref10.sourceTableName;
+
+    return (0, _helpers.JoinExpr)(inner ? 0 : 1, baseQuery, (0, _helpers.RangeVar)(tableName, (0, _helpers.Alias)(alias)), (0, _helpers.AExpr)(0, '=', (0, _helpers.ColumnRef)(sourceColumn, sourceTableName || 'records'), (0, _helpers.ColumnRef)(joinColumn, alias)));
   };
 
   Converter.duplicateResTargetWithExactName = function duplicateResTargetWithExactName(query, targetList, column, exactName) {
@@ -731,18 +775,18 @@ var Converter = function () {
 
     // If a column is referenced more than once don't add it again
     for (var _iterator4 = targetList, _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : _iterator4[Symbol.iterator]();;) {
-      var _ref10;
+      var _ref11;
 
       if (_isArray4) {
         if (_i4 >= _iterator4.length) break;
-        _ref10 = _iterator4[_i4++];
+        _ref11 = _iterator4[_i4++];
       } else {
         _i4 = _iterator4.next();
         if (_i4.done) break;
-        _ref10 = _i4.value;
+        _ref11 = _i4.value;
       }
 
-      var existing = _ref10;
+      var existing = _ref11;
 
       if (existing.ResTarget.name === exactName) {
         return;
@@ -907,11 +951,11 @@ var Converter = function () {
     return (0, _helpers.BoolExpr)(0, andArgs);
   };
 
-  Converter.prototype.summaryWhereClause = function summaryWhereClause(query, columnSetting, _ref11) {
+  Converter.prototype.summaryWhereClause = function summaryWhereClause(query, columnSetting, _ref12) {
     var _converters;
 
-    var boundingBox = _ref11.boundingBox,
-        searchFilter = _ref11.searchFilter;
+    var boundingBox = _ref12.boundingBox,
+        searchFilter = _ref12.searchFilter;
 
     var expressions = [];
 

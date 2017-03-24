@@ -16,8 +16,10 @@ var Join = function () {
   function Join(_ref) {
     var alias = _ref.alias,
         tableName = _ref.tableName,
+        sourceTableName = _ref.sourceTableName,
         sourceColumn = _ref.sourceColumn,
-        joinColumn = _ref.joinColumn;
+        joinColumn = _ref.joinColumn,
+        inner = _ref.inner;
 
     _classCallCheck(this, Join);
 
@@ -25,11 +27,18 @@ var Join = function () {
     this._tableName = tableName;
     this._sourceColumn = sourceColumn;
     this._joinColumn = joinColumn;
+    this._inner = !!inner;
+    this._sourceTableName = sourceTableName || null;
 
     (0, _assert2.default)(alias && tableName && sourceColumn && joinColumn, 'invalid join');
   }
 
   _createClass(Join, [{
+    key: 'inner',
+    get: function get() {
+      return this._inner;
+    }
+  }, {
     key: 'alias',
     get: function get() {
       return this._alias;
@@ -43,6 +52,11 @@ var Join = function () {
     key: 'sourceColumn',
     get: function get() {
       return this._sourceColumn;
+    }
+  }, {
+    key: 'sourceTableName',
+    get: function get() {
+      return this._sourceTableName;
     }
   }, {
     key: 'joinColumn',

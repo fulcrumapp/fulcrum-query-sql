@@ -264,23 +264,19 @@ var Query = function () {
     var subJoinColumns = this.joinColumnsWithSorting;
 
     if (this.schema.createdByColumn && subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
-      var join = this.schema.createdByColumn.join;
-      baseQuery = _converter2.default.leftJoinClause(baseQuery, join.tableName, join.alias, join.sourceColumn, join.joinColumn);
+      baseQuery = _converter2.default.joinClause(baseQuery, this.schema.createdByColumn.join);
     }
 
     if (this.schema.updatedByColumn && subJoinColumns.indexOf(this.schema.updatedByColumn) === -1) {
-      var _join = this.schema.updatedByColumn.join;
-      baseQuery = _converter2.default.leftJoinClause(baseQuery, _join.tableName, _join.alias, _join.sourceColumn, _join.joinColumn);
+      baseQuery = _converter2.default.joinClause(baseQuery, this.schema.updatedByColumn.join);
     }
 
     if (this.schema.assignedToColumn && subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
-      var _join2 = this.schema.assignedToColumn.join;
-      baseQuery = _converter2.default.leftJoinClause(baseQuery, _join2.tableName, _join2.alias, _join2.sourceColumn, _join2.joinColumn);
+      baseQuery = _converter2.default.joinClause(baseQuery, this.schema.assignedToColumn.join);
     }
 
     if (this.schema.projectColumn && subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
-      var _join3 = this.schema.projectColumn.join;
-      baseQuery = _converter2.default.leftJoinClause(baseQuery, _join3.tableName, _join3.alias, _join3.sourceColumn, _join3.joinColumn);
+      baseQuery = _converter2.default.joinClause(baseQuery, this.schema.projectColumn.join);
     }
 
     return [baseQuery];
