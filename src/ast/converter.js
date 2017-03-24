@@ -194,7 +194,7 @@ export default class Converter {
     const isLinkedRecord = options.column.element && options.column.element.isRecordLinkElement;
 
     if (isLinkedRecord) {
-      targetList = [ ResTarget(ColumnRef('linked_record_id', '__join'), 'value') ];
+      targetList = [ ResTarget(ColumnRef('linked_record_id', '__linked_join'), 'value') ];
     } else if (options.column.isArray) {
       targetList = [ ResTarget(FuncCall('unnest', [ valueColumn ]), 'value') ];
     } else {
@@ -204,7 +204,7 @@ export default class Converter {
     targetList.push(ResTarget(FuncCall('count', [ AConst(IntegerValue(1)) ]), 'count'));
 
     if (isLinkedRecord) {
-      targetList.push(ResTarget(ColumnRef('_title', '__linked'), 'label'));
+      targetList.push(ResTarget(ColumnRef('__title', '__linked'), 'label'));
     }
 
     const joins = query.joinColumns.map(o => o.join);
@@ -216,16 +216,24 @@ export default class Converter {
     if (isLinkedRecord) {
       joins.push({inner: false,
                   tableName: `${query.form.id}/${options.column.element.key}`,
-                  alias: '__join',
+                  alias: '__linked_join',
                   sourceColumn: '_record_id',
                   joinColumn: 'source_record_id'});
 
+      const subQuery = SelectStmt({
+        targetList: [ ResTarget(ColumnRef('_title'), '__title'),
+                      ResTarget(ColumnRef('_record_id'), '__record_id') ],
+        fromClause: [ RangeVar(`${options.column.element.form.id}`) ]
+      });
+
+      const linkedSubselect = RangeSubselect(subQuery, Alias('__linked'));
+
       joins.push({inner: false,
-                  tableName: `${options.column.element.form.id}`,
+                  rarg: linkedSubselect,
                   alias: '__linked',
-                  sourceTableName: '__join',
+                  sourceTableName: '__linked_join',
                   sourceColumn: 'linked_record_id',
-                  joinColumn: '_record_id'});
+                  joinColumn: '__record_id'});
     }
 
     const fromClause = this.fromClause(query, joins, [ options.column ]);
@@ -494,10 +502,10 @@ export default class Converter {
     return filterNode;
   }
 
-  static joinClause(baseQuery, {inner, tableName, alias, sourceColumn, joinColumn, sourceTableName}) {
+  static joinClause(baseQuery, {inner, tableName, alias, sourceColumn, joinColumn, sourceTableName, rarg}) {
     return JoinExpr(inner ? 0 : 1,
                     baseQuery,
-                    RangeVar(tableName, Alias(alias)),
+                    rarg || RangeVar(tableName, Alias(alias)),
                     AExpr(0, '=', ColumnRef(sourceColumn, sourceTableName || 'records'), ColumnRef(joinColumn, alias)));
   }
 
