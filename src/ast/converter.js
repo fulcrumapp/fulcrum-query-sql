@@ -189,15 +189,43 @@ export default class Converter {
   toDistinctValuesAST(query, options = {}) {
     const valueColumn = query.ast ? ColumnRef(options.column.id) : columnRef(options.column);
 
-    const targetList = options.column.isArray ? [ ResTarget(FuncCall('unnest', [ valueColumn ]), 'value') ]
-                                              : [ ResTarget(valueColumn, 'value') ];
+    let targetList = null;
+
+    const isLinkedRecord = options.column.element && options.column.element.isRecordLinkElement;
+
+    if (isLinkedRecord) {
+      targetList = [ ResTarget(ColumnRef('linked_record_id', '__join'), 'value') ];
+    } else if (options.column.isArray) {
+      targetList = [ ResTarget(FuncCall('unnest', [ valueColumn ]), 'value') ];
+    } else {
+      targetList = [ ResTarget(valueColumn, 'value') ];
+    }
 
     targetList.push(ResTarget(FuncCall('count', [ AConst(IntegerValue(1)) ]), 'count'));
+
+    if (isLinkedRecord) {
+      targetList.push(ResTarget(ColumnRef('_title', '__linked'), 'label'));
+    }
 
     const joins = query.joinColumns.map(o => o.join);
 
     if (options.column.join) {
       joins.push(options.column.join);
+    }
+
+    if (isLinkedRecord) {
+      joins.push({inner: false,
+                  tableName: `${query.form.id}/${options.column.element.key}`,
+                  alias: '__join',
+                  sourceColumn: '_record_id',
+                  joinColumn: 'source_record_id'});
+
+      joins.push({inner: false,
+                  tableName: `${options.column.element.form.id}`,
+                  alias: '__linked',
+                  sourceTableName: '__join',
+                  sourceColumn: 'linked_record_id',
+                  joinColumn: '_record_id'});
     }
 
     const fromClause = this.fromClause(query, joins, [ options.column ]);
@@ -208,10 +236,18 @@ export default class Converter {
 
     const groupClause = [ AConst(IntegerValue(1)) ];
 
+    if (isLinkedRecord) {
+      groupClause.push(AConst(IntegerValue(3)));
+    }
+
     const sortClause = [];
 
     if (options.by === 'frequency') {
       sortClause.push(SortBy(AConst(IntegerValue(2)), 2, 0));
+    }
+
+    if (isLinkedRecord) {
+      sortClause.push(SortBy(AConst(IntegerValue(3)), 1, 0));
     }
 
     sortClause.push(SortBy(AConst(IntegerValue(1)), 1, 0));
@@ -388,7 +424,7 @@ export default class Converter {
         if (!visitedTables[join.alias]) {
           visitedTables[join.alias] = join;
 
-          baseQuery = Converter.leftJoinClause(baseQuery, join.tableName, join.alias, join.sourceColumn, join.joinColumn);
+          baseQuery = Converter.joinClause(baseQuery, join);
         }
       }
     }
@@ -458,11 +494,11 @@ export default class Converter {
     return filterNode;
   }
 
-  static leftJoinClause(baseQuery, table, alias, sourceColumn, tableColumn) {
-    return JoinExpr(1,
+  static joinClause(baseQuery, {inner, tableName, alias, sourceColumn, joinColumn, sourceTableName}) {
+    return JoinExpr(inner ? 0 : 1,
                     baseQuery,
-                    RangeVar(table, Alias(alias)),
-                    AExpr(0, '=', ColumnRef(sourceColumn, 'records'), ColumnRef(tableColumn, alias)));
+                    RangeVar(tableName, Alias(alias)),
+                    AExpr(0, '=', ColumnRef(sourceColumn, sourceTableName || 'records'), ColumnRef(joinColumn, alias)));
   }
 
   static duplicateResTargetWithExactName(query, targetList, column, exactName) {

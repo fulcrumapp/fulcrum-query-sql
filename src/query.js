@@ -427,23 +427,19 @@ export default class Query {
     const subJoinColumns = this.joinColumnsWithSorting;
 
     if (this.schema.createdByColumn && subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
-      const join = this.schema.createdByColumn.join;
-      baseQuery = Converter.leftJoinClause(baseQuery, join.tableName, join.alias, join.sourceColumn, join.joinColumn);
+      baseQuery = Converter.joinClause(baseQuery, this.schema.createdByColumn.join);
     }
 
     if (this.schema.updatedByColumn && subJoinColumns.indexOf(this.schema.updatedByColumn) === -1) {
-      const join = this.schema.updatedByColumn.join;
-      baseQuery = Converter.leftJoinClause(baseQuery, join.tableName, join.alias, join.sourceColumn, join.joinColumn);
+      baseQuery = Converter.joinClause(baseQuery, this.schema.updatedByColumn.join);
     }
 
     if (this.schema.assignedToColumn && subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
-      const join = this.schema.assignedToColumn.join;
-      baseQuery = Converter.leftJoinClause(baseQuery, join.tableName, join.alias, join.sourceColumn, join.joinColumn);
+      baseQuery = Converter.joinClause(baseQuery, this.schema.assignedToColumn.join);
     }
 
     if (this.schema.projectColumn && subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
-      const join = this.schema.projectColumn.join;
-      baseQuery = Converter.leftJoinClause(baseQuery, join.tableName, join.alias, join.sourceColumn, join.joinColumn);
+      baseQuery = Converter.joinClause(baseQuery, this.schema.projectColumn.join);
     }
 
     return [ baseQuery ];
