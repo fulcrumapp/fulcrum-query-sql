@@ -78,7 +78,6 @@ export default class RepeatableSchema extends FormFieldSchema {
           return feature.parentID;
         }
 
-        console.log('PARENT', feature);
         return options && options.parent.id;
       });
     }
