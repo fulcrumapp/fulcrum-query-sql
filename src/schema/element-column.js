@@ -68,7 +68,7 @@ export default class ElementColumn extends Column {
     const value = this.valueFrom(feature);
 
     if (value) {
-      return value.format({part: this.part, ...options});
+      return value.format({feature, part: this.part, ...options});
     }
 
     return null;

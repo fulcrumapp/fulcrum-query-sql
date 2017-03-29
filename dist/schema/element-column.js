@@ -60,7 +60,7 @@ var ElementColumn = function (_Column) {
     var value = this.valueFrom(feature);
 
     if (value) {
-      return value.format(_extends({ part: this.part }, options));
+      return value.format(_extends({ feature: feature, part: this.part }, options));
     }
 
     return null;
