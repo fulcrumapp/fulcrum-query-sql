@@ -84,7 +84,6 @@ var RepeatableSchema = function (_FormFieldSchema) {
           return feature.parentID;
         }
 
-        console.log('PARENT', feature);
         return options && options.parent.id;
       });
     }
