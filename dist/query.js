@@ -56,7 +56,7 @@ var Query = function () {
     this._sorting = new _sortExpressions2.default(attrs.sorting, attrs.schema);
     this._boundingBox = attrs.bounding_box || null;
     this._searchFilter = attrs.search_filter;
-    this._dateFilter = new _expression.Expression(attrs.date_filter || { field: '_server_updated_at' }, attrs.schema);
+    this._dateFilter = new _expression.Expression(attrs.date_filter || { field: this.defaultDateField }, attrs.schema);
     this._options = new _queryOptions2.default(attrs.options || {});
     this._columnSettings = new _columnSettings2.default(this._schema, attrs.columns);
     this._statusFilter = new _columnFilter2.default(_extends({}, attrs.status_filter, { field: attrs.repeatableKey ? '_record_status' : '_status' }), this._schema);
@@ -77,7 +77,7 @@ var Query = function () {
     this._sorting = new _sortExpressions2.default(null, this._schema);
     // this._boundingBox = null;
     this._searchFilter = '';
-    this._dateFilter = new _expression.Expression({ field: '_server_updated_at' }, this._schema);
+    this._dateFilter = new _expression.Expression({ field: this.defaultDateField }, this._schema);
   };
 
   Query.prototype.toJSON = function toJSON() {
@@ -508,6 +508,11 @@ var Query = function () {
       return joins;
     }
   }, {
+    key: 'defaultDateField',
+    get: function get() {
+      return this.repeatableKey ? '_updated_at' : '_server_updated_at';
+    }
+  }, {
     key: 'boundingBox',
     set: function set(box) {
       this._boundingBox = box;
@@ -559,6 +564,10 @@ var Query = function () {
     get: function get() {
       if (this.ast) {
         return [(0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), 2, 0)];
+      }
+
+      if (this.repeatableKey) {
+        return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)('_updated_at'), 2, 0)];
       }
 
       return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)('_server_updated_at'), 2, 0)];

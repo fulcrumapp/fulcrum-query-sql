@@ -32,7 +32,7 @@ export default class Query {
     this._sorting = new SortExpressions(attrs.sorting, attrs.schema);
     this._boundingBox = attrs.bounding_box || null;
     this._searchFilter = attrs.search_filter;
-    this._dateFilter = new Expression(attrs.date_filter || {field: '_server_updated_at'}, attrs.schema);
+    this._dateFilter = new Expression(attrs.date_filter || {field: this.defaultDateField}, attrs.schema);
     this._options = new QueryOptions(attrs.options || {});
     this._columnSettings = new ColumnSettings(this._schema, attrs.columns);
     this._statusFilter = new ColumnFilter({...attrs.status_filter, field: attrs.repeatableKey ? '_record_status' : '_status'}, this._schema);
@@ -163,6 +163,10 @@ export default class Query {
     return joins;
   }
 
+  get defaultDateField() {
+    return this.repeatableKey ? '_updated_at' : '_server_updated_at';
+  }
+
   clearAllFilters() {
     this.statusFilter.reset();
     this.projectFilter.reset();
@@ -174,7 +178,7 @@ export default class Query {
     this._sorting = new SortExpressions(null, this._schema);
     // this._boundingBox = null;
     this._searchFilter = '';
-    this._dateFilter = new Expression({field: '_server_updated_at'}, this._schema);
+    this._dateFilter = new Expression({field: this.defaultDateField}, this._schema);
   }
 
   set boundingBox(box) {
@@ -472,6 +476,10 @@ export default class Query {
   get systemSortClause() {
     if (this.ast) {
       return [ SortBy(AConst(IntegerValue(1)), 2, 0) ];
+    }
+
+    if (this.repeatableKey) {
+      return [ SortBy(ColumnRef('_updated_at'), 2, 0) ];
     }
 
     return [ SortBy(ColumnRef('_server_updated_at'), 2, 0) ];
