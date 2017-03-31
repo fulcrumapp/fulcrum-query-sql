@@ -88,6 +88,10 @@ export class Expression {
     return this._field;
   }
 
+  set field(field) {
+    this._field = field;
+  }
+
   get column() {
     return this._schema.columnForFieldKey(this.field);
   }

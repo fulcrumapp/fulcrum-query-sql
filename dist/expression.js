@@ -207,6 +207,9 @@ var Expression = exports.Expression = function () {
     key: 'field',
     get: function get() {
       return this._field;
+    },
+    set: function set(field) {
+      this._field = field;
     }
   }, {
     key: 'column',
