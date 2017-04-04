@@ -522,9 +522,9 @@ export default class Query {
       parts.push(description);
     }
 
-    if ((description = this.filter.toHumanDescription())) {
-      parts.push(description);
-    }
+    // if ((description = this.filter.toHumanDescription())) {
+    //   parts.push(description);
+    // }
 
     if ((description = this.sorting.toHumanDescription())) {
       parts.push(description);

@@ -105,7 +105,7 @@ export default class ColumnFilter {
     }
 
     return [
-      this.field,
+      this.column ? this.column.name : this.field,
       'one of',
       '[' + this.value.join(', ') + ']'
     ].join(' ');

@@ -227,7 +227,7 @@ export class Expression {
     }
 
     const parts = [
-      this.columnName,
+      this.column ? this.column.name : this.columnName,
       OperatorsByValue[this.operator].label
     ];
 

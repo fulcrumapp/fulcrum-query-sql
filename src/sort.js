@@ -57,6 +57,6 @@ export class Sort {
       return null;
     }
 
-    return [ this.columnName, this.direction.toUpperCase() ].join(' ');
+    return [ this.column ? this.column.name : this.columnName, this.direction.toUpperCase() ].join(' ');
   }
 }
