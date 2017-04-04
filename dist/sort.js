@@ -36,7 +36,7 @@ var Sort = exports.Sort = function () {
       return null;
     }
 
-    return [this.columnName, this.direction.toUpperCase()].join(' ');
+    return [this.column ? this.column.name : this.columnName, this.direction.toUpperCase()].join(' ');
   };
 
   _createClass(Sort, [{

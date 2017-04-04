@@ -113,7 +113,7 @@ var Expression = exports.Expression = function () {
       return null;
     }
 
-    var parts = [this.columnName, _operator.OperatorsByValue[this.operator].label];
+    var parts = [this.column ? this.column.name : this.columnName, _operator.OperatorsByValue[this.operator].label];
 
     if (this.supportsValue) {
       if (this.value.length === 1) {

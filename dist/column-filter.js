@@ -81,7 +81,7 @@ var ColumnFilter = function () {
       return null;
     }
 
-    return [this.field, 'one of', '[' + this.value.join(', ') + ']'].join(' ');
+    return [this.column ? this.column.name : this.field, 'one of', '[' + this.value.join(', ') + ']'].join(' ');
   };
 
   _createClass(ColumnFilter, [{
