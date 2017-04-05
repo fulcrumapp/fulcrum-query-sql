@@ -60,8 +60,8 @@ var Query = function () {
     this._options = new _queryOptions2.default(attrs.options || {});
     this._columnSettings = new _columnSettings2.default(this._schema, attrs.columns);
     this._statusFilter = new _columnFilter2.default(_extends({}, attrs.status_filter, { field: attrs.repeatableKey ? '_record_status' : '_status' }), this._schema);
-    this._projectFilter = new _columnFilter2.default(_extends({}, attrs.project_filter, { field: 'project.name' }), this._schema);
-    this._assignmentFilter = new _columnFilter2.default(_extends({}, attrs.assignment_filter, { field: 'assigned_to.name' }), this._schema);
+    this._projectFilter = new _columnFilter2.default(_extends({}, attrs.project_filter, { field: attrs.repeatableKey ? 'record_project.name' : 'project.name' }), this._schema);
+    this._assignmentFilter = new _columnFilter2.default(_extends({}, attrs.assignment_filter, { field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name' }), this._schema);
 
     this.setup();
   }
@@ -218,22 +218,22 @@ var Query = function () {
     }
 
     if (this.schema.assignedToColumn) {
-      var alias = this.repeatableKey ? 'record_assigned_to' : 'assigned_to';
+      var alias = this.schema.assignedToColumn.join.alias;
 
       if (subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
-        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'assigned_to'), alias));
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', alias), alias));
       } else {
-        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('assigned_to.name'), alias));
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)(alias + '.name'), alias));
       }
     }
 
     if (this.schema.projectColumn) {
-      var _alias = this.repeatableKey ? 'record_project' : 'project';
+      var _alias = this.schema.projectColumn.join.alias;
 
       if (subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
-        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'project'), _alias));
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', _alias), _alias));
       } else {
-        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('project.name'), _alias));
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)(_alias + '.name'), _alias));
       }
     }
 

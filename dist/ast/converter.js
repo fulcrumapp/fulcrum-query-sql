@@ -598,11 +598,11 @@ var Converter = function () {
     }
 
     if (subJoinColumns.indexOf(query.schema.assignedToColumn) !== -1) {
-      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'assigned_to'), 'assigned_to.name'));
+      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', query.schema.assignedToColumn.join.alias), query.schema.assignedToColumn.id));
     }
 
     if (subJoinColumns.indexOf(query.schema.projectColumn) !== -1) {
-      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'project'), 'project.name'));
+      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', query.schema.projectColumn.join.alias), query.schema.projectColumn.id));
     }
 
     list.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, { over: (0, _helpers.WindowDef)(sort, 530) }), '__row_number'));

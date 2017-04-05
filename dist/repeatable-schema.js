@@ -97,15 +97,15 @@ var RepeatableSchema = function (_FormFieldSchema) {
     this.addSystemColumn('Device Updated', 'updatedAt', '_updated_at', 'timestamp');
 
     if (this.formSchema.form.isProjectEnabled) {
-      this.projectColumn = this.addSystemColumn('Project', 'recordProjectName', 'project.name', 'string', null, { tableName: 'projects',
-        alias: 'project',
+      this.projectColumn = this.addSystemColumn('Project', 'recordProjectName', 'record_project.name', 'string', null, { tableName: 'projects',
+        alias: 'record_project',
         sourceColumn: '_record_project_id',
         joinColumn: 'project_id' });
     }
 
     if (this.formSchema.form.isAssignmentEnabled) {
-      this.assignedToColumn = this.addSystemColumn('Assigned', 'recordAssignedToName', 'assigned_to.name', 'string', null, { tableName: 'memberships',
-        alias: 'assigned_to',
+      this.assignedToColumn = this.addSystemColumn('Assigned', 'recordAssignedToName', 'record_assigned_to.name', 'string', null, { tableName: 'memberships',
+        alias: 'record_assigned_to',
         sourceColumn: '_record_assigned_to_id',
         joinColumn: 'user_id' });
     }
