@@ -128,7 +128,7 @@ var RepeatableSchema = function (_FormFieldSchema) {
 
       this.addSystemColumn('Altitude', 'altitude', '_altitude', 'double');
       this.addSystemColumn('Accuracy', 'horizontalAccuracy', '_horizontal_accuracy', 'double');
-      this.addSystemColumn('Changeset', 'changesetID', '_changeset_id', 'integer');
+      this.addSystemColumn('Changeset', 'changesetID', '_changeset_id', 'string');
 
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');

@@ -709,6 +709,7 @@ var Converter = function () {
     systemParts.push(this.createExpressionForColumnFilter(query.statusFilter, options));
     systemParts.push(this.createExpressionForColumnFilter(query.projectFilter, options));
     systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
+    systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
 
     for (var _iterator3 = query.columnSettings.columns, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator]();;) {
       var _ref9;

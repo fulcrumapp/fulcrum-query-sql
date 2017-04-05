@@ -62,12 +62,14 @@ var Query = function () {
     this._statusFilter = new _columnFilter2.default(_extends({}, attrs.status_filter, { field: attrs.repeatableKey ? '_record_status' : '_status' }), this._schema);
     this._projectFilter = new _columnFilter2.default(_extends({}, attrs.project_filter, { field: attrs.repeatableKey ? 'record_project.name' : 'project.name' }), this._schema);
     this._assignmentFilter = new _columnFilter2.default(_extends({}, attrs.assignment_filter, { field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name' }), this._schema);
+    this._changesetFilter = new _columnFilter2.default(_extends({}, attrs.changeset_filter, { field: '_changeset_id' }), this._schema);
 
     this.setup();
   }
 
   Query.prototype.clearAllFilters = function clearAllFilters() {
     this.statusFilter.reset();
+    this.changesetFilter.reset();
     this.projectFilter.reset();
     this.assignmentFilter.reset();
 
@@ -94,6 +96,7 @@ var Query = function () {
       date_filter: this.dateFilter.toJSON(),
       columns: this.columnSettings.toJSON(),
       status_filter: this.statusFilter.toJSON(),
+      changeset_filter: this.changesetFilter.toJSON(),
       project_filter: this.projectFilter.toJSON(),
       assignment_filter: this.assignmentFilter.toJSON()
     };
@@ -407,6 +410,11 @@ var Query = function () {
       return this._statusFilter;
     }
   }, {
+    key: 'changesetFilter',
+    get: function get() {
+      return this._changesetFilter;
+    }
+  }, {
     key: 'projectFilter',
     get: function get() {
       return this._projectFilter;
@@ -424,7 +432,7 @@ var Query = function () {
   }, {
     key: 'hasFilter',
     get: function get() {
-      return this.statusFilter.hasFilter || this.projectFilter.hasFilter || this.assignmentFilter.hasFilter || this.columnSettings.columns.find(function (o) {
+      return this.statusFilter.hasFilter || this.projectFilter.hasFilter || this.assignmentFilter.hasFilter || this.changesetFilter.hasFilter || this.columnSettings.columns.find(function (o) {
         return o.hasFilter;
       }) || this.searchFilter || this.dateFilter.isValid || this.filter.expressions.find(function (o) {
         return o.isValid;
