@@ -458,6 +458,7 @@ export default class Converter {
     systemParts.push(this.createExpressionForColumnFilter(query.statusFilter, options));
     systemParts.push(this.createExpressionForColumnFilter(query.projectFilter, options));
     systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
+    systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
 
     for (const item of query.columnSettings.columns) {
       if (item.hasFilter) {

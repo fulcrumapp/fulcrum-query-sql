@@ -38,6 +38,7 @@ export default class Query {
     this._statusFilter = new ColumnFilter({...attrs.status_filter, field: attrs.repeatableKey ? '_record_status' : '_status'}, this._schema);
     this._projectFilter = new ColumnFilter({...attrs.project_filter, field: attrs.repeatableKey ? 'record_project.name' : 'project.name'}, this._schema);
     this._assignmentFilter = new ColumnFilter({...attrs.assignment_filter, field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name'}, this._schema);
+    this._changesetFilter = new ColumnFilter({...attrs.changeset_filter, field: '_changeset_id'}, this._schema);
 
     this.setup();
   }
@@ -78,6 +79,10 @@ export default class Query {
     return this._statusFilter;
   }
 
+  get changesetFilter() {
+    return this._changesetFilter;
+  }
+
   get projectFilter() {
     return this._projectFilter;
   }
@@ -94,6 +99,7 @@ export default class Query {
     return this.statusFilter.hasFilter ||
            this.projectFilter.hasFilter ||
            this.assignmentFilter.hasFilter ||
+           this.changesetFilter.hasFilter ||
            this.columnSettings.columns.find(o => o.hasFilter) ||
            this.searchFilter ||
            this.dateFilter.isValid ||
@@ -169,6 +175,7 @@ export default class Query {
 
   clearAllFilters() {
     this.statusFilter.reset();
+    this.changesetFilter.reset();
     this.projectFilter.reset();
     this.assignmentFilter.reset();
 
@@ -215,6 +222,7 @@ export default class Query {
       date_filter: this.dateFilter.toJSON(),
       columns: this.columnSettings.toJSON(),
       status_filter: this.statusFilter.toJSON(),
+      changeset_filter: this.changesetFilter.toJSON(),
       project_filter: this.projectFilter.toJSON(),
       assignment_filter: this.assignmentFilter.toJSON()
     };
