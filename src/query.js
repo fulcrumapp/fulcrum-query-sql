@@ -36,8 +36,8 @@ export default class Query {
     this._options = new QueryOptions(attrs.options || {});
     this._columnSettings = new ColumnSettings(this._schema, attrs.columns);
     this._statusFilter = new ColumnFilter({...attrs.status_filter, field: attrs.repeatableKey ? '_record_status' : '_status'}, this._schema);
-    this._projectFilter = new ColumnFilter({...attrs.project_filter, field: 'project.name'}, this._schema);
-    this._assignmentFilter = new ColumnFilter({...attrs.assignment_filter, field: 'assigned_to.name'}, this._schema);
+    this._projectFilter = new ColumnFilter({...attrs.project_filter, field: attrs.repeatableKey ? 'record_project.name' : 'project.name'}, this._schema);
+    this._assignmentFilter = new ColumnFilter({...attrs.assignment_filter, field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name'}, this._schema);
 
     this.setup();
   }
@@ -330,22 +330,22 @@ export default class Query {
     }
 
     if (this.schema.assignedToColumn) {
-      const alias = this.repeatableKey ? 'record_assigned_to' : 'assigned_to';
+      const alias = this.schema.assignedToColumn.join.alias;
 
       if (subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
-        joinedColumns.push(ResTarget(ColumnRef('name', 'assigned_to'), alias));
+        joinedColumns.push(ResTarget(ColumnRef('name', alias), alias));
       } else {
-        joinedColumns.push(ResTarget(ColumnRef('assigned_to.name'), alias));
+        joinedColumns.push(ResTarget(ColumnRef(alias + '.name'), alias));
       }
     }
 
     if (this.schema.projectColumn) {
-      const alias = this.repeatableKey ? 'record_project' : 'project';
+      const alias = this.schema.projectColumn.join.alias;
 
       if (subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
-        joinedColumns.push(ResTarget(ColumnRef('name', 'project'), alias));
+        joinedColumns.push(ResTarget(ColumnRef('name', alias), alias));
       } else {
-        joinedColumns.push(ResTarget(ColumnRef('project.name'), alias));
+        joinedColumns.push(ResTarget(ColumnRef(alias + '.name'), alias));
       }
     }
 

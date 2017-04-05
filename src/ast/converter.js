@@ -377,11 +377,11 @@ export default class Converter {
     }
 
     if (subJoinColumns.indexOf(query.schema.assignedToColumn) !== -1) {
-      list.push(ResTarget(ColumnRef('name', 'assigned_to'), 'assigned_to.name'));
+      list.push(ResTarget(ColumnRef('name', query.schema.assignedToColumn.join.alias), query.schema.assignedToColumn.id));
     }
 
     if (subJoinColumns.indexOf(query.schema.projectColumn) !== -1) {
-      list.push(ResTarget(ColumnRef('name', 'project'), 'project.name'));
+      list.push(ResTarget(ColumnRef('name', query.schema.projectColumn.join.alias), query.schema.projectColumn.id));
     }
 
     list.push(ResTarget(FuncCall('row_number', null, {over: WindowDef(sort, 530)}), '__row_number'));

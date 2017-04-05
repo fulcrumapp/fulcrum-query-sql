@@ -98,11 +98,11 @@ export default class RepeatableSchema extends FormFieldSchema {
     if (this.formSchema.form.isProjectEnabled) {
       this.projectColumn = this.addSystemColumn('Project',
                                                 'recordProjectName',
-                                                'project.name',
+                                                'record_project.name',
                                                 'string',
                                                 null,
                                                 {tableName: 'projects',
-                                                 alias: 'project',
+                                                 alias: 'record_project',
                                                  sourceColumn: '_record_project_id',
                                                  joinColumn: 'project_id'});
     }
@@ -110,11 +110,11 @@ export default class RepeatableSchema extends FormFieldSchema {
     if (this.formSchema.form.isAssignmentEnabled) {
       this.assignedToColumn = this.addSystemColumn('Assigned',
                                                    'recordAssignedToName',
-                                                   'assigned_to.name',
+                                                   'record_assigned_to.name',
                                                    'string',
                                                    null,
                                                    {tableName: 'memberships',
-                                                    alias: 'assigned_to',
+                                                    alias: 'record_assigned_to',
                                                     sourceColumn: '_record_assigned_to_id',
                                                     joinColumn: 'user_id'});
     }
