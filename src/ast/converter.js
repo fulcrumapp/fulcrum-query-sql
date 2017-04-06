@@ -80,10 +80,12 @@ export default class Converter {
         ResTarget(ColumnRef('__geometry'))
       ];
     } else {
+      const statusColumn = query.schema.repeatable ? '_record_status' : '_status';
+
       targetList = [
         ResTarget(ColumnRef('_record_id'), 'id'),
         ResTarget(ColumnRef('_geometry'), 'geometry'),
-        ResTarget(ColumnRef('_status'), 'status'),
+        ResTarget(ColumnRef(statusColumn), 'status'),
         ResTarget(TypeCast(TypeName('text'), AConst(StringValue(query.form.id))), 'form_id')
       ];
     }

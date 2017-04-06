@@ -339,7 +339,9 @@ var Converter = function () {
 
       targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, { over: (0, _helpers.WindowDef)(sort, 530) }), '__id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('__geometry'))];
     } else {
-      targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_geometry'), 'geometry'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_status'), 'status'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(query.form.id))), 'form_id')];
+      var statusColumn = query.schema.repeatable ? '_record_status' : '_status';
+
+      targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_geometry'), 'geometry'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)(statusColumn), 'status'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(query.form.id))), 'form_id')];
     }
 
     var joins = query.joinColumns.map(function (o) {

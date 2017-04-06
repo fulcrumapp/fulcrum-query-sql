@@ -70,7 +70,7 @@ export default class RepeatableSchema extends FormFieldSchema {
           return feature.recordID;
         }
 
-        return options && options.record.id;
+        return options && options.record && options.record.id;
       });
 
       this.addSystemColumn('Parent ID', null, '_parent_id', 'string', (feature, options) => {
@@ -78,7 +78,7 @@ export default class RepeatableSchema extends FormFieldSchema {
           return feature.parentID;
         }
 
-        return options && options.parent.id;
+        return options && options.parent && options.parent.id;
       });
     }
 
