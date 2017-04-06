@@ -350,9 +350,9 @@ var Converter = function () {
 
     var whereClause = this.whereClause(query, null, searchFilter);
 
-    var limitClause = (0, _helpers.AConst)((0, _helpers.IntegerValue)(MAX_TILE_RECORDS));
+    var limitCount = this.limitCount(MAX_TILE_RECORDS);
 
-    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause, limitClause: limitClause });
+    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause, limitCount: limitCount });
   };
 
   Converter.prototype.toHistogramAST = function toHistogramAST(query, _ref4) {
@@ -489,9 +489,9 @@ var Converter = function () {
 
     sortClause.push((0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), 1, 0));
 
-    var limitClause = (0, _helpers.AConst)((0, _helpers.IntegerValue)(MAX_DISTINCT_VALUES));
+    var limitCount = this.limitCount(MAX_DISTINCT_VALUES);
 
-    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause, groupClause: groupClause, sortClause: sortClause, limitClause: limitClause });
+    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause, groupClause: groupClause, sortClause: sortClause, limitCount: limitCount });
   };
 
   Converter.prototype.toSummaryAST = function toSummaryAST(query, columnSetting, _ref5) {

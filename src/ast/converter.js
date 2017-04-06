@@ -94,9 +94,9 @@ export default class Converter {
 
     const whereClause = this.whereClause(query, null, searchFilter);
 
-    const limitClause = AConst(IntegerValue(MAX_TILE_RECORDS));
+    const limitCount = this.limitCount(MAX_TILE_RECORDS);
 
-    return SelectStmt({targetList, fromClause, whereClause, limitClause});
+    return SelectStmt({targetList, fromClause, whereClause, limitCount});
   }
 
   toHistogramAST(query, {column, bucketSize, type, sort, pageSize, pageIndex, boundingBox, searchFilter}) {
@@ -263,9 +263,9 @@ export default class Converter {
 
     sortClause.push(SortBy(AConst(IntegerValue(1)), 1, 0));
 
-    const limitClause = AConst(IntegerValue(MAX_DISTINCT_VALUES));
+    const limitCount = this.limitCount(MAX_DISTINCT_VALUES);
 
-    return SelectStmt({targetList, fromClause, whereClause, groupClause, sortClause, limitClause});
+    return SelectStmt({targetList, fromClause, whereClause, groupClause, sortClause, limitCount});
   }
 
   toSummaryAST(query, columnSetting, {boundingBox, searchFilter}) {
