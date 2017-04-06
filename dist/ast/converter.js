@@ -21,6 +21,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MAX_DISTINCT_VALUES = 1000;
+var MAX_TILE_RECORDS = 1000;
 
 var columnRef = function columnRef(column) {
   return column.isSQL ? (0, _helpers.ColumnRef)(column.id, column.source) : (0, _helpers.ColumnRef)(column.columnName, column.source);
@@ -349,7 +350,9 @@ var Converter = function () {
 
     var whereClause = this.whereClause(query, null, searchFilter);
 
-    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause });
+    var limitClause = (0, _helpers.AConst)((0, _helpers.IntegerValue)(MAX_TILE_RECORDS));
+
+    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause, limitClause: limitClause });
   };
 
   Converter.prototype.toHistogramAST = function toHistogramAST(query, _ref4) {

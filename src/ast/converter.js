@@ -31,6 +31,7 @@ import { AggregateType } from '../aggregate';
 import moment from 'moment-timezone';
 
 const MAX_DISTINCT_VALUES = 1000;
+const MAX_TILE_RECORDS = 1000;
 
 const columnRef = (column) => {
   return column.isSQL ? ColumnRef(column.id, column.source)
@@ -93,7 +94,9 @@ export default class Converter {
 
     const whereClause = this.whereClause(query, null, searchFilter);
 
-    return SelectStmt({targetList, fromClause, whereClause});
+    const limitClause = AConst(IntegerValue(MAX_TILE_RECORDS));
+
+    return SelectStmt({targetList, fromClause, whereClause, limitClause});
   }
 
   toHistogramAST(query, {column, bucketSize, type, sort, pageSize, pageIndex, boundingBox, searchFilter}) {
