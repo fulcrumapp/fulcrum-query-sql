@@ -91,6 +91,7 @@ export default class RepeatableSchema extends FormFieldSchema {
                                '_record_status');
     }
 
+    this.addSystemColumn('Title', 'displayValue', '_title', 'string');
     this.addSystemColumn('Version', 'version', '_version', 'integer');
     this.addSystemColumn('Device Created', 'createdAt', '_created_at', 'timestamp');
     this.addSystemColumn('Device Updated', 'updatedAt', '_updated_at', 'timestamp');

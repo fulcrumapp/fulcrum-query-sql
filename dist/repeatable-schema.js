@@ -92,6 +92,7 @@ var RepeatableSchema = function (_FormFieldSchema) {
       this.addRawElementColumn(this.formSchema.form.statusField, this._rawColumnsByKey._record_status, '_record_status', 'string', null, '_record_status');
     }
 
+    this.addSystemColumn('Title', 'displayValue', '_title', 'string');
     this.addSystemColumn('Version', 'version', '_version', 'integer');
     this.addSystemColumn('Device Created', 'createdAt', '_created_at', 'timestamp');
     this.addSystemColumn('Device Updated', 'updatedAt', '_updated_at', 'timestamp');

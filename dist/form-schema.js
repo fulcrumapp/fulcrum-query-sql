@@ -104,6 +104,7 @@ var FormSchema = function (_FormFieldSchema) {
       this.addRawElementColumn(this.form.statusField, this._rawColumnsByKey._status, '_status', 'string', null, '_status');
     }
 
+    this.addSystemColumn('Title', 'displayValue', '_title', 'string');
     this.addSystemColumn('Version', 'version', '_version', 'integer');
     this.addSystemColumn('Created', 'createdAt', '_server_created_at', 'timestamp');
     this.addSystemColumn('Updated', 'updatedAt', '_server_updated_at', 'timestamp');
