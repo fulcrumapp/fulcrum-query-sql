@@ -984,13 +984,20 @@ export default class Converter {
   }
 
   TextMatchConverter = (expression) => {
-    return AExpr(0, '~*', this.ConvertToText(expression.column),
-                 AConst(StringValue(expression.scalarValue)));
+    if (this.IsValidRegExp(expression.scalarValue)) {
+      return AExpr(0, '~*', this.ConvertToText(expression.column),
+                   AConst(StringValue(expression.scalarValue)));
+    }
+
+    return null;
   }
 
   TextNotMatchConverter = (expression) => {
-    return AExpr(0, '!~*', this.ConvertToText(expression.column),
-                 AConst(StringValue(expression.scalarValue)));
+    if (this.IsValidRegExp(expression.scalarValue)) {
+      return AExpr(0, '!~*', this.ConvertToText(expression.column),
+                   AConst(StringValue(expression.scalarValue)));
+    }
+    return null;
   }
 
   ArrayAnyOfConverter = (expression) => {
@@ -1109,5 +1116,13 @@ export default class Converter {
     }
 
     return columnRef(column);
+  }
+
+  IsValidRegExp = (string) => {
+    try {
+      return !!(new RegExp(string));
+    } catch (ex) {
+      return false;
+    }
   }
 }
