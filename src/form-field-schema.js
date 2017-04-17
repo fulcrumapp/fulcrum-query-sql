@@ -108,7 +108,6 @@ export default class FormFieldSchema {
 
       for (const element of elements) {
         const skip = element.isSectionElement ||
-                     element.isRepeatableElement ||
                      element.isLabelElement ||
                      element.isHidden;
 
