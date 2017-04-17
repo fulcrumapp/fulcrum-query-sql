@@ -74,6 +74,16 @@ export default class ElementColumn extends Column {
     return null;
   }
 
+  get supportsRanges() {
+    // Repeatable columns are an exception, they don't support ranges yet because we don't
+    // have a physical column to query.
+    if (this.element.isRepeatableElement) {
+      return false;
+    }
+
+    return this.isNumber || this.isDate;
+  }
+
   get isSortable() {
     if (this.element.isPhotoElement ||
         this.element.isVideoElement ||

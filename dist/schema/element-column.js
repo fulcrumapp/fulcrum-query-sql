@@ -114,6 +114,17 @@ var ElementColumn = function (_Column) {
       return this._part;
     }
   }, {
+    key: 'supportsRanges',
+    get: function get() {
+      // Repeatable columns are an exception, they don't support ranges yet because we don't
+      // have a physical column to query.
+      if (this.element.isRepeatableElement) {
+        return false;
+      }
+
+      return this.isNumber || this.isDate;
+    }
+  }, {
     key: 'isSortable',
     get: function get() {
       if (this.element.isPhotoElement || this.element.isVideoElement || this.element.isAudioElement || this.element.isSignatureElement || this.element.isRepeatableElement) {
