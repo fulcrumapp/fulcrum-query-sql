@@ -582,6 +582,8 @@ export function availableOperatorsForColumn(column) {
     } else {
       operators.push.apply(operators, TEXTUAL_OPERATORS);
     }
+  } else {
+    operators.push.apply(operators, TEXTUAL_OPERATORS);
   }
 
   return operators;
