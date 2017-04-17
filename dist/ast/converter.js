@@ -164,11 +164,18 @@ var Converter = function () {
     };
 
     this.TextMatchConverter = function (expression) {
-      return (0, _helpers.AExpr)(0, '~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
+      if (_this.IsValidRegExp(expression.scalarValue)) {
+        return (0, _helpers.AExpr)(0, '~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
+      }
+
+      return null;
     };
 
     this.TextNotMatchConverter = function (expression) {
-      return (0, _helpers.AExpr)(0, '!~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
+      if (_this.IsValidRegExp(expression.scalarValue)) {
+        return (0, _helpers.AExpr)(0, '!~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
+      }
+      return null;
     };
 
     this.ArrayAnyOfConverter = function (expression) {
@@ -291,6 +298,14 @@ var Converter = function () {
       }
 
       return columnRef(column);
+    };
+
+    this.IsValidRegExp = function (string) {
+      try {
+        return !!new RegExp(string);
+      } catch (ex) {
+        return false;
+      }
     };
   }
 
