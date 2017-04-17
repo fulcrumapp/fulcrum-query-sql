@@ -78,9 +78,9 @@ var FormFieldSchema = function () {
 
       var element = _ref2;
 
-      if (element.isHidden || element.hasHiddenParent) {
-        continue;
-      }
+      // if (element.isHidden || element.hasHiddenParent) {
+      //   continue;
+      // }
 
       // repeatable elements don't have any physical columns, but we want to add a column that has the count of items
       if (element.isRepeatableElement) {
@@ -167,7 +167,7 @@ var FormFieldSchema = function () {
 
           var element = _ref3;
 
-          var skip = element.isSectionElement || element.isLabelElement || element.isHidden;
+          var skip = element.isSectionElement || element.isLabelElement;
 
           if (!skip) {
             this._elementsForColumns.push(element);

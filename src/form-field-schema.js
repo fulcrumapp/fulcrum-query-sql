@@ -45,9 +45,9 @@ export default class FormFieldSchema {
 
   setupElementColumns() {
     for (const element of this.elementsForColumns) {
-      if (element.isHidden || element.hasHiddenParent) {
-        continue;
-      }
+      // if (element.isHidden || element.hasHiddenParent) {
+      //   continue;
+      // }
 
       // repeatable elements don't have any physical columns, but we want to add a column that has the count of items
       if (element.isRepeatableElement) {
@@ -113,8 +113,7 @@ export default class FormFieldSchema {
 
       for (const element of elements) {
         const skip = element.isSectionElement ||
-                     element.isLabelElement ||
-                     element.isHidden;
+                     element.isLabelElement;
 
         if (!skip) {
           this._elementsForColumns.push(element);
