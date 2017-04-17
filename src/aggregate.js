@@ -97,6 +97,14 @@ export function availableAggregatesForColumn(column) {
     return aggregates;
   }
 
+  // Repeatable columns don't have a physical column to enable aggregates
+  // this column is the "4 items" value, which requires the in-memory record.
+  // Until we add an underlying db column for the item count, we can't do any
+  // aggregates on the repeatable itself.
+  if (column.element && column.element.isRepeatableElement) {
+    return aggregates;
+  }
+
   if (column.isNumber) {
     aggregates.push.apply(aggregates, NUMERIC_AGGREGATES);
   } else if (column.isArray) {
