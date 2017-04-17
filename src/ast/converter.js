@@ -475,7 +475,7 @@ export default class Converter {
       }
 
       if (item.search) {
-        if (item.column.isArray || item.column.isDate || item.column.isNumber) {
+        if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
           systemParts.push(AExpr(8, '~~*', TypeCast(TypeName('text'), columnRef(item.column)),
                                            AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
         } else {
@@ -954,42 +954,42 @@ export default class Converter {
   }
 
   TextEqualConverter = (expression) => {
-    return AExpr(8, '~~*', columnRef(expression.column),
+    return AExpr(8, '~~*', this.ConvertToText(expression.column),
                  this.ConstValue(expression.column, expression.scalarValue));
   }
 
   TextNotEqualConverter = (expression) => {
-    return AExpr(8, '!~~*', columnRef(expression.column),
+    return AExpr(8, '!~~*', this.ConvertToText(expression.column),
                  this.ConstValue(expression.column, expression.scalarValue));
   }
 
   TextContainConverter = (expression) => {
-    return AExpr(8, '~~*', columnRef(expression.column),
+    return AExpr(8, '~~*', this.ConvertToText(expression.column),
                  AConst(StringValue('%' + this.escapeLikePercent(expression.scalarValue) + '%')));
   }
 
   TextNotContainConverter = (expression) => {
-    return AExpr(8, '!~~*', columnRef(expression.column),
+    return AExpr(8, '!~~*', this.ConvertToText(expression.column),
                  AConst(StringValue('%' + this.escapeLikePercent(expression.scalarValue) + '%')));
   }
 
   TextStartsWithConverter = (expression) => {
-    return AExpr(8, '~~*', columnRef(expression.column),
+    return AExpr(8, '~~*', this.ConvertToText(expression.column),
                  AConst(StringValue(this.escapeLikePercent(expression.scalarValue) + '%')));
   }
 
   TextEndsWithConverter = (expression) => {
-    return AExpr(8, '~~*', columnRef(expression.column),
+    return AExpr(8, '~~*', this.ConvertToText(expression.column),
                  AConst(StringValue('%' + this.escapeLikePercent(expression.scalarValue))));
   }
 
   TextMatchConverter = (expression) => {
-    return AExpr(0, '~*', columnRef(expression.column),
+    return AExpr(0, '~*', this.ConvertToText(expression.column),
                  AConst(StringValue(expression.scalarValue)));
   }
 
   TextNotMatchConverter = (expression) => {
-    return AExpr(0, '!~*', columnRef(expression.column),
+    return AExpr(0, '!~*', this.ConvertToText(expression.column),
                  AConst(StringValue(expression.scalarValue)));
   }
 
@@ -1101,5 +1101,13 @@ export default class Converter {
       return date.clone().toISOString();
     }
     return null;
+  }
+
+  ConvertToText = (column) => {
+    if (column.isDate || column.isTime) {
+      return TypeCast(TypeName('text'), columnRef(column));
+    }
+
+    return columnRef(column);
   }
 }

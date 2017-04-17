@@ -140,35 +140,35 @@ var Converter = function () {
     };
 
     this.TextEqualConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '~~*', columnRef(expression.column), _this.ConstValue(expression.column, expression.scalarValue));
+      return (0, _helpers.AExpr)(8, '~~*', _this.ConvertToText(expression.column), _this.ConstValue(expression.column, expression.scalarValue));
     };
 
     this.TextNotEqualConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '!~~*', columnRef(expression.column), _this.ConstValue(expression.column, expression.scalarValue));
+      return (0, _helpers.AExpr)(8, '!~~*', _this.ConvertToText(expression.column), _this.ConstValue(expression.column, expression.scalarValue));
     };
 
     this.TextContainConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '~~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue) + '%')));
+      return (0, _helpers.AExpr)(8, '~~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue) + '%')));
     };
 
     this.TextNotContainConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '!~~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue) + '%')));
+      return (0, _helpers.AExpr)(8, '!~~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue) + '%')));
     };
 
     this.TextStartsWithConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '~~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(_this.escapeLikePercent(expression.scalarValue) + '%')));
+      return (0, _helpers.AExpr)(8, '~~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(_this.escapeLikePercent(expression.scalarValue) + '%')));
     };
 
     this.TextEndsWithConverter = function (expression) {
-      return (0, _helpers.AExpr)(8, '~~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue))));
+      return (0, _helpers.AExpr)(8, '~~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue))));
     };
 
     this.TextMatchConverter = function (expression) {
-      return (0, _helpers.AExpr)(0, '~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
+      return (0, _helpers.AExpr)(0, '~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
     };
 
     this.TextNotMatchConverter = function (expression) {
-      return (0, _helpers.AExpr)(0, '!~*', columnRef(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
+      return (0, _helpers.AExpr)(0, '!~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
     };
 
     this.ArrayAnyOfConverter = function (expression) {
@@ -283,6 +283,14 @@ var Converter = function () {
         return date.clone().toISOString();
       }
       return null;
+    };
+
+    this.ConvertToText = function (column) {
+      if (column.isDate || column.isTime) {
+        return (0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), columnRef(column));
+      }
+
+      return columnRef(column);
     };
   }
 
@@ -739,7 +747,7 @@ var Converter = function () {
       }
 
       if (item.search) {
-        if (item.column.isArray || item.column.isDate || item.column.isNumber) {
+        if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
           systemParts.push((0, _helpers.AExpr)(8, '~~*', (0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), columnRef(item.column)), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
         } else {
           systemParts.push((0, _helpers.AExpr)(8, '~~*', columnRef(item.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));

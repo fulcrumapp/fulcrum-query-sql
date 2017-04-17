@@ -25,7 +25,12 @@ var Column = function () {
   }, {
     key: 'isDate',
     get: function get() {
-      return this.type === 'timestamp';
+      return this.type === 'timestamp' || this.type === 'date';
+    }
+  }, {
+    key: 'isTime',
+    get: function get() {
+      return this.type === 'time';
     }
   }, {
     key: 'isNumber',
