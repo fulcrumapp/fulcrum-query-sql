@@ -162,7 +162,7 @@ var FormFieldSchema = function () {
 
           var element = _ref3;
 
-          var skip = element.isSectionElement || element.isRepeatableElement || element.isLabelElement || element.isHidden;
+          var skip = element.isSectionElement || element.isLabelElement || element.isHidden;
 
           if (!skip) {
             this._elementsForColumns.push(element);
