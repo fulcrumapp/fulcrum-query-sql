@@ -78,7 +78,8 @@ export default class ElementColumn extends Column {
     if (this.element.isPhotoElement ||
         this.element.isVideoElement ||
         this.element.isAudioElement ||
-        this.element.isSignatureElement) {
+        this.element.isSignatureElement ||
+        this.element.isRepeatableElement) {
       return false;
     }
 

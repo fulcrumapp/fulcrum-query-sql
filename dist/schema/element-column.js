@@ -116,7 +116,7 @@ var ElementColumn = function (_Column) {
   }, {
     key: 'isSortable',
     get: function get() {
-      if (this.element.isPhotoElement || this.element.isVideoElement || this.element.isAudioElement || this.element.isSignatureElement) {
+      if (this.element.isPhotoElement || this.element.isVideoElement || this.element.isAudioElement || this.element.isSignatureElement || this.element.isRepeatableElement) {
         return false;
       }
 
