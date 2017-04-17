@@ -53,6 +53,11 @@ var Column = function () {
       return this.isNumber || this.isDate;
     }
   }, {
+    key: 'canSearch',
+    get: function get() {
+      return true;
+    }
+  }, {
     key: 'isSortable',
     get: function get() {
       return true;

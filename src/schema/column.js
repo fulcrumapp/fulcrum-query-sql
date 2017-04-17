@@ -27,6 +27,10 @@ export default class Column {
     return this.isNumber || this.isDate;
   }
 
+  get canSearch() {
+    return true;
+  }
+
   get isSortable() {
     return true;
   }

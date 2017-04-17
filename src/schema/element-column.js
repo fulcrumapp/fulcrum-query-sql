@@ -74,6 +74,18 @@ export default class ElementColumn extends Column {
     return null;
   }
 
+  get canSearch() {
+    if (this.element.isPhotoElement ||
+        this.element.isVideoElement ||
+        this.element.isAudioElement ||
+        this.element.isSignatureElement ||
+        this.element.isRepeatableElement) {
+      return false;
+    }
+
+    return true;
+  }
+
   get supportsRanges() {
     // Repeatable columns are an exception, they don't support ranges yet because we don't
     // have a physical column to query.
