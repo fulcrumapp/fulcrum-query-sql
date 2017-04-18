@@ -10,6 +10,8 @@ var _column = require('./column');
 
 var _column2 = _interopRequireDefault(_column);
 
+var _fulcrumCore = require('fulcrum-core');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defaults(obj, defaults) { var keys = Object.getOwnPropertyNames(defaults); for (var i = 0; i < keys.length; i++) { var key = keys[i]; var value = Object.getOwnPropertyDescriptor(defaults, key); if (value && value.configurable && obj[key] === undefined) { Object.defineProperty(obj, key, value); } } return obj; }
@@ -50,7 +52,11 @@ var ElementColumn = function (_Column) {
 
   ElementColumn.prototype.valueFrom = function valueFrom(feature) {
     if (this.element.isStatusElement) {
-      return feature.statusValue;
+      if (feature instanceof _fulcrumCore.Record) {
+        return feature.statusValue;
+      }
+
+      return new _fulcrumCore.StatusValue(this.element, feature.recordStatus);
     }
 
     return feature.formValues.get(this.element.key);
