@@ -146,8 +146,6 @@ export default class RepeatableSchema extends FormFieldSchema {
       this.addSystemColumn('Latitude', 'latitude', '_latitude', 'double');
       this.addSystemColumn('Longitude', 'longitude', '_longitude', 'double');
 
-      this.addSystemColumn('Altitude', 'altitude', '_altitude', 'double');
-      this.addSystemColumn('Accuracy', 'horizontalAccuracy', '_horizontal_accuracy', 'double');
       this.addSystemColumn('Changeset', 'changesetID', '_changeset_id', 'string');
 
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');

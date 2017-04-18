@@ -1,4 +1,5 @@
 import Column from './column';
+import { StatusValue, Record } from 'fulcrum-core';
 
 export default class ElementColumn extends Column {
   constructor({element, rawColumn, type, id, part, index}) {
@@ -58,7 +59,11 @@ export default class ElementColumn extends Column {
 
   valueFrom(feature) {
     if (this.element.isStatusElement) {
-      return feature.statusValue;
+      if (feature instanceof Record) {
+        return feature.statusValue;
+      }
+
+      return new StatusValue(this.element, feature.recordStatus);
     }
 
     return feature.formValues.get(this.element.key);
