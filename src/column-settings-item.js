@@ -19,7 +19,6 @@ export default class ColumnSettingsItem {
   }
 
   clear() {
-    this._hidden = false;
     this._search = '';
     this._filter = new ColumnFilter({field: this.column.id}, this._schema);
     this._expression = new Expression({field: this.column.id}, this._schema);
