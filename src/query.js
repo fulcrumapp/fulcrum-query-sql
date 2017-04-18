@@ -179,7 +179,7 @@ export default class Query {
     this.projectFilter.reset();
     this.assignmentFilter.reset();
 
-    this.columnSettings.reset();
+    // this.columnSettings.reset();
 
     this._filter = new Condition(null, this._schema);
     this._sorting = new SortExpressions(null, this._schema);

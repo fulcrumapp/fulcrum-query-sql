@@ -73,7 +73,7 @@ var Query = function () {
     this.projectFilter.reset();
     this.assignmentFilter.reset();
 
-    this.columnSettings.reset();
+    // this.columnSettings.reset();
 
     this._filter = new _condition.Condition(null, this._schema);
     this._sorting = new _sortExpressions2.default(null, this._schema);
