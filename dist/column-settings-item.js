@@ -39,7 +39,6 @@ var ColumnSettingsItem = function () {
   }
 
   ColumnSettingsItem.prototype.clear = function clear() {
-    this._hidden = false;
     this._search = '';
     this._filter = new _columnFilter2.default({ field: this.column.id }, this._schema);
     this._expression = new _expression.Expression({ field: this.column.id }, this._schema);
