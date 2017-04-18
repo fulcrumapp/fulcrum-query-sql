@@ -27,6 +27,10 @@ var ColumnSettings = function () {
     this._columns = [];
     this._columnsByID = {};
 
+    this._allColumns = [];
+
+    var newColumns = [];
+
     var existingSettingsByID = {};
 
     if (settings) {
@@ -50,30 +54,64 @@ var ColumnSettings = function () {
 
     var columns = schema.columns.slice();
 
-    for (var _iterator2 = columns, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
-      var _ref2;
-
-      if (_isArray2) {
-        if (_i2 >= _iterator2.length) break;
-        _ref2 = _iterator2[_i2++];
-      } else {
-        _i2 = _iterator2.next();
-        if (_i2.done) break;
-        _ref2 = _i2.value;
-      }
-
-      var column = _ref2;
+    for (var index = 0; index < columns.length; ++index) {
+      var column = columns[index];
 
       var existingAttributes = existingSettingsByID[column.id];
 
       var item = new _columnSettingsItem2.default(_extends({}, existingAttributes, { column: column }), this._schema);
 
-      this._columns.push(item);
+      if (existingAttributes == null) {
+        newColumns.push({ column: item, index: index });
+      }
+
+      this._allColumns.push(item);
       this._columnsByID[column.id] = item;
+    }
+
+    if (settings) {
+      for (var _iterator2 = settings, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
+        var _ref2;
+
+        if (_isArray2) {
+          if (_i2 >= _iterator2.length) break;
+          _ref2 = _iterator2[_i2++];
+        } else {
+          _i2 = _iterator2.next();
+          if (_i2.done) break;
+          _ref2 = _i2.value;
+        }
+
+        var _setting = _ref2;
+
+        var _item = this._columnsByID[_setting.column.id];
+
+        if (_item) {
+          this._columns.push(_item);
+        }
+      }
+    }
+
+    for (var _iterator3 = newColumns, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator]();;) {
+      var _ref3;
+
+      if (_isArray3) {
+        if (_i3 >= _iterator3.length) break;
+        _ref3 = _iterator3[_i3++];
+      } else {
+        _i3 = _iterator3.next();
+        if (_i3.done) break;
+        _ref3 = _i3.value;
+      }
+
+      var newColumn = _ref3;
+
+      this._columns.splice(newColumn.index, 0, newColumn.column);
     }
   }
 
   ColumnSettings.prototype.reset = function reset() {
+    this._columns = this._allColumns.slice();
     this._columns.map(function (o) {
       return o.clear();
     });
