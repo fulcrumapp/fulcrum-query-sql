@@ -45,7 +45,7 @@ var Expression = exports.Expression = function () {
     }
 
     return this.value.find(function (o) {
-      return value == null && o == null || o.toString() === value.toString();
+      return value == null && o == null || value != null && o != null && o.toString() === value.toString();
     });
   };
 
