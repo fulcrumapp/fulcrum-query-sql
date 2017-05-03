@@ -456,6 +456,10 @@ function availableOperatorsForColumn(column) {
       }
     }
 
+    if (element.isYesNoElement) {
+      operators.push.apply(operators, TEXTUAL_OPERATORS);
+    }
+
     if (element.isClassificationElement) {
       operators.push.apply(operators, TEXTUAL_OPERATORS);
     }
@@ -478,7 +482,9 @@ function availableOperatorsForColumn(column) {
     } else {
       operators.push.apply(operators, TEXTUAL_OPERATORS);
     }
-  } else {
+  }
+
+  if (operators.length === 0) {
     operators.push.apply(operators, TEXTUAL_OPERATORS);
   }
 
