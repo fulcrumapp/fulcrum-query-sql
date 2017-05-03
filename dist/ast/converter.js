@@ -120,11 +120,7 @@ var Converter = function () {
     };
 
     this.NotInConverter = function (expression) {
-      var values = expression.value.map(function (v) {
-        return _this.ConstValue(expression.column, v);
-      });
-
-      return (0, _helpers.AExpr)(6, '<>', columnRef(expression.column), values);
+      return _this.NotIn(expression.column, expression.value);
     };
 
     this.BinaryConverter = function (kind, operator, expression) {
@@ -244,11 +240,61 @@ var Converter = function () {
     };
 
     this.In = function (column, values) {
-      var arrayValues = values.map(function (v) {
-        return _this.ConstValue(column, v);
+      var hasNull = false;
+      var inValues = [];
+
+      values.forEach(function (v) {
+        if (v != null) {
+          inValues.push(v);
+        } else {
+          hasNull = true;
+        }
       });
 
-      return (0, _helpers.AExpr)(6, '=', columnRef(column), arrayValues);
+      var expression = null;
+
+      if (inValues.length) {
+        expression = (0, _helpers.AExpr)(6, '=', columnRef(column), inValues.map(function (v) {
+          return _this.ConstValue(column, v);
+        }));
+
+        if (hasNull) {
+          expression = (0, _helpers.BoolExpr)(1, [(0, _helpers.NullTest)(0, columnRef(column)), expression]);
+        }
+      } else if (hasNull) {
+        expression = (0, _helpers.NullTest)(0, columnRef(column));
+      }
+
+      return expression;
+    };
+
+    this.NotIn = function (column, values) {
+      var hasNull = false;
+      var inValues = [];
+
+      values.forEach(function (v) {
+        if (v != null) {
+          inValues.push(v);
+        } else {
+          hasNull = true;
+        }
+      });
+
+      var expression = null;
+
+      if (inValues.length) {
+        expression = (0, _helpers.AExpr)(6, '<>', columnRef(column), inValues.map(function (v) {
+          return _this.ConstValue(column, v);
+        }));
+
+        if (hasNull) {
+          expression = (0, _helpers.BoolExpr)(1, [(0, _helpers.NullTest)(1, columnRef(column)), expression]);
+        }
+      } else if (hasNull) {
+        expression = (0, _helpers.NullTest)(1, columnRef(column));
+      }
+
+      return expression;
     };
 
     this.Between = function (column, value1, value2) {
