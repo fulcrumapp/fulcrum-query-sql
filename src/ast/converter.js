@@ -934,10 +934,7 @@ export default class Converter {
   }
 
   NotInConverter = (expression) => {
-    const values = expression.value.map(v => this.ConstValue(expression.column, v));
-
-    return AExpr(6, '<>', columnRef(expression.column),
-                 values);
+    return this.NotIn(expression.column, expression.value);
   }
 
   BinaryConverter = (kind, operator, expression) => {
@@ -1064,9 +1061,57 @@ export default class Converter {
   }
 
   In = (column, values) => {
-    const arrayValues = values.map(v => this.ConstValue(column, v));
+    let hasNull = false;
+    const inValues = [];
 
-    return AExpr(6, '=', columnRef(column), arrayValues);
+    values.forEach(v => {
+      if (v != null) {
+        inValues.push(v);
+      } else {
+        hasNull = true;
+      }
+    });
+
+    let expression = null;
+
+    if (inValues.length) {
+      expression = AExpr(6, '=', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
+
+      if (hasNull) {
+        expression = BoolExpr(1, [ NullTest(0, columnRef(column)), expression ]);
+      }
+    } else if (hasNull) {
+      expression = NullTest(0, columnRef(column));
+    }
+
+    return expression;
+  }
+
+  NotIn = (column, values) => {
+    let hasNull = false;
+    const inValues = [];
+
+    values.forEach(v => {
+      if (v != null) {
+        inValues.push(v);
+      } else {
+        hasNull = true;
+      }
+    });
+
+    let expression = null;
+
+    if (inValues.length) {
+      expression = AExpr(6, '<>', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
+
+      if (hasNull) {
+        expression = BoolExpr(1, [ NullTest(1, columnRef(column)), expression ]);
+      }
+    } else if (hasNull) {
+      expression = NullTest(1, columnRef(column));
+    }
+
+    return expression;
   }
 
   Between = (column, value1, value2) => {

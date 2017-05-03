@@ -129,7 +129,7 @@ export class Expression {
       return false;
     }
 
-    return this.value.find(o => (value == null && o == null) || (value != null && o != null && o.toString() === value.toString()));
+    return this.value.indexOf(value) > -1;
   }
 
   toJSON() {
