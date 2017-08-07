@@ -244,7 +244,7 @@ var Expression = exports.Expression = function () {
         this._value = [];
       }
 
-      this._value = [date && date.format('YYYY-MM-DD'), this.value[1]];
+      this._value = [date && date.startOf('day').format('YYYY-MM-DD HH:mm:ss'), this.value[1]];
 
       this.clearRangeValuesIfNull();
     }
@@ -258,7 +258,7 @@ var Expression = exports.Expression = function () {
         this._value = [];
       }
 
-      this._value = [this.value[0], date && date.format('YYYY-MM-DD')];
+      this._value = [this.value[0], date && date.endOf('day').format('YYYY-MM-DD HH:mm:ss')];
 
       this.clearRangeValuesIfNull();
     }
