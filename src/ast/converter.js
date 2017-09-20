@@ -88,6 +88,11 @@ export default class Converter {
         ResTarget(ColumnRef(statusColumn), 'status'),
         ResTarget(TypeCast(TypeName('text'), AConst(StringValue(query.form.id))), 'form_id')
       ];
+
+      if (query.schema.repeatable) {
+        targetList.push(ResTarget(ColumnRef('_child_record_id'), 'child_record_id'));
+        targetList.push(ResTarget(ColumnRef('_parent_id'), 'parent_id'));
+      }
     }
 
     const joins = query.joinColumns.map(o => o.join);
