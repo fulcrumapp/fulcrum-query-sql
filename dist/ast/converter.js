@@ -410,10 +410,10 @@ var Converter = function () {
     } else {
       var statusColumn = query.schema.repeatable ? '_record_status' : '_status';
 
-      targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_geometry'), 'geometry'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)(statusColumn), 'status'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(query.form.id))), 'form_id')];
+      targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)(query.schema.repeatable ? '_child_record_id' : '_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_geometry'), 'geometry'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)(statusColumn), 'status'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(query.form.id))), 'form_id')];
 
       if (query.schema.repeatable) {
-        targetList.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_child_record_id'), 'child_record_id'));
+        targetList.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'record_id'));
         targetList.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_parent_id'), 'parent_id'));
       }
     }

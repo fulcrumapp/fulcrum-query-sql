@@ -83,14 +83,14 @@ export default class Converter {
       const statusColumn = query.schema.repeatable ? '_record_status' : '_status';
 
       targetList = [
-        ResTarget(ColumnRef('_record_id'), 'id'),
+        ResTarget(ColumnRef(query.schema.repeatable ? '_child_record_id' : '_record_id'), 'id'),
         ResTarget(ColumnRef('_geometry'), 'geometry'),
         ResTarget(ColumnRef(statusColumn), 'status'),
         ResTarget(TypeCast(TypeName('text'), AConst(StringValue(query.form.id))), 'form_id')
       ];
 
       if (query.schema.repeatable) {
-        targetList.push(ResTarget(ColumnRef('_child_record_id'), 'child_record_id'));
+        targetList.push(ResTarget(ColumnRef('_record_id'), 'record_id'));
         targetList.push(ResTarget(ColumnRef('_parent_id'), 'parent_id'));
       }
     }
