@@ -33,6 +33,11 @@ var Column = function () {
       return this.type === 'time';
     }
   }, {
+    key: 'isDateTime',
+    get: function get() {
+      return this.type === 'timestamp';
+    }
+  }, {
     key: 'isNumber',
     get: function get() {
       return this.isDouble || this.isInteger;

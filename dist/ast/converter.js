@@ -96,8 +96,8 @@ var Converter = function () {
       var value2 = expression.value2;
 
       if (expression.isDateOperator) {
-        value1 = value1 && _this.ConvertDateValue(_this.GetDate(value1, options).startOf('day'));
-        value2 = value2 && _this.ConvertDateValue(_this.GetDate(value2, options).endOf('day'));
+        value1 = value1 && _this.ConvertDateValue(_this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
+        value2 = value2 && _this.ConvertDateValue(_this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
       }
 
       return _this.Between(expression.column, value1, value2);
@@ -108,8 +108,8 @@ var Converter = function () {
       var value2 = expression.value2;
 
       if (expression.isDateOperator) {
-        value1 = value1 && _this.ConvertDateValue(_this.GetDate(value1, options).startOf('day'));
-        value2 = value2 && _this.ConvertDateValue(_this.GetDate(value2, options).endOf('day'));
+        value1 = value1 && _this.ConvertDateValue(_this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
+        value2 = value2 && _this.ConvertDateValue(_this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
       }
 
       return _this.NotBetween(expression.column, value1, value2);
@@ -209,7 +209,7 @@ var Converter = function () {
       // makes sure when the browser calculates a dynamic range, the server would calculate
       // the same range. So 'Today' is midnight to midnight in the user's local time. It would
       // be much less useful and confusing if we forced "Today" to always be London's today.
-      var now = _this.GetDate(null, options);
+      var now = _this.GetDate(null, options, true);
 
       var range = (0, _operator.calculateDateRange)(expression.operator, expression.value, now);
 
@@ -325,7 +325,11 @@ var Converter = function () {
       return (0, _helpers.AConst)((0, _helpers.StringValue)(value));
     };
 
-    this.GetDate = function (date, options) {
+    this.GetDate = function (date, options, isDateTime) {
+      if (!isDateTime) {
+        return (0, _momentTimezone2.default)(date);
+      }
+
       var timeZone = options && options.timeZone || _momentTimezone2.default.tz.guess();
 
       return (0, _momentTimezone2.default)(date || new Date()).tz(timeZone);
