@@ -207,6 +207,18 @@ export default class Converter {
       targetList = [ ResTarget(ColumnRef('linked_record_id', '__linked_join'), 'value') ];
     } else if (options.column.isArray) {
       targetList = [ ResTarget(FuncCall('unnest', [ valueColumn ]), 'value') ];
+    } else if (options.column.element && options.column.element.isCalculatedElement && options.column.element.display.isDate) {
+      // SELECT pg_catalog.timezone('UTC', to_timestamp(column_name))::date
+
+      const timeZoneCast = (param) => {
+        return FuncCall([ StringValue('pg_catalog'), StringValue('timezone') ], [ AConst(StringValue('UTC')), param ]);
+      };
+
+      const toTimestamp = (param) => {
+        return FuncCall([ StringValue('pg_catalog'), StringValue('to_timestamp') ], [ param ]);
+      };
+
+      targetList = [ ResTarget(TypeCast(TypeName('date'), timeZoneCast(toTimestamp(valueColumn))), 'value') ];
     } else {
       targetList = [ ResTarget(valueColumn, 'value') ];
     }
@@ -601,6 +613,10 @@ export default class Converter {
       if (values.length) {
         if (filter.column.isArray) {
           expression = this.AnyOf(filter.column, values);
+        } else if (filter.column.element && filter.column.element.isCalculatedElement && filter.column.element.display.isDate) {
+          expression = this.In(filter.column, values.map((value) => {
+            return new Date(value).getTime() / 1000;
+          }));
         } else {
           expression = this.In(filter.column, values);
         }
