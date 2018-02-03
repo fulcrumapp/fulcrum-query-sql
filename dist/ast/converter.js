@@ -511,6 +511,18 @@ var Converter = function () {
       targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('linked_record_id', '__linked_join'), 'value')];
     } else if (options.column.isArray) {
       targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('unnest', [valueColumn]), 'value')];
+    } else if (options.column.element && options.column.element.isCalculatedElement && options.column.element.display.isDate) {
+      // SELECT pg_catalog.timezone('UTC', to_timestamp(column_name))::date
+
+      var timeZoneCast = function timeZoneCast(param) {
+        return (0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('timezone')], [(0, _helpers.AConst)((0, _helpers.StringValue)('UTC')), param]);
+      };
+
+      var toTimestamp = function toTimestamp(param) {
+        return (0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('to_timestamp')], [param]);
+      };
+
+      targetList = [(0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('date'), timeZoneCast(toTimestamp(valueColumn))), 'value')];
     } else {
       targetList = [(0, _helpers.ResTarget)(valueColumn, 'value')];
     }
@@ -960,6 +972,10 @@ var Converter = function () {
         if (values.length) {
           if (filter.column.isArray) {
             expression = _this2.AnyOf(filter.column, values);
+          } else if (filter.column.element && filter.column.element.isCalculatedElement && filter.column.element.display.isDate) {
+            expression = _this2.In(filter.column, values.map(function (value) {
+              return new Date(value).getTime() / 1000;
+            }));
           } else {
             expression = _this2.In(filter.column, values);
           }
