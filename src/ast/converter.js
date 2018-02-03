@@ -915,8 +915,8 @@ export default class Converter {
     let value2 = expression.value2;
 
     if (expression.isDateOperator) {
-      value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options).startOf('day'));
-      value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options).endOf('day'));
+      value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
+      value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
     }
 
     return this.Between(expression.column, value1, value2);
@@ -927,8 +927,8 @@ export default class Converter {
     let value2 = expression.value2;
 
     if (expression.isDateOperator) {
-      value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options).startOf('day'));
-      value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options).endOf('day'));
+      value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
+      value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
     }
 
     return this.NotBetween(expression.column, value1, value2);
@@ -1037,7 +1037,7 @@ export default class Converter {
     // makes sure when the browser calculates a dynamic range, the server would calculate
     // the same range. So 'Today' is midnight to midnight in the user's local time. It would
     // be much less useful and confusing if we forced "Today" to always be London's today.
-    const now = this.GetDate(null, options);
+    const now = this.GetDate(null, options, true);
 
     const range = calculateDateRange(expression.operator, expression.value, now);
 
@@ -1147,7 +1147,11 @@ export default class Converter {
     return AConst(StringValue(value));
   }
 
-  GetDate = (date, options) => {
+  GetDate = (date, options, isDateTime) => {
+    if (!isDateTime) {
+      return moment(date);
+    }
+
     const timeZone = (options && options.timeZone) || moment.tz.guess();
 
     return moment(date || new Date()).tz(timeZone);

@@ -11,6 +11,10 @@ export default class Column {
     return this.type === 'time';
   }
 
+  get isDateTime() {
+    return this.type === 'timestamp';
+  }
+
   get isNumber() {
     return this.isDouble || this.isInteger;
   }
