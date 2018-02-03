@@ -326,13 +326,19 @@ var Converter = function () {
     };
 
     this.GetDate = function (date, options, isDateTime) {
+      date = date || new Date().toISOString();
+
       if (!isDateTime) {
-        return (0, _momentTimezone2.default)(date);
+        // the `date` value comes in as the string "2017-11-12 23:59:59". We want it to be interpreted as UTC for the
+        // purposes of the SQL query generation. So we convert the local timestamp to a UTC one. We don't care if it's
+        // in a different timezone, we just need to make sure the date component of the timestamp is identical to the
+        // value stored in the date field. We are effectively disregarding the time component of the timestamp.
+        return (0, _momentTimezone2.default)(date.replace(' ', 'T') + 'Z');
       }
 
       var timeZone = options && options.timeZone || _momentTimezone2.default.tz.guess();
 
-      return (0, _momentTimezone2.default)(date || new Date()).tz(timeZone);
+      return (0, _momentTimezone2.default)(date).tz(timeZone);
     };
 
     this.ConvertDateValue = function (date) {
