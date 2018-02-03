@@ -388,6 +388,7 @@ export default class Query {
         ResTarget(ColumnRef('_edited_duration'), 'edited_duration'),
         ResTarget(ColumnRef('_updated_duration'), 'updated_duration'),
         ResTarget(ColumnRef('_created_duration'), 'created_duration'),
+        ResTarget(ColumnRef('_changeset_id'), 'changeset_id'),
         ...joinedColumns
       ];
     }
@@ -420,6 +421,7 @@ export default class Query {
       ResTarget(ColumnRef('_edited_duration'), 'edited_duration'),
       ResTarget(ColumnRef('_updated_duration'), 'updated_duration'),
       ResTarget(ColumnRef('_created_duration'), 'created_duration'),
+      ResTarget(ColumnRef('_changeset_id'), 'changeset_id'),
       ...joinedColumns
     ];
   }
