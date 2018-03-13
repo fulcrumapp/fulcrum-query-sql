@@ -389,6 +389,14 @@ export default class Query {
         ResTarget(ColumnRef('_updated_duration'), 'updated_duration'),
         ResTarget(ColumnRef('_created_duration'), 'created_duration'),
         ResTarget(ColumnRef('_changeset_id'), 'changeset_id'),
+        ResTarget(ColumnRef('_created_latitude'), 'created_latitude'),
+        ResTarget(ColumnRef('_created_longitude'), 'created_longitude'),
+        ResTarget(ColumnRef('_created_altitude'), 'created_altitude'),
+        ResTarget(ColumnRef('_created_horizontal_accuracy'), 'created_horizontal_accuracy'),
+        ResTarget(ColumnRef('_updated_latitude'), 'updated_latitude'),
+        ResTarget(ColumnRef('_updated_longitude'), 'updated_longitude'),
+        ResTarget(ColumnRef('_updated_altitude'), 'updated_altitude'),
+        ResTarget(ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
         ...joinedColumns
       ];
     }
@@ -422,6 +430,14 @@ export default class Query {
       ResTarget(ColumnRef('_updated_duration'), 'updated_duration'),
       ResTarget(ColumnRef('_created_duration'), 'created_duration'),
       ResTarget(ColumnRef('_changeset_id'), 'changeset_id'),
+      ResTarget(ColumnRef('_created_latitude'), 'created_latitude'),
+      ResTarget(ColumnRef('_created_longitude'), 'created_longitude'),
+      ResTarget(ColumnRef('_created_altitude'), 'created_altitude'),
+      ResTarget(ColumnRef('_created_horizontal_accuracy'), 'created_horizontal_accuracy'),
+      ResTarget(ColumnRef('_updated_latitude'), 'updated_latitude'),
+      ResTarget(ColumnRef('_updated_longitude'), 'updated_longitude'),
+      ResTarget(ColumnRef('_updated_altitude'), 'updated_altitude'),
+      ResTarget(ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
       ...joinedColumns
     ];
   }

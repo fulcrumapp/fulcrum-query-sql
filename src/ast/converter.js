@@ -345,8 +345,8 @@ export default class Converter {
       ResTarget(FuncCall('max', [ ColumnRef('value') ]), 'max_value'),
       ResTarget(AExpr(0, '-', FuncCall('max', [ ColumnRef('value') ]), FuncCall('min', [ ColumnRef('value') ])), 'range'),
       ResTarget(AExpr(0, '/', AExpr(0, '-', TypeCast(TypeName([ StringValue('pg_catalog'), StringValue('float8') ]), FuncCall('max', [ ColumnRef('value') ])),
-                                            TypeCast(TypeName([ StringValue('pg_catalog'), StringValue('float8') ]), FuncCall('min', [ ColumnRef('value') ]))),
-                              AConst(FloatValue(bucketSize))), 'bucket_width')
+      TypeCast(TypeName([ StringValue('pg_catalog'), StringValue('float8') ]), FuncCall('min', [ ColumnRef('value') ]))),
+      AConst(FloatValue(bucketSize))), 'bucket_width')
     ];
 
     const statsFromClause = [ RangeVar('__records') ];
@@ -494,10 +494,10 @@ export default class Converter {
       if (item.search) {
         if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
           systemParts.push(AExpr(8, '~~*', TypeCast(TypeName('text'), columnRef(item.column)),
-                                           AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
+                                          AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
         } else {
           systemParts.push(AExpr(8, '~~*', columnRef(item.column),
-                                           AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
+                                          AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
         }
       }
 
@@ -629,8 +629,7 @@ export default class Converter {
       }
     } else if (filter.isEmptySet) {
       // add 1 = 0 clause to return 0 rows
-      expression = AExpr(0, '=', AConst(IntegerValue(1)),
-                                 AConst(IntegerValue(0)));
+      expression = AExpr(0, '=', AConst(IntegerValue(1)), AConst(IntegerValue(0)));
     }
 
     return expression;
@@ -682,7 +681,7 @@ export default class Converter {
     // if it's a fully custom SQL statement, use a simpler form with no index
     if (query.ast) {
       return AExpr(8, '~~*', TypeCast(TypeName('text'), ColumnRef('records')),
-                             AConst(StringValue('%' + this.escapeLikePercent(search) + '%')));
+                   AConst(StringValue('%' + this.escapeLikePercent(search) + '%')));
     }
 
     const toTsQuery = (dictionary, term) => {
