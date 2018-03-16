@@ -948,8 +948,6 @@ var Converter = function () {
   };
 
   Converter.prototype.createExpressionForColumnFilter = function createExpressionForColumnFilter(filter, options) {
-    var _this2 = this;
-
     var expression = null;
 
     if (filter === options.except) {
@@ -957,36 +955,34 @@ var Converter = function () {
     }
 
     if (filter.hasValues) {
-      (function () {
-        var hasNull = false;
-        var values = [];
+      var hasNull = false;
+      var values = [];
 
-        filter.value.forEach(function (v) {
-          if (v != null) {
-            values.push(v);
-          } else {
-            hasNull = true;
-          }
-        });
-
-        if (values.length) {
-          if (filter.column.isArray) {
-            expression = _this2.AnyOf(filter.column, values);
-          } else if (filter.column.element && filter.column.element.isCalculatedElement && filter.column.element.display.isDate) {
-            expression = _this2.In(filter.column, values.map(function (value) {
-              return new Date(value).getTime() / 1000;
-            }));
-          } else {
-            expression = _this2.In(filter.column, values);
-          }
-
-          if (hasNull) {
-            expression = (0, _helpers.BoolExpr)(1, [(0, _helpers.NullTest)(0, columnRef(filter.column)), expression]);
-          }
-        } else if (hasNull) {
-          expression = (0, _helpers.NullTest)(0, columnRef(filter.column));
+      filter.value.forEach(function (v) {
+        if (v != null) {
+          values.push(v);
+        } else {
+          hasNull = true;
         }
-      })();
+      });
+
+      if (values.length) {
+        if (filter.column.isArray) {
+          expression = this.AnyOf(filter.column, values);
+        } else if (filter.column.element && filter.column.element.isCalculatedElement && filter.column.element.display.isDate) {
+          expression = this.In(filter.column, values.map(function (value) {
+            return new Date(value).getTime() / 1000;
+          }));
+        } else {
+          expression = this.In(filter.column, values);
+        }
+
+        if (hasNull) {
+          expression = (0, _helpers.BoolExpr)(1, [(0, _helpers.NullTest)(0, columnRef(filter.column)), expression]);
+        }
+      } else if (hasNull) {
+        expression = (0, _helpers.NullTest)(0, columnRef(filter.column));
+      }
     } else if (filter.isEmptySet) {
       // add 1 = 0 clause to return 0 rows
       expression = (0, _helpers.AExpr)(0, '=', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), (0, _helpers.AConst)((0, _helpers.IntegerValue)(0)));
@@ -1109,10 +1105,10 @@ var Converter = function () {
   };
 
   Converter.prototype.nodeForExpressions = function nodeForExpressions(expressions, options) {
-    var _this3 = this;
+    var _this2 = this;
 
     return expressions.map(function (e) {
-      return _this3.nodeForExpression(e, options);
+      return _this2.nodeForExpression(e, options);
     }).filter(function (e) {
       return e;
     });
