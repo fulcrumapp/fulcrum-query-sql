@@ -170,7 +170,7 @@ var Expression = exports.Expression = function () {
       return null;
     },
     set: function set(value) {
-      this._value = value ? Array.isArray(value) ? value : [value] : null;
+      this._value = value ? [value] : null;
     }
   }, {
     key: 'value1',
