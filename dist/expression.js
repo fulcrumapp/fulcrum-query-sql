@@ -79,6 +79,9 @@ var Expression = exports.Expression = function () {
   };
 
   Expression.prototype.labelForValue = function labelForValue(value) {
+    var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        separator = _ref.separator;
+
     var column = this.column;
 
     if (!column) {
@@ -103,7 +106,7 @@ var Expression = exports.Expression = function () {
       }
     }
 
-    return value;
+    return Array.isArray(value) ? value.join(separator != null ? separator : ', ') : value && value.toString();
   };
 
   Expression.prototype.toHumanDescription = function toHumanDescription() {
