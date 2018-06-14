@@ -149,6 +149,15 @@ var Expression = exports.Expression = function () {
       return this._value;
     }
   }, {
+    key: 'arrayValue',
+    get: function get() {
+      if (this.hasValue) {
+        return Array.isArray(this.value[0]) ? this.value[0] : this.value;
+      }
+
+      return null;
+    }
+  }, {
     key: 'scalarValue',
     get: function get() {
       if (this.hasValue) {
@@ -158,7 +167,7 @@ var Expression = exports.Expression = function () {
       return null;
     },
     set: function set(value) {
-      this._value = value ? [value] : null;
+      this._value = value ? Array.isArray(value) ? value : [value] : null;
     }
   }, {
     key: 'value1',

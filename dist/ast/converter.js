@@ -116,11 +116,11 @@ var Converter = function () {
     };
 
     this.InConverter = function (expression) {
-      return _this.In(expression.column, expression.value);
+      return _this.In(expression.column, expression.arrayValue);
     };
 
     this.NotInConverter = function (expression) {
-      return _this.NotIn(expression.column, expression.value);
+      return _this.NotIn(expression.column, expression.arrayValue);
     };
 
     this.BinaryConverter = function (kind, operator, expression) {
@@ -175,11 +175,11 @@ var Converter = function () {
     };
 
     this.ArrayAnyOfConverter = function (expression) {
-      return _this.AnyOf(expression.column, expression.value);
+      return _this.AnyOf(expression.column, expression.arrayValue);
     };
 
     this.ArrayAllOfConverter = function (expression) {
-      var values = (0, _helpers.AArrayExpr)(expression.value.map(function (v) {
+      var values = (0, _helpers.AArrayExpr)(expression.arrayValue.map(function (v) {
         return _this.ConstValue(expression.column, v);
       }));
 
@@ -187,7 +187,7 @@ var Converter = function () {
     };
 
     this.ArrayEqualConverter = function (expression) {
-      var values = (0, _helpers.AArrayExpr)(expression.value.map(function (v) {
+      var values = (0, _helpers.AArrayExpr)(expression.arrayValue.map(function (v) {
         return _this.ConstValue(expression.column, v);
       }));
 
