@@ -201,7 +201,7 @@ export class Expression {
     }
   }
 
-  labelForValue(value) {
+  labelForValue(value, {separator} = {}) {
     const column = this.column;
 
     if (!column) {
@@ -226,7 +226,8 @@ export class Expression {
       }
     }
 
-    return value;
+    return Array.isArray(value) ? value.join(separator != null ? separator : ', ')
+                                : value && value.toString();
   }
 
   toHumanDescription() {
