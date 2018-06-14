@@ -49,7 +49,7 @@ export class Expression {
   }
 
   set scalarValue(value) {
-    this._value = value ? Array.isArray(value) ? value : [ value ] : null;
+    this._value = value ? [ value ] : null;
   }
 
   get value1() {
