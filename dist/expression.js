@@ -33,7 +33,28 @@ var Expression = exports.Expression = function () {
     }
 
     if (this.containsValue(value)) {
-      this._value = _lodash2.default.without(this.value, value);
+      var newValues = [];
+
+      for (var _iterator = this.values, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+        var _ref;
+
+        if (_isArray) {
+          if (_i >= _iterator.length) break;
+          _ref = _iterator[_i++];
+        } else {
+          _i = _iterator.next();
+          if (_i.done) break;
+          _ref = _i.value;
+        }
+
+        var selectedValue = _ref;
+
+        if (JSON.stringify(selectedValue) !== JSON.stringify(value)) {
+          newValues.push(selectedValue);
+        }
+      }
+
+      this._value = newValues;
     } else {
       this._value.push(value);
     }
@@ -44,7 +65,7 @@ var Expression = exports.Expression = function () {
       return false;
     }
 
-    return this.value.indexOf(value) > -1;
+    return this.value.map(JSON.stringify).indexOf(JSON.stringify(value)) > -1;
   };
 
   Expression.prototype.toJSON = function toJSON() {
@@ -79,8 +100,8 @@ var Expression = exports.Expression = function () {
   };
 
   Expression.prototype.labelForValue = function labelForValue(value) {
-    var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        separator = _ref.separator;
+    var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        separator = _ref2.separator;
 
     var column = this.column;
 

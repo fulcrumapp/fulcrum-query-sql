@@ -129,7 +129,7 @@ export class Expression {
       const newValues = [];
 
       for (const selectedValue of this.values) {
-        if (JSON.stringify(selectedValue) !== JSON.stringify(value) {
+        if (JSON.stringify(selectedValue) !== JSON.stringify(value)) {
           newValues.push(selectedValue);
         }
       }
