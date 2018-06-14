@@ -32,6 +32,14 @@ export class Expression {
     return this._value;
   }
 
+  get arrayValue() {
+    if (this.hasValue) {
+      return Array.isArray(this.value[0]) ? this.value[0] : this.value;
+    }
+
+    return null;
+  }
+
   get scalarValue() {
     if (this.hasValue) {
       return this.value[0];

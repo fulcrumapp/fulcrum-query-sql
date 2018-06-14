@@ -949,11 +949,11 @@ export default class Converter {
   }
 
   InConverter = (expression) => {
-    return this.In(expression.column, expression.value);
+    return this.In(expression.column, expression.arrayValue);
   }
 
   NotInConverter = (expression) => {
-    return this.NotIn(expression.column, expression.value);
+    return this.NotIn(expression.column, expression.arrayValue);
   }
 
   BinaryConverter = (kind, operator, expression) => {
@@ -1017,18 +1017,18 @@ export default class Converter {
   }
 
   ArrayAnyOfConverter = (expression) => {
-    return this.AnyOf(expression.column, expression.value);
+    return this.AnyOf(expression.column, expression.arrayValue);
   }
 
   ArrayAllOfConverter = (expression) => {
-    const values = AArrayExpr(expression.value.map(v => this.ConstValue(expression.column, v)));
+    const values = AArrayExpr(expression.arrayValue.map(v => this.ConstValue(expression.column, v)));
 
     return AExpr(0, '@>', columnRef(expression.column),
                  values);
   }
 
   ArrayEqualConverter = (expression) => {
-    const values = AArrayExpr(expression.value.map(v => this.ConstValue(expression.column, v)));
+    const values = AArrayExpr(expression.arrayValue.map(v => this.ConstValue(expression.column, v)));
 
     const a = AExpr(0, '<@', columnRef(expression.column),
                     values);
