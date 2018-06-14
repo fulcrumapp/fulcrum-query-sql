@@ -691,8 +691,7 @@ export default class Converter {
     };
 
     const makeTsQueryCall = (term) => {
-      return toTsQuery(term.length > 3 ? 'english' : 'simple',
-                       term.toLowerCase().replace(/'/g, "''"));
+      return toTsQuery('english', term.toLowerCase().replace(/'/g, "''"));
     };
 
     const terms = search.split(' ').filter(s => s.trim().length);
