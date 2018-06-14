@@ -35,7 +35,7 @@ var Expression = exports.Expression = function () {
     if (this.containsValue(value)) {
       var newValues = [];
 
-      for (var _iterator = this.values, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+      for (var _iterator = this.value, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
         var _ref;
 
         if (_isArray) {

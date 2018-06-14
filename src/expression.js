@@ -128,7 +128,7 @@ export class Expression {
     if (this.containsValue(value)) {
       const newValues = [];
 
-      for (const selectedValue of this.values) {
+      for (const selectedValue of this.value) {
         if (JSON.stringify(selectedValue) !== JSON.stringify(value)) {
           newValues.push(selectedValue);
         }
