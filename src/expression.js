@@ -126,7 +126,15 @@ export class Expression {
     }
 
     if (this.containsValue(value)) {
-      this._value = _.without(this.value, value);
+      const newValues = [];
+
+      for (const selectedValue of this.values) {
+        if (JSON.stringify(selectedValue) !== JSON.stringify(value) {
+          newValues.push(selectedValue);
+        }
+      }
+
+      this._value = newValues;
     } else {
       this._value.push(value);
     }
@@ -137,7 +145,7 @@ export class Expression {
       return false;
     }
 
-    return this.value.indexOf(value) > -1;
+    return this.value.map(JSON.stringify).indexOf(JSON.stringify(value)) > -1;
   }
 
   toJSON() {
