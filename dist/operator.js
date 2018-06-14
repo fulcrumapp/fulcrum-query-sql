@@ -458,7 +458,7 @@ function availableOperatorsForColumn(column) {
     }
 
     if (element.isClassificationElement) {
-      operators.push.apply(operators, TEXTUAL_OPERATORS);
+      operators.push.apply(operators, ARRAY_OPERATORS);
     }
 
     if (element.isStatusElement) {
