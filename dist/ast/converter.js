@@ -349,7 +349,7 @@ var Converter = function () {
     };
 
     this.ConvertToText = function (column) {
-      if (column.isDate || column.isTime) {
+      if (column.isDate || column.isTime || column.isArray) {
         return (0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), columnRef(column));
       }
 
@@ -509,7 +509,7 @@ var Converter = function () {
 
     if (isLinkedRecord) {
       targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('linked_record_id', '__linked_join'), 'value')];
-    } else if (options.column.isArray) {
+    } else if (options.column.isArray && options.unnestArrays !== false) {
       targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('unnest', [valueColumn]), 'value')];
     } else if (options.column.element && options.column.element.isCalculatedElement && options.column.element.display.isDate) {
       // SELECT pg_catalog.timezone('UTC', to_timestamp(column_name))::date
