@@ -996,11 +996,34 @@ var Converter = function () {
   };
 
   Converter.prototype.boundingBoxFilter = function boundingBoxFilter(query, boundingBox) {
+    var xmin = boundingBox[0],
+        ymin = boundingBox[1],
+        xmax = boundingBox[2],
+        ymax = boundingBox[3];
+
+
+    var columnName = query.ast ? '__geometry' : '_geometry';
+
+    // if the east value is less than the west value, the bbox spans the 180 meridian.
+    // Split the box into 2 separate boxes on either side of the meridian and use
+    // an OR statement in the where clause so records on either side of the meridian
+    // will be returned.
+    if (xmax < xmin) {
+      var box1 = [xmin, ymin, 180, ymax];
+      var box2 = [-180, ymin, xmax, ymax];
+
+      var boxes = [this.geometryQuery(columnName, box1), this.geometryQuery(columnName, box2)];
+
+      return (0, _helpers.BoolExpr)(1, boxes);
+    }
+
+    return this.geometryQuery(columnName, boundingBox);
+  };
+
+  Converter.prototype.geometryQuery = function geometryQuery(columnName, boundingBox) {
     var args = [(0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[0])), (0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[1])), (0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[2])), (0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[3])), (0, _helpers.AConst)((0, _helpers.IntegerValue)(4326))];
 
     var rhs = (0, _helpers.FuncCall)('st_makeenvelope', args);
-
-    var columnName = query.ast ? '__geometry' : '_geometry';
 
     return (0, _helpers.AExpr)(0, '&&', (0, _helpers.ColumnRef)(columnName), rhs);
   };
