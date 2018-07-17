@@ -636,6 +636,28 @@ export default class Converter {
   }
 
   boundingBoxFilter(query, boundingBox) {
+    const [xmin, ymin, xmax, ymax] = boundingBox;
+
+    const columnName = query.ast ? '__geometry' : '_geometry';
+
+    // if the east value is less than the west value, the bbox spans the 180 meridian.
+    // Split the box into 2 separate boxes on either side of the meridian and use
+    // an OR statement in the where clause so records on either side of the meridian
+    // will be returned.
+    if (xmax < xmin) {
+      const box1 = [ xmin, ymin, 180, ymax ];
+      const box2 = [ -180, ymin, xmax, ymax ];
+
+      const boxes = [ this.geometryQuery(columnName, box1),
+                      this.geometryQuery(columnName, box2) ];
+
+      return BoolExpr(1, boxes);
+    }
+
+    return this.geometryQuery(columnName, boundingBox);
+  }
+
+  geometryQuery(columnName, boundingBox) {
     const args = [
       AConst(FloatValue(boundingBox[0])),
       AConst(FloatValue(boundingBox[1])),
@@ -645,8 +667,6 @@ export default class Converter {
     ];
 
     const rhs = FuncCall('st_makeenvelope', args);
-
-    const columnName = query.ast ? '__geometry' : '_geometry';
 
     return AExpr(0, '&&', ColumnRef(columnName), rhs);
   }
