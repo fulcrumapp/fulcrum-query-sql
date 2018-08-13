@@ -32,7 +32,7 @@ var ColumnSettingsItem = function () {
     this._search = attrs.search || '';
     this._filter = new _columnFilter2.default(_extends({}, attrs.filter, { field: attrs.column.id }), this._schema);
     this._expression = new _expression.Expression(_extends({}, attrs.expression, { field: attrs.column.id }), schema);
-    this._range = new _expression.Expression(_extends({}, attrs.expression, {
+    this._range = new _expression.Expression(_extends({}, attrs.range, {
       operator: attrs.column.isDate ? _operator.OperatorType.DateBetween.name : _operator.OperatorType.Between.name,
       field: attrs.column.id }), schema);
     this._summary = new _columnSummary2.default(_extends({}, attrs.summary, { field: attrs.column.id }), this._schema);

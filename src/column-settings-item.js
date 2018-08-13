@@ -11,7 +11,7 @@ export default class ColumnSettingsItem {
     this._search = attrs.search || '';
     this._filter = new ColumnFilter({...attrs.filter, field: attrs.column.id}, this._schema);
     this._expression = new Expression({...attrs.expression, field: attrs.column.id}, schema);
-    this._range = new Expression({...attrs.expression,
+    this._range = new Expression({...attrs.range,
                                   operator: attrs.column.isDate ? OperatorType.DateBetween.name
                                                                 : OperatorType.Between.name,
                                   field: attrs.column.id}, schema);
