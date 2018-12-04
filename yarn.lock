@@ -1602,7 +1602,7 @@ fstream@^1.0.0, fstream@^1.0.2, fstream@~1.0.10:
     mkdirp ">=0.5 0"
     rimraf "2"
 
-fulcrum-core@^0.10.12:
+fulcrum-core@^0.10.13:
   version "0.10.13"
   resolved "https://registry.yarnpkg.com/fulcrum-core/-/fulcrum-core-0.10.13.tgz#173bcd2af3a6530d99f7fbf193f6e7540c08fca0"
   dependencies:
