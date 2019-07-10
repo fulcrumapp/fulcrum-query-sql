@@ -338,7 +338,7 @@ var Converter = function () {
 
       var timeZone = options && options.timeZone || _momentTimezone2.default.tz.guess();
 
-      return (0, _momentTimezone2.default)(date).tz(timeZone);
+      return _momentTimezone2.default.tz(date, timeZone);
     };
 
     this.ConvertDateValue = function (date) {

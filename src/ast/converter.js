@@ -1194,7 +1194,7 @@ export default class Converter {
 
     const timeZone = (options && options.timeZone) || moment.tz.guess();
 
-    return moment(date).tz(timeZone);
+    return moment.tz(date, timeZone);
   }
 
   ConvertDateValue = (date) => {
