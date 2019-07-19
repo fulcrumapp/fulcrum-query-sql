@@ -1,91 +1,89 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _condition = require("./condition");
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _expression = require("./expression");
 
-var _condition = require('./condition');
+var _sortExpressions = _interopRequireDefault(require("./sort-expressions"));
 
-var _expression = require('./expression');
+var _converter = _interopRequireDefault(require("./ast/converter"));
 
-var _sortExpressions = require('./sort-expressions');
+var _columnFilter = _interopRequireDefault(require("./column-filter"));
 
-var _sortExpressions2 = _interopRequireDefault(_sortExpressions);
+var _pgQueryDeparser = _interopRequireDefault(require("pg-query-deparser"));
 
-var _converter = require('./ast/converter');
+var _queryOptions = _interopRequireDefault(require("./query-options"));
 
-var _converter2 = _interopRequireDefault(_converter);
+var _lodash = _interopRequireDefault(require("lodash"));
 
-var _columnFilter = require('./column-filter');
+var _columnSettings = _interopRequireDefault(require("./column-settings"));
 
-var _columnFilter2 = _interopRequireDefault(_columnFilter);
+var _helpers = require("./ast/helpers");
 
-var _pgQueryDeparser = require('pg-query-deparser');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _pgQueryDeparser2 = _interopRequireDefault(_pgQueryDeparser);
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-var _queryOptions = require('./query-options');
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-var _queryOptions2 = _interopRequireDefault(_queryOptions);
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var _lodash = require('lodash');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _columnSettings = require('./column-settings');
-
-var _columnSettings2 = _interopRequireDefault(_columnSettings);
-
-var _helpers = require('./ast/helpers');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Query = function () {
+var Query =
+/*#__PURE__*/
+function () {
   function Query(attrs) {
-    _classCallCheck(this, Query);
-
     this._ast = attrs.ast;
     this._form = attrs.form;
     this._repeatableKey = attrs.repeatableKey;
     this._schema = attrs.schema;
     this._filter = new _condition.Condition(attrs.filter, attrs.schema);
-    this._sorting = new _sortExpressions2.default(attrs.sorting, attrs.schema);
+    this._sorting = new _sortExpressions["default"](attrs.sorting, attrs.schema);
     this._boundingBox = attrs.bounding_box || null;
     this._searchFilter = attrs.search_filter;
-    this._dateFilter = new _expression.Expression(attrs.date_filter || { field: this.defaultDateField }, attrs.schema);
-    this._options = new _queryOptions2.default(attrs.options || {});
-    this._columnSettings = new _columnSettings2.default(this._schema, attrs.columns);
-    this._statusFilter = new _columnFilter2.default(_extends({}, attrs.status_filter, { field: attrs.repeatableKey ? '_record_status' : '_status' }), this._schema);
-    this._projectFilter = new _columnFilter2.default(_extends({}, attrs.project_filter, { field: attrs.repeatableKey ? 'record_project.name' : 'project.name' }), this._schema);
-    this._assignmentFilter = new _columnFilter2.default(_extends({}, attrs.assignment_filter, { field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name' }), this._schema);
-    this._changesetFilter = new _columnFilter2.default(_extends({}, attrs.changeset_filter, { field: '_changeset_id' }), this._schema);
-
+    this._dateFilter = new _expression.Expression(attrs.date_filter || {
+      field: this.defaultDateField
+    }, attrs.schema);
+    this._options = new _queryOptions["default"](attrs.options || {});
+    this._columnSettings = new _columnSettings["default"](this._schema, attrs.columns);
+    this._statusFilter = new _columnFilter["default"](_extends({}, attrs.status_filter, {
+      field: attrs.repeatableKey ? '_record_status' : '_status'
+    }), this._schema);
+    this._projectFilter = new _columnFilter["default"](_extends({}, attrs.project_filter, {
+      field: attrs.repeatableKey ? 'record_project.name' : 'project.name'
+    }), this._schema);
+    this._assignmentFilter = new _columnFilter["default"](_extends({}, attrs.assignment_filter, {
+      field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name'
+    }), this._schema);
+    this._changesetFilter = new _columnFilter["default"](_extends({}, attrs.changeset_filter, {
+      field: '_changeset_id'
+    }), this._schema);
     this.setup();
   }
 
-  Query.prototype.clearAllFilters = function clearAllFilters() {
+  var _proto = Query.prototype;
+
+  _proto.clearAllFilters = function clearAllFilters() {
     this.statusFilter.reset();
     this.changesetFilter.reset();
     this.projectFilter.reset();
     this.assignmentFilter.reset();
-
     this.columnSettings.reset();
-
     this._filter = new _condition.Condition(null, this._schema);
-    this._sorting = new _sortExpressions2.default(null, this._schema);
-    // this._boundingBox = null;
+    this._sorting = new _sortExpressions["default"](null, this._schema); // this._boundingBox = null;
+
     this._searchFilter = '';
-    this._dateFilter = new _expression.Expression({ field: this.defaultDateField }, this._schema);
+    this._dateFilter = new _expression.Expression({
+      field: this.defaultDateField
+    }, this._schema);
   };
 
-  Query.prototype.toJSON = function toJSON() {
-    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+  _proto.toJSON = function toJSON(_temp) {
+    var _ref = _temp === void 0 ? {} : _temp,
         _ref$boundingBox = _ref.boundingBox,
-        boundingBox = _ref$boundingBox === undefined ? false : _ref$boundingBox;
+        boundingBox = _ref$boundingBox === void 0 ? false : _ref$boundingBox;
 
     return {
       filter: this.filter.toJSON(),
@@ -102,38 +100,38 @@ var Query = function () {
     };
   };
 
-  Query.prototype.toRawAST = function toRawAST(options) {
-    return new _converter2.default().toAST(this, options);
+  _proto.toRawAST = function toRawAST(options) {
+    return new _converter["default"]().toAST(this, options);
   };
 
-  Query.prototype.toCountAST = function toCountAST(options) {
-    return new _converter2.default().toCountAST(this, options);
+  _proto.toCountAST = function toCountAST(options) {
+    return new _converter["default"]().toCountAST(this, options);
   };
 
-  Query.prototype.toTileAST = function toTileAST(options) {
-    return new _converter2.default().toTileAST(this, options);
+  _proto.toTileAST = function toTileAST(options) {
+    return new _converter["default"]().toTileAST(this, options);
   };
 
-  Query.prototype.toDistinctValuesAST = function toDistinctValuesAST(options) {
-    return new _converter2.default().toDistinctValuesAST(this, options);
+  _proto.toDistinctValuesAST = function toDistinctValuesAST(options) {
+    return new _converter["default"]().toDistinctValuesAST(this, options);
   };
 
-  Query.prototype.toHistogramAST = function toHistogramAST(options) {
-    return new _converter2.default().toHistogramAST(this, options);
+  _proto.toHistogramAST = function toHistogramAST(options) {
+    return new _converter["default"]().toHistogramAST(this, options);
   };
 
-  Query.prototype.toAST = function toAST(_ref2) {
+  _proto.toAST = function toAST(_ref2) {
     var applySort = _ref2.applySort,
         pageSize = _ref2.pageSize,
         pageIndex = _ref2.pageIndex,
         outerLimit = _ref2.outerLimit;
-
     var finalLimit = outerLimit ? (0, _helpers.AConst)((0, _helpers.IntegerValue)(+outerLimit)) : null;
-
     var sortClause = applySort ? this.outerSortClause : null;
-
-    var fromClause = this.fromClause(_extends({ applySort: applySort, pageSize: pageSize, pageIndex: pageIndex }, this.runtimeFilters));
-
+    var fromClause = this.fromClause(_extends({
+      applySort: applySort,
+      pageSize: pageSize,
+      pageIndex: pageIndex
+    }, this.runtimeFilters));
     return (0, _helpers.SelectStmt)({
       targetList: this.targetList(),
       fromClause: fromClause,
@@ -142,27 +140,27 @@ var Query = function () {
     });
   };
 
-  Query.prototype.deparse = function deparse(ast) {
-    return new _pgQueryDeparser2.default().deparse(ast);
+  _proto.deparse = function deparse(ast) {
+    return new _pgQueryDeparser["default"]().deparse(ast);
   };
 
-  Query.prototype.toSchemaAST = function toSchemaAST(ast, options) {
-    return new _converter2.default().toSchemaAST(ast, options);
+  _proto.toSchemaAST = function toSchemaAST(ast, options) {
+    return new _converter["default"]().toSchemaAST(ast, options);
   };
 
-  Query.prototype.toDistinctValuesSQL = function toDistinctValuesSQL(options) {
+  _proto.toDistinctValuesSQL = function toDistinctValuesSQL(options) {
     return this.deparse(this.toDistinctValuesAST(options));
   };
 
-  Query.prototype.toHistogramSQL = function toHistogramSQL(options) {
+  _proto.toHistogramSQL = function toHistogramSQL(options) {
     return this.deparse(this.toHistogramAST(options));
   };
 
-  Query.prototype.toCountSQL = function toCountSQL() {
+  _proto.toCountSQL = function toCountSQL() {
     return this.deparse(this.toCountAST(this.runtimeFilters));
   };
 
-  Query.prototype.toSQL = function toSQL(_ref3) {
+  _proto.toSQL = function toSQL(_ref3) {
     var applySort = _ref3.applySort,
         pageSize = _ref3.pageSize,
         pageIndex = _ref3.pageIndex,
@@ -178,16 +176,16 @@ var Query = function () {
     return this.deparse(this.toAST(options));
   };
 
-  Query.prototype.toTileSQL = function toTileSQL() {
+  _proto.toTileSQL = function toTileSQL() {
     return this.deparse(this.toTileAST(this.runtimeFilters));
   };
 
-  Query.prototype.toSummarySQL = function toSummarySQL(columnSetting) {
-    var ast = new _converter2.default().toSummaryAST(this, columnSetting, this.runtimeFilters);
+  _proto.toSummarySQL = function toSummarySQL(columnSetting) {
+    var ast = new _converter["default"]().toSummaryAST(this, columnSetting, this.runtimeFilters);
     return this.deparse(ast);
   };
 
-  Query.prototype.targetList = function targetList() {
+  _proto.targetList = function targetList() {
     if (this.ast) {
       return [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)()))];
     }
@@ -197,11 +195,9 @@ var Query = function () {
     };
 
     var timeZoneFormat = (0, _helpers.AConst)((0, _helpers.StringValue)('YYYY-MM-DD"T"HH24:MI:SS"Z"'));
-
-    var joinedColumns = [];
-
-    // The "subJoinColumns" are joins that need to happen in the inner sub-select from Converter.
+    var joinedColumns = []; // The "subJoinColumns" are joins that need to happen in the inner sub-select from Converter.
     // We don't need to join them in the outer part.
+
     var subJoinColumns = this.joinColumnsWithSorting;
 
     if (this.schema.createdByColumn) {
@@ -247,47 +243,53 @@ var Query = function () {
     return [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_status'), 'status'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_version'), 'version'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_server_created_at')), timeZoneFormat]), 'created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_server_updated_at')), timeZoneFormat]), 'updated_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_created_at')), timeZoneFormat]), 'client_created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_updated_at')), timeZoneFormat]), 'client_updated_at'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_by_id'), 'created_by_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_by_id'), 'updated_by_id'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(this.form.id))), 'form_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_project_id'), 'project_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_assigned_to_id'), 'assigned_to_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_form_values'), 'form_values'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_latitude'), 'latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_longitude'), 'longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_altitude'), 'altitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_speed'), 'speed'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_course'), 'course'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_horizontal_accuracy'), 'horizontal_accuracy'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_vertical_accuracy'), 'vertical_accuracy'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_edited_duration'), 'edited_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_duration'), 'updated_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_duration'), 'created_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_changeset_id'), 'changeset_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_latitude'), 'created_latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_longitude'), 'created_longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_altitude'), 'created_altitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_horizontal_accuracy'), 'created_horizontal_accuracy'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_latitude'), 'updated_latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_longitude'), 'updated_longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_altitude'), 'updated_altitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy')].concat(joinedColumns);
   };
 
-  Query.prototype.fromClause = function fromClause(_ref4) {
+  _proto.fromClause = function fromClause(_ref4) {
     var applySort = _ref4.applySort,
         pageSize = _ref4.pageSize,
         pageIndex = _ref4.pageIndex,
         boundingBox = _ref4.boundingBox,
         searchFilter = _ref4.searchFilter;
-
-    var ast = applySort ? this.toRawAST({ sort: this.sortClause, pageSize: pageSize, pageIndex: pageIndex, boundingBox: boundingBox, searchFilter: searchFilter }) : this.toRawAST({ boundingBox: boundingBox, searchFilter: searchFilter });
-
+    var ast = applySort ? this.toRawAST({
+      sort: this.sortClause,
+      pageSize: pageSize,
+      pageIndex: pageIndex,
+      boundingBox: boundingBox,
+      searchFilter: searchFilter
+    }) : this.toRawAST({
+      boundingBox: boundingBox,
+      searchFilter: searchFilter
+    });
     var baseQuery = (0, _helpers.RangeSubselect)(ast, (0, _helpers.Alias)('records'));
 
     if (this.ast) {
       return [baseQuery];
-    }
-
-    // The "subJoinColumns" are joins that need to happen in the inner sub-select from Converter.
+    } // The "subJoinColumns" are joins that need to happen in the inner sub-select from Converter.
     // We don't need to join them in the outer part.
+
+
     var subJoinColumns = this.joinColumnsWithSorting;
 
     if (this.schema.createdByColumn && subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
-      baseQuery = _converter2.default.joinClause(baseQuery, this.schema.createdByColumn.join);
+      baseQuery = _converter["default"].joinClause(baseQuery, this.schema.createdByColumn.join);
     }
 
     if (this.schema.updatedByColumn && subJoinColumns.indexOf(this.schema.updatedByColumn) === -1) {
-      baseQuery = _converter2.default.joinClause(baseQuery, this.schema.updatedByColumn.join);
+      baseQuery = _converter["default"].joinClause(baseQuery, this.schema.updatedByColumn.join);
     }
 
     if (this.schema.assignedToColumn && subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
-      baseQuery = _converter2.default.joinClause(baseQuery, this.schema.assignedToColumn.join);
+      baseQuery = _converter["default"].joinClause(baseQuery, this.schema.assignedToColumn.join);
     }
 
     if (this.schema.projectColumn && subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
-      baseQuery = _converter2.default.joinClause(baseQuery, this.schema.projectColumn.join);
+      baseQuery = _converter["default"].joinClause(baseQuery, this.schema.projectColumn.join);
     }
 
     return [baseQuery];
   };
 
-  Query.prototype.toHumanDescription = function toHumanDescription() {
+  _proto.toHumanDescription = function toHumanDescription() {
     var parts = [];
-
     var description = null;
 
     if (description = this.statusFilter.toHumanDescription()) {
@@ -333,11 +335,10 @@ var Query = function () {
 
     if (description = this.dateFilter.toHumanDescription()) {
       parts.push(description);
-    }
-
-    // if ((description = this.filter.toHumanDescription())) {
+    } // if ((description = this.filter.toHumanDescription())) {
     //   parts.push(description);
     // }
+
 
     if (description = this.sorting.toHumanDescription()) {
       parts.push(description);
@@ -346,7 +347,7 @@ var Query = function () {
     return parts.join(', ');
   };
 
-  Query.prototype.setup = function setup() {
+  _proto.setup = function setup() {
     if (!this.ast) {
       return;
     }
@@ -360,77 +361,77 @@ var Query = function () {
       // query.
       var geometryColumn = geometryColumns[0];
 
-      _converter2.default.duplicateResTargetWithExactName(this, this.ast.SelectStmt.targetList, geometryColumn, '__geometry');
+      _converter["default"].duplicateResTargetWithExactName(this, this.ast.SelectStmt.targetList, geometryColumn, '__geometry');
     }
   };
 
   _createClass(Query, [{
-    key: 'ast',
+    key: "ast",
     get: function get() {
       return this._ast;
     }
   }, {
-    key: 'form',
+    key: "form",
     get: function get() {
       return this._form;
     }
   }, {
-    key: 'repeatableKey',
+    key: "repeatableKey",
     get: function get() {
       return this._repeatableKey;
     }
   }, {
-    key: 'schema',
+    key: "schema",
     get: function get() {
       return this._schema;
     }
   }, {
-    key: 'filter',
+    key: "filter",
     get: function get() {
       return this._filter;
     }
   }, {
-    key: 'sorting',
+    key: "sorting",
     get: function get() {
       return this._sorting;
     }
   }, {
-    key: 'columnSettings',
+    key: "columnSettings",
     get: function get() {
       return this._columnSettings;
     }
   }, {
-    key: 'dateFilter',
+    key: "dateFilter",
     get: function get() {
       return this._dateFilter;
     }
   }, {
-    key: 'statusFilter',
+    key: "statusFilter",
     get: function get() {
       return this._statusFilter;
     }
   }, {
-    key: 'changesetFilter',
+    key: "changesetFilter",
     get: function get() {
       return this._changesetFilter;
     }
   }, {
-    key: 'projectFilter',
+    key: "projectFilter",
     get: function get() {
       return this._projectFilter;
     }
   }, {
-    key: 'assignmentFilter',
+    key: "assignmentFilter",
     get: function get() {
       return this._assignmentFilter;
     }
   }, {
-    key: 'options',
+    key: "options",
     get: function get() {
       return this._options;
     }
   }, {
-    key: 'hasFilter',
+    key: "hasFilter",
     get: function get() {
       return this.statusFilter.hasFilter || this.projectFilter.hasFilter || this.assignmentFilter.hasFilter || this.changesetFilter.hasFilter || this.columnSettings.columns.find(function (o) {
         return o.hasFilter;
@@ -439,7 +440,7 @@ var Query = function () {
       }) || this.sorting.hasSort;
     }
   }, {
-    key: 'joinColumns',
+    key: "joinColumns",
     get: function get() {
       var joins = [];
 
@@ -456,17 +457,15 @@ var Query = function () {
       }).map(function (o) {
         return o.column;
       }));
-
       joins.push.apply(joins, this.filter.allExpressions.filter(function (o) {
         return o.isValid && o.column.join;
       }).map(function (o) {
         return o.column;
       }));
-
       return joins;
     }
   }, {
-    key: 'referencedColumns',
+    key: "referencedColumns",
     get: function get() {
       var columns = [];
 
@@ -483,7 +482,6 @@ var Query = function () {
       }).map(function (o) {
         return o.column;
       }));
-
       columns.push.apply(columns, this.filter.allExpressions.filter(function (o) {
         return o.isValid;
       }).map(function (o) {
@@ -501,7 +499,7 @@ var Query = function () {
       return columns;
     }
   }, {
-    key: 'joinColumnsWithSorting',
+    key: "joinColumnsWithSorting",
     get: function get() {
       var joins = this.joinColumns;
 
@@ -516,12 +514,12 @@ var Query = function () {
       return joins;
     }
   }, {
-    key: 'defaultDateField',
+    key: "defaultDateField",
     get: function get() {
       return this.repeatableKey ? '_updated_at' : '_server_updated_at';
     }
   }, {
-    key: 'boundingBox',
+    key: "boundingBox",
     set: function set(box) {
       this._boundingBox = box;
     },
@@ -529,7 +527,7 @@ var Query = function () {
       return this._boundingBox;
     }
   }, {
-    key: 'searchFilter',
+    key: "searchFilter",
     get: function get() {
       return this._searchFilter || '';
     },
@@ -537,7 +535,7 @@ var Query = function () {
       this._searchFilter = filter;
     }
   }, {
-    key: 'runtimeFilters',
+    key: "runtimeFilters",
     get: function get() {
       return {
         boundingBox: this.boundingBox,
@@ -546,15 +544,15 @@ var Query = function () {
       };
     }
   }, {
-    key: 'sortClause',
+    key: "sortClause",
     get: function get() {
       var _this = this;
 
       if (this.sorting.isEmpty) {
         return this.systemSortClause;
-      }
+      } // always add the record ID to the sorting so it's stable across executions
 
-      // always add the record ID to the sorting so it's stable across executions
+
       var sorts = this.sorting.expressions.map(function (sort) {
         var direction = sort.direction === 'desc' ? 2 : 1;
 
@@ -564,11 +562,10 @@ var Query = function () {
 
         return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)(sort.column.columnName, sort.column.source), direction, 0), (0, _helpers.SortBy)((0, _helpers.ColumnRef)('_record_id'), direction, 0)];
       });
-
-      return _lodash2.default.flatten(sorts);
+      return _lodash["default"].flatten(sorts);
     }
   }, {
-    key: 'systemSortClause',
+    key: "systemSortClause",
     get: function get() {
       if (this.ast) {
         return [(0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), 2, 0)];
@@ -581,7 +578,7 @@ var Query = function () {
       return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)('_server_updated_at'), 2, 0)];
     }
   }, {
-    key: 'outerSortClause',
+    key: "outerSortClause",
     get: function get() {
       return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)('__row_number'), 1, 0)];
     }
@@ -590,5 +587,5 @@ var Query = function () {
   return Query;
 }();
 
-exports.default = Query;
+exports["default"] = Query;
 //# sourceMappingURL=query.js.map

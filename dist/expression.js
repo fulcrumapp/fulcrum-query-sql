@@ -1,33 +1,32 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
-exports.Expression = undefined;
+exports.Expression = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _lodash = _interopRequireDefault(require("lodash"));
 
-var _lodash = require('lodash');
+var _operator = require("./operator");
 
-var _lodash2 = _interopRequireDefault(_lodash);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _operator = require('./operator');
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Expression = exports.Expression = function () {
+var Expression =
+/*#__PURE__*/
+function () {
   function Expression(attrs, schema) {
-    _classCallCheck(this, Expression);
-
     attrs = attrs || {};
-
     this._field = attrs.field || null;
     this._operator = attrs.operator || null;
     this._value = attrs.value || null;
     this._schema = schema;
   }
 
-  Expression.prototype.toggleValue = function toggleValue(value) {
+  var _proto = Expression.prototype;
+
+  _proto.toggleValue = function toggleValue(value) {
     if (!this._value) {
       this._value = [];
     }
@@ -60,7 +59,7 @@ var Expression = exports.Expression = function () {
     }
   };
 
-  Expression.prototype.containsValue = function containsValue(value) {
+  _proto.containsValue = function containsValue(value) {
     if (this.value == null) {
       return false;
     }
@@ -68,7 +67,7 @@ var Expression = exports.Expression = function () {
     return this.value.map(JSON.stringify).indexOf(JSON.stringify(value)) > -1;
   };
 
-  Expression.prototype.toJSON = function toJSON() {
+  _proto.toJSON = function toJSON() {
     if (!this.isValid) {
       return null;
     }
@@ -80,7 +79,7 @@ var Expression = exports.Expression = function () {
     };
   };
 
-  Expression.prototype.isEqual = function isEqual(other) {
+  _proto.isEqual = function isEqual(other) {
     if (other == null || !(other instanceof Expression)) {
       return false;
     }
@@ -88,19 +87,19 @@ var Expression = exports.Expression = function () {
     return this.field === other.field && this.operator === other.operator && JSON.stringify(this.value) === JSON.stringify(other.value);
   };
 
-  Expression.prototype.availableOperators = function availableOperators() {
+  _proto.availableOperators = function availableOperators() {
     return (0, _operator.availableOperatorsForColumn)(this.column);
   };
 
-  Expression.prototype.clearRangeValuesIfNull = function clearRangeValuesIfNull() {
+  _proto.clearRangeValuesIfNull = function clearRangeValuesIfNull() {
     // if both values are null, clear it, don't allow [ null, null ]
     if (this._value[0] == null && this._value[1] == null) {
       this._value = null;
     }
   };
 
-  Expression.prototype.labelForValue = function labelForValue(value) {
-    var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+  _proto.labelForValue = function labelForValue(value, _temp) {
+    var _ref2 = _temp === void 0 ? {} : _temp,
         separator = _ref2.separator;
 
     var column = this.column;
@@ -130,7 +129,7 @@ var Expression = exports.Expression = function () {
     return Array.isArray(value) ? value.join(separator != null ? separator : ', ') : value && value.toString();
   };
 
-  Expression.prototype.toHumanDescription = function toHumanDescription() {
+  _proto.toHumanDescription = function toHumanDescription() {
     if (!this.isValid) {
       return null;
     }
@@ -149,7 +148,7 @@ var Expression = exports.Expression = function () {
   };
 
   _createClass(Expression, [{
-    key: 'isValid',
+    key: "isValid",
     get: function get() {
       if (!(0, _operator.isValueRequired)(this.operator)) {
         return this.column != null && this.operator != null;
@@ -158,22 +157,22 @@ var Expression = exports.Expression = function () {
       return this.column != null && this.operator != null && this.hasValue;
     }
   }, {
-    key: 'supportsValue',
+    key: "supportsValue",
     get: function get() {
       return (0, _operator.isValueRequired)(this.operator);
     }
   }, {
-    key: 'hasValue',
+    key: "hasValue",
     get: function get() {
       return this.value !== null && this.value.length !== 0;
     }
   }, {
-    key: 'value',
+    key: "value",
     get: function get() {
       return this._value;
     }
   }, {
-    key: 'arrayValue',
+    key: "arrayValue",
     get: function get() {
       if (this.hasValue) {
         return Array.isArray(this.value[0]) ? this.value[0] : this.value;
@@ -182,7 +181,7 @@ var Expression = exports.Expression = function () {
       return null;
     }
   }, {
-    key: 'scalarValue',
+    key: "scalarValue",
     get: function get() {
       if (this.hasValue) {
         return this.value[0];
@@ -194,7 +193,7 @@ var Expression = exports.Expression = function () {
       this._value = value ? [value] : null;
     }
   }, {
-    key: 'value1',
+    key: "value1",
     get: function get() {
       return this.value && this.value[0];
     },
@@ -204,11 +203,10 @@ var Expression = exports.Expression = function () {
       }
 
       this._value = [value, this.value[1]];
-
       this.clearRangeValuesIfNull();
     }
   }, {
-    key: 'value2',
+    key: "value2",
     get: function get() {
       return this.value && this.value[1];
     },
@@ -218,16 +216,15 @@ var Expression = exports.Expression = function () {
       }
 
       this._value = [this.value[0], value];
-
       this.clearRangeValuesIfNull();
     }
   }, {
-    key: 'isDateOperator',
+    key: "isDateOperator",
     get: function get() {
       return (0, _operator.isDateOperator)(this.operator);
     }
   }, {
-    key: 'operator',
+    key: "operator",
     get: function get() {
       return this._operator;
     },
@@ -235,7 +232,7 @@ var Expression = exports.Expression = function () {
       this._operator = operator;
     }
   }, {
-    key: 'field',
+    key: "field",
     get: function get() {
       return this._field;
     },
@@ -243,16 +240,15 @@ var Expression = exports.Expression = function () {
       this._field = field;
     }
   }, {
-    key: 'column',
+    key: "column",
     get: function get() {
       return this._schema.columnForFieldKey(this.field);
     },
     set: function set(column) {
       var _this = this;
 
-      this._field = column ? column.id : null;
+      this._field = column ? column.id : null; // if the change in the field results in the operator not being valid, clear the operator
 
-      // if the change in the field results in the operator not being valid, clear the operator
       if (this._operator && this.availableOperators().find(function (o) {
         return o.name === _this._operator;
       }) === -1) {
@@ -260,15 +256,16 @@ var Expression = exports.Expression = function () {
       }
     }
   }, {
-    key: 'columnName',
+    key: "columnName",
     get: function get() {
       if (this.column) {
         return this.column.columnName;
       }
+
       return null;
     }
   }, {
-    key: 'startDate',
+    key: "startDate",
     get: function get() {
       return this._value && this._value[0];
     },
@@ -278,11 +275,10 @@ var Expression = exports.Expression = function () {
       }
 
       this._value = [date && date.startOf('day').format('YYYY-MM-DD HH:mm:ss'), this.value[1]];
-
       this.clearRangeValuesIfNull();
     }
   }, {
-    key: 'endDate',
+    key: "endDate",
     get: function get() {
       return this._value && this._value[1];
     },
@@ -292,11 +288,12 @@ var Expression = exports.Expression = function () {
       }
 
       this._value = [this.value[0], date && date.endOf('day').format('YYYY-MM-DD HH:mm:ss')];
-
       this.clearRangeValuesIfNull();
     }
   }]);
 
   return Expression;
 }();
+
+exports.Expression = Expression;
 //# sourceMappingURL=expression.js.map

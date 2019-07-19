@@ -1,37 +1,41 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports.Sort = exports.DIRECTIONS = exports.DIRECTION_DESC = exports.DIRECTION_ASC = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var DIRECTION_ASC = exports.DIRECTION_ASC = 'asc';
-
-var DIRECTION_DESC = exports.DIRECTION_DESC = 'desc';
-
-var DIRECTIONS = exports.DIRECTIONS = {
+var DIRECTION_ASC = 'asc';
+exports.DIRECTION_ASC = DIRECTION_ASC;
+var DIRECTION_DESC = 'desc';
+exports.DIRECTION_DESC = DIRECTION_DESC;
+var DIRECTIONS = {
   Asc: DIRECTION_ASC,
   Desc: DIRECTION_DESC
 };
+exports.DIRECTIONS = DIRECTIONS;
 
-var Sort = exports.Sort = function () {
+var Sort =
+/*#__PURE__*/
+function () {
   function Sort(attrs, schema) {
-    _classCallCheck(this, Sort);
-
     this._field = attrs.field || null;
     this._direction = attrs.direction || null;
     this._schema = schema;
   }
 
-  Sort.prototype.toJSON = function toJSON() {
+  var _proto = Sort.prototype;
+
+  _proto.toJSON = function toJSON() {
     return {
       field: this._field,
       direction: this._direction
     };
   };
 
-  Sort.prototype.toHumanDescription = function toHumanDescription() {
+  _proto.toHumanDescription = function toHumanDescription() {
     if (!this.isValid) {
       return null;
     }
@@ -40,12 +44,12 @@ var Sort = exports.Sort = function () {
   };
 
   _createClass(Sort, [{
-    key: 'isValid',
+    key: "isValid",
     get: function get() {
       return !!this.column;
     }
   }, {
-    key: 'direction',
+    key: "direction",
     get: function get() {
       return this._direction;
     },
@@ -53,12 +57,12 @@ var Sort = exports.Sort = function () {
       this._direction = direction;
     }
   }, {
-    key: 'field',
+    key: "field",
     get: function get() {
       return this._field;
     }
   }, {
-    key: 'column',
+    key: "column",
     get: function get() {
       return this._schema.columnForFieldKey(this.field);
     },
@@ -66,15 +70,18 @@ var Sort = exports.Sort = function () {
       this._field = column ? column.id : null;
     }
   }, {
-    key: 'columnName',
+    key: "columnName",
     get: function get() {
       if (this.column) {
         return this.column.columnName;
       }
+
       return null;
     }
   }]);
 
   return Sort;
 }();
+
+exports.Sort = Sort;
 //# sourceMappingURL=sort.js.map

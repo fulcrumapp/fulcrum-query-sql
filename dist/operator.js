@@ -1,365 +1,284 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
-exports.FRIENDLY_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = exports.OperatorsByValue = exports.OperatorType = undefined;
 exports.isValueRequired = isValueRequired;
 exports.isDateOperator = isDateOperator;
 exports.availableOperatorsForColumn = availableOperatorsForColumn;
 exports.calculateDateRange = calculateDateRange;
+exports.FRIENDLY_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = exports.OperatorsByValue = exports.OperatorType = void 0;
 
-var _moment = require('moment');
+var _moment = _interopRequireDefault(require("moment"));
 
-var _moment2 = _interopRequireDefault(_moment);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var OperatorType = exports.OperatorType = {
+var OperatorType = {
   Empty: {
     name: 'is_empty',
     label: 'Is blank'
   },
-
   NotEmpty: {
     name: 'is_not_empty',
     label: 'Is not blank'
   },
-
   Equal: {
     name: 'equal',
     label: 'Equals'
   },
-
   NotEqual: {
     name: 'not_equal',
     label: 'Does not equal'
   },
-
   GreaterThan: {
     name: 'greater_than',
     label: 'Greater than'
   },
-
   GreaterThanOrEqual: {
     name: 'greater_than_or_equal',
     label: 'Greater than or equal to'
   },
-
   LessThan: {
     name: 'less_than',
     label: 'Less than'
   },
-
   LessThanOrEqual: {
     name: 'less_than_or_equal',
     label: 'Less than or equal to'
   },
-
   Between: {
     name: 'between',
     label: 'Between'
   },
-
   NotBetween: {
     name: 'not_between',
     label: 'Not between'
   },
-
   In: {
     name: 'in',
     label: 'One of'
   },
-
   NotIn: {
     name: 'not_in',
     label: 'Not one of'
   },
-
   TextContain: {
     name: 'text_contain',
     label: 'Contains'
   },
-
   TextNotContain: {
     name: 'text_not_contain',
     label: 'Does not contain'
   },
-
   TextStartsWith: {
     name: 'text_starts_with',
     label: 'Starts with'
   },
-
   TextEndsWith: {
     name: 'text_ends_with',
     label: 'Ends with'
   },
-
   TextEqual: {
     name: 'text_equal',
     label: 'Equals'
   },
-
   TextNotEqual: {
     name: 'text_not_equal',
     label: 'Does not equal'
   },
-
   TextMatch: {
     name: 'text_match',
     label: 'Matches regex'
   },
-
   TextNotMatch: {
     name: 'text_not_match',
     label: 'Does not match regex'
   },
-
   DateEqual: {
     name: 'date_equal',
     label: 'Equals'
   },
-
   DateNotEqual: {
     name: 'date_not_equal',
     label: 'Does not equal'
   },
-
   DateAfter: {
     name: 'date_after',
     label: 'After'
   },
-
   DateOnOrAfter: {
     name: 'date_on_or_after',
     label: 'On or After'
   },
-
   DateBefore: {
     name: 'date_before',
     label: 'Before'
   },
-
   DateOnOrBefore: {
     name: 'date_on_or_before',
     label: 'On or Before'
   },
-
   DateToday: {
     name: 'date_today',
     label: 'Today'
   },
-
   DateYesterday: {
     name: 'date_yesterday',
     label: 'Yesterday'
   },
-
   DateTomorrow: {
     name: 'date_tomorrow',
     label: 'Tomorrow'
   },
-
   DateLast7Days: {
     name: 'date_last_7_days',
     label: 'Last 7 days'
   },
-
   DateLast30Days: {
     name: 'date_last_30_days',
     label: 'Last 30 days'
   },
-
   DateLast90Days: {
     name: 'date_last_90_days',
     label: 'Last 90 days'
   },
-
   DateLastMonth: {
     name: 'date_last_month',
     label: '1 Month Ago'
   },
-
   DateLastYear: {
     name: 'date_last_year',
     label: '1 Year Ago'
   },
-
   DateNextWeek: {
     name: 'date_next_week',
     label: '1 Week from Now'
   },
-
   DateNextMonth: {
     name: 'date_next_month',
     label: '1 Month from Now'
   },
-
   DateNextYear: {
     name: 'date_next_year',
     label: '1 Year from Now'
   },
-
   DateCurrentCalendarWeek: {
     name: 'date_current_calendar_week',
     label: 'This Week'
   },
-
   DateCurrentCalendarMonth: {
     name: 'date_current_calendar_month',
     label: 'This Month'
   },
-
   DateCurrentCalendarYear: {
     name: 'date_current_calendar_year',
     label: 'This Year'
   },
-
   DatePreviousCalendarWeek: {
     name: 'date_previous_calendar_week',
     label: 'Last Week'
   },
-
   DatePreviousCalendarMonth: {
     name: 'date_previous_calendar_month',
     label: 'Last Month'
   },
-
   DatePreviousCalendarYear: {
     name: 'date_previous_calendar_year',
     label: 'Last Year'
   },
-
   DateNextCalendarWeek: {
     name: 'date_next_calendar_week',
     label: 'Next Week'
   },
-
   DateNextCalendarMonth: {
     name: 'date_next_calendar_month',
     label: 'Next Month'
   },
-
   DateNextCalendarYear: {
     name: 'date_next_calendar_year',
     label: 'Next Year'
   },
-
   DateDaysFromNow: {
     name: 'date_days_from_now',
     label: 'Days from Now'
   },
-
   DateWeeksFromNow: {
     name: 'date_weeks_from_now',
     label: 'Weeks from Now'
   },
-
   DateMonthsFromNow: {
     name: 'date_months_from_now',
     label: 'Months from now'
   },
-
   DateYearsFromNow: {
     name: 'date_weeks_from_now',
     label: 'Years from now'
   },
-
   DateDaysAgo: {
     name: 'date_days_ago',
     label: 'Days ago'
   },
-
   DateWeeksAgo: {
     name: 'date_weeks_ago',
     label: 'Weeks ago'
   },
-
   DateMonthsAgo: {
     name: 'date_months_ago',
     label: 'Months ago'
   },
-
   DateYearsAgo: {
     name: 'date_years_ago',
     label: 'Years ago'
   },
-
   DateBetween: {
     name: 'date_between',
     label: 'Specific Range'
   },
-
   DateNotBetween: {
     name: 'date_not_between',
     label: 'Not Between'
   },
-
   ArrayAnyOf: {
     name: 'array_any_of',
     label: 'Any of'
   },
-
   ArrayAllOf: {
     name: 'array_all_of',
     label: 'All of'
   },
-
   ArrayNoneOf: {
     name: 'array_none_of',
     label: 'None of'
   },
-
   ArrayEqual: {
     name: 'array_equal',
     label: 'Equals'
   },
-
   Search: {
     name: 'search',
     label: 'Search'
   }
 };
+exports.OperatorType = OperatorType;
+var OperatorsByValue = {};
+exports.OperatorsByValue = OperatorsByValue;
 
-var OperatorsByValue = exports.OperatorsByValue = {};
-
-for (var _iterator = Object.keys(OperatorType), _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-  var _ref;
-
-  if (_isArray) {
-    if (_i >= _iterator.length) break;
-    _ref = _iterator[_i++];
-  } else {
-    _i = _iterator.next();
-    if (_i.done) break;
-    _ref = _i.value;
-  }
-
-  var key = _ref;
-
+for (var _i = 0, _Object$keys = Object.keys(OperatorType); _i < _Object$keys.length; _i++) {
+  var key = _Object$keys[_i];
   OperatorsByValue[OperatorType[key].name] = OperatorType[key];
 }
 
 var TEXTUAL_OPERATORS = [OperatorType.In, OperatorType.NotIn, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.TextContain, OperatorType.TextNotContain, OperatorType.TextStartsWith, OperatorType.TextEndsWith, OperatorType.TextEqual, OperatorType.TextNotEqual, OperatorType.TextMatch, OperatorType.TextNotMatch];
-
 var DATE_OPERATORS = [OperatorType.DateEqual, OperatorType.DateOnOrAfter, OperatorType.DateAfter, OperatorType.DateOnOrBefore, OperatorType.DateBefore, OperatorType.DateBetween, OperatorType.DateNotBetween, OperatorType.DateNotEqual, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn, OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateLast90Days, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear, OperatorType.DateDaysFromNow, OperatorType.DateWeeksFromNow, OperatorType.DateMonthsFromNow, OperatorType.DateYearsFromNow, OperatorType.DateDaysAgo, OperatorType.DateWeeksAgo, OperatorType.DateMonthsAgo, OperatorType.DateYearsAgo];
-
-var DYNAMIC_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateLast90Days, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear, OperatorType.DateDaysFromNow, OperatorType.DateWeeksFromNow, OperatorType.DateMonthsFromNow, OperatorType.DateYearsFromNow, OperatorType.DateDaysAgo, OperatorType.DateWeeksAgo, OperatorType.DateMonthsAgo, OperatorType.DateYearsAgo];
-
-var FRIENDLY_DATE_OPERATORS = exports.FRIENDLY_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateCurrentCalendarMonth, OperatorType.DatePreviousCalendarMonth, OperatorType.DateBetween];
-
-var NUMERIC_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.GreaterThan, OperatorType.GreaterThanOrEqual, OperatorType.LessThan, OperatorType.LessThanOrEqual,
-// OperatorType.Between,
+var DYNAMIC_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateLast90Days, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear, OperatorType.DateDaysFromNow, OperatorType.DateWeeksFromNow, OperatorType.DateMonthsFromNow, OperatorType.DateYearsFromNow, OperatorType.DateDaysAgo, OperatorType.DateWeeksAgo, OperatorType.DateMonthsAgo, OperatorType.DateYearsAgo];
+exports.DYNAMIC_DATE_OPERATORS = DYNAMIC_DATE_OPERATORS;
+var FRIENDLY_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateCurrentCalendarMonth, OperatorType.DatePreviousCalendarMonth, OperatorType.DateBetween];
+exports.FRIENDLY_DATE_OPERATORS = FRIENDLY_DATE_OPERATORS;
+var NUMERIC_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.GreaterThan, OperatorType.GreaterThanOrEqual, OperatorType.LessThan, OperatorType.LessThanOrEqual, // OperatorType.Between,
 // OperatorType.NotBetween,
 OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
-
 var ARRAY_OPERATORS = [OperatorType.ArrayAnyOf, OperatorType.ArrayAllOf, OperatorType.ArrayEqual, OperatorType.Empty, OperatorType.NotEmpty];
-
 var GEOSPATIAL_OPERATORS = [];
-
 var MEDIA_OPERATORS = [OperatorType.Empty, OperatorType.NotEmpty];
-
 var NO_VALUE_OPERATORS = [OperatorType.Empty, OperatorType.NotEmpty, OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateLast90Days, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear];
-
 var SYSTEM_COLUMNS = {
   _record_id: TEXTUAL_OPERATORS,
   _project_id: TEXTUAL_OPERATORS,
@@ -489,8 +408,7 @@ function availableOperatorsForColumn(column) {
 }
 
 function calculateDateRange(operator, value, now) {
-  now = (0, _moment2.default)(now || new Date()).clone().startOf('day');
-
+  now = (0, _moment["default"])(now || new Date()).clone().startOf('day');
   var date1 = now.clone();
   var date2 = now.clone();
 
@@ -584,7 +502,7 @@ function calculateDateRange(operator, value, now) {
       return value && range(date1.subtract(+value, 'years'), date2);
 
     case OperatorType.DateBetween.name:
-      return value && range(value[0] && (0, _moment2.default)(value[0]), value[1] && (0, _moment2.default)(value[1]));
+      return value && range(value[0] && (0, _moment["default"])(value[0]), value[1] && (0, _moment["default"])(value[1]));
 
     default:
       return null;

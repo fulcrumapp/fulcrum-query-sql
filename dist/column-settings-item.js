@@ -1,52 +1,64 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _expression = require("./expression");
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _operator = require("./operator");
 
-var _expression = require('./expression');
+var _columnFilter = _interopRequireDefault(require("./column-filter"));
 
-var _operator = require('./operator');
+var _columnSummary = _interopRequireDefault(require("./column-summary"));
 
-var _columnFilter = require('./column-filter');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _columnFilter2 = _interopRequireDefault(_columnFilter);
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-var _columnSummary = require('./column-summary');
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-var _columnSummary2 = _interopRequireDefault(_columnSummary);
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ColumnSettingsItem = function () {
+var ColumnSettingsItem =
+/*#__PURE__*/
+function () {
   function ColumnSettingsItem(attrs, schema) {
-    _classCallCheck(this, ColumnSettingsItem);
-
     this._schema = schema;
     this._hidden = !!attrs.hidden;
     this._column = attrs.column;
     this._search = attrs.search || '';
-    this._filter = new _columnFilter2.default(_extends({}, attrs.filter, { field: attrs.column.id }), this._schema);
-    this._expression = new _expression.Expression(_extends({}, attrs.expression, { field: attrs.column.id }), schema);
+    this._filter = new _columnFilter["default"](_extends({}, attrs.filter, {
+      field: attrs.column.id
+    }), this._schema);
+    this._expression = new _expression.Expression(_extends({}, attrs.expression, {
+      field: attrs.column.id
+    }), schema);
     this._range = new _expression.Expression(_extends({}, attrs.range, {
       operator: attrs.column.isDate ? _operator.OperatorType.DateBetween.name : _operator.OperatorType.Between.name,
-      field: attrs.column.id }), schema);
-    this._summary = new _columnSummary2.default(_extends({}, attrs.summary, { field: attrs.column.id }), this._schema);
+      field: attrs.column.id
+    }), schema);
+    this._summary = new _columnSummary["default"](_extends({}, attrs.summary, {
+      field: attrs.column.id
+    }), this._schema);
   }
 
-  ColumnSettingsItem.prototype.clear = function clear() {
+  var _proto = ColumnSettingsItem.prototype;
+
+  _proto.clear = function clear() {
     this._search = '';
-    this._filter = new _columnFilter2.default({ field: this.column.id }, this._schema);
-    this._expression = new _expression.Expression({ field: this.column.id }, this._schema);
-    this._range = new _expression.Expression({ operator: this.column.isDate ? _operator.OperatorType.DateBetween.name : _operator.OperatorType.Between.name,
-      field: this.column.id }, this._schema);
+    this._filter = new _columnFilter["default"]({
+      field: this.column.id
+    }, this._schema);
+    this._expression = new _expression.Expression({
+      field: this.column.id
+    }, this._schema);
+    this._range = new _expression.Expression({
+      operator: this.column.isDate ? _operator.OperatorType.DateBetween.name : _operator.OperatorType.Between.name,
+      field: this.column.id
+    }, this._schema);
   };
 
-  ColumnSettingsItem.prototype.toJSON = function toJSON() {
+  _proto.toJSON = function toJSON() {
     var json = {
       hidden: this.isHidden,
       column: this.column.toJSON()
@@ -72,12 +84,12 @@ var ColumnSettingsItem = function () {
   };
 
   _createClass(ColumnSettingsItem, [{
-    key: 'hasFilter',
+    key: "hasFilter",
     get: function get() {
       return this._search || this._filter.hasFilter || this._expression.isValid || this._range.isValid;
     }
   }, {
-    key: 'search',
+    key: "search",
     get: function get() {
       return this._search;
     },
@@ -85,42 +97,42 @@ var ColumnSettingsItem = function () {
       this._search = search || '';
     }
   }, {
-    key: 'column',
+    key: "column",
     get: function get() {
       return this._column;
     }
   }, {
-    key: 'filter',
+    key: "filter",
     get: function get() {
       return this._filter;
     }
   }, {
-    key: 'summary',
+    key: "summary",
     get: function get() {
       return this._summary;
     }
   }, {
-    key: 'isVisible',
+    key: "isVisible",
     get: function get() {
       return !this._hidden;
     }
   }, {
-    key: 'isHidden',
+    key: "isHidden",
     get: function get() {
       return this._hidden;
     }
   }, {
-    key: 'hidden',
+    key: "hidden",
     set: function set(hidden) {
       this._hidden = !!hidden;
     }
   }, {
-    key: 'expression',
+    key: "expression",
     get: function get() {
       return this._expression;
     }
   }, {
-    key: 'range',
+    key: "range",
     get: function get() {
       return this._range;
     }
@@ -129,5 +141,5 @@ var ColumnSettingsItem = function () {
   return ColumnSettingsItem;
 }();
 
-exports.default = ColumnSettingsItem;
+exports["default"] = ColumnSettingsItem;
 //# sourceMappingURL=column-settings-item.js.map

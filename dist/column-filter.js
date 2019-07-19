@@ -1,41 +1,42 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _lodash = _interopRequireDefault(require("lodash"));
 
-var _lodash = require('lodash');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _lodash2 = _interopRequireDefault(_lodash);
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ColumnFilter = function () {
+var ColumnFilter =
+/*#__PURE__*/
+function () {
   function ColumnFilter(attrs, schema) {
-    _classCallCheck(this, ColumnFilter);
-
     this._field = attrs.field;
     this._value = attrs.value || null;
     this._schema = schema;
   }
 
-  ColumnFilter.prototype.reset = function reset() {
+  var _proto = ColumnFilter.prototype;
+
+  _proto.reset = function reset() {
     this._value = null;
   };
 
-  ColumnFilter.prototype.resetIfEmpty = function resetIfEmpty() {
+  _proto.resetIfEmpty = function resetIfEmpty() {
     if (this.isEmptySet) {
       this.reset();
     }
   };
 
-  ColumnFilter.prototype.clearValues = function clearValues() {
+  _proto.clearValues = function clearValues() {
     this._value = [];
   };
 
-  ColumnFilter.prototype.ensureValue = function ensureValue(value) {
+  _proto.ensureValue = function ensureValue(value) {
     if (!this._value) {
       this._value = [];
     }
@@ -45,19 +46,19 @@ var ColumnFilter = function () {
     }
   };
 
-  ColumnFilter.prototype.toggleValue = function toggleValue(value) {
+  _proto.toggleValue = function toggleValue(value) {
     if (!this._value) {
       this._value = [];
     }
 
     if (this.containsValue(value)) {
-      this._value = _lodash2.default.without(this.value, value);
+      this._value = _lodash["default"].without(this.value, value);
     } else {
       this._value.push(value);
     }
   };
 
-  ColumnFilter.prototype.containsValue = function containsValue(value) {
+  _proto.containsValue = function containsValue(value) {
     if (this.value == null) {
       return false;
     }
@@ -65,7 +66,7 @@ var ColumnFilter = function () {
     return this.value.indexOf(value) > -1;
   };
 
-  ColumnFilter.prototype.toJSON = function toJSON() {
+  _proto.toJSON = function toJSON() {
     if (!this.hasFilter) {
       return null;
     }
@@ -76,7 +77,7 @@ var ColumnFilter = function () {
     };
   };
 
-  ColumnFilter.prototype.toHumanDescription = function toHumanDescription() {
+  _proto.toHumanDescription = function toHumanDescription() {
     if (!this.hasFilter) {
       return null;
     }
@@ -85,52 +86,49 @@ var ColumnFilter = function () {
   };
 
   _createClass(ColumnFilter, [{
-    key: 'value',
+    key: "value",
     get: function get() {
       return this._value;
-    }
-
-    // when the filter is fully blank (default state) all rows are returned
+    } // when the filter is fully blank (default state) all rows are returned
 
   }, {
-    key: 'isNull',
+    key: "isNull",
     get: function get() {
       return this.value == null;
     }
   }, {
-    key: 'hasFilter',
+    key: "hasFilter",
     get: function get() {
       return !this.isNull;
     }
   }, {
-    key: 'hasValues',
+    key: "hasValues",
     get: function get() {
       return this.value != null && this.value.length > 0;
-    }
-
-    // when the set is empty, it should always return no results
+    } // when the set is empty, it should always return no results
 
   }, {
-    key: 'isEmptySet',
+    key: "isEmptySet",
     get: function get() {
       return this.value != null && this.value.length === 0;
     }
   }, {
-    key: 'field',
+    key: "field",
     get: function get() {
       return this._field;
     }
   }, {
-    key: 'column',
+    key: "column",
     get: function get() {
       return this._schema.columnForFieldKey(this.field);
     }
   }, {
-    key: 'columnName',
+    key: "columnName",
     get: function get() {
       if (this.column) {
         return this.column.columnName;
       }
+
       return null;
     }
   }]);
@@ -138,5 +136,5 @@ var ColumnFilter = function () {
   return ColumnFilter;
 }();
 
-exports.default = ColumnFilter;
+exports["default"] = ColumnFilter;
 //# sourceMappingURL=column-filter.js.map

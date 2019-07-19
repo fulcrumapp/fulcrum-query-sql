@@ -1,19 +1,22 @@
 "use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var QueryOptions = function () {
-  function QueryOptions() {
-    var attrs = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, QueryOptions);
+var QueryOptions =
+/*#__PURE__*/
+function () {
+  function QueryOptions(attrs) {
+    if (attrs === void 0) {
+      attrs = {};
+    }
 
     this.timeZone = attrs.time_zone || null;
   }
 
-  QueryOptions.prototype.toJSON = function toJSON() {
+  var _proto = QueryOptions.prototype;
+
+  _proto.toJSON = function toJSON() {
     return {
       time_zone: this.timeZone
     };
@@ -22,5 +25,5 @@ var QueryOptions = function () {
   return QueryOptions;
 }();
 
-exports.default = QueryOptions;
+exports["default"] = QueryOptions;
 //# sourceMappingURL=query-options.js.map

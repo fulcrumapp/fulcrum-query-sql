@@ -1,51 +1,49 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _column = _interopRequireDefault(require("./column"));
 
-var _column = require('./column');
+var _join = _interopRequireDefault(require("./join"));
 
-var _column2 = _interopRequireDefault(_column);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _join = require('./join');
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-var _join2 = _interopRequireDefault(_join);
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _defaults(obj, defaults) { var keys = Object.getOwnPropertyNames(defaults); for (var i = 0; i < keys.length; i++) { var key = keys[i]; var value = Object.getOwnPropertyDescriptor(defaults, key); if (value && value.configurable && obj[key] === undefined) { Object.defineProperty(obj, key, value); } } return obj; }
+function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : _defaults(subClass, superClass); }
-
-var SimpleColumn = function (_Column) {
-  _inherits(SimpleColumn, _Column);
+var SimpleColumn =
+/*#__PURE__*/
+function (_Column) {
+  _inheritsLoose(SimpleColumn, _Column);
 
   function SimpleColumn(_ref) {
+    var _this;
+
     var name = _ref.name,
         attributeName = _ref.attributeName,
         columnName = _ref.columnName,
         _ref$type = _ref.type,
-        type = _ref$type === undefined ? null : _ref$type,
+        type = _ref$type === void 0 ? null : _ref$type,
         _ref$accessor = _ref.accessor,
-        accessor = _ref$accessor === undefined ? null : _ref$accessor,
+        accessor = _ref$accessor === void 0 ? null : _ref$accessor,
         _ref$join = _ref.join,
-        join = _ref$join === undefined ? null : _ref$join,
+        join = _ref$join === void 0 ? null : _ref$join,
         _ref$sql = _ref.sql,
-        sql = _ref$sql === undefined ? null : _ref$sql,
+        sql = _ref$sql === void 0 ? null : _ref$sql,
         index = _ref.index;
+    _this = _Column.call(this) || this;
 
-    _classCallCheck(this, SimpleColumn);
-
-    var _this = _possibleConstructorReturn(this, _Column.call(this));
-
-    _this.defaultAccessor = function (object) {
+    _defineProperty(_assertThisInitialized(_this), "defaultAccessor", function (object) {
       return object[_this.attributeName];
-    };
+    });
 
     _this._type = type || 'string';
     _this._name = name;
@@ -56,47 +54,53 @@ var SimpleColumn = function (_Column) {
     _this._index = index;
 
     if (join) {
-      _this._join = new _join2.default(join);
+      _this._join = new _join["default"](join);
     }
+
     return _this;
   }
 
-  SimpleColumn.prototype.valueFrom = function valueFrom(object) {
+  var _proto = SimpleColumn.prototype;
+
+  _proto.valueFrom = function valueFrom(object) {
     return this._accessor(object);
   };
 
-  SimpleColumn.prototype.exportValue = function exportValue(object) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  _proto.exportValue = function exportValue(object, options) {
+    if (options === void 0) {
+      options = {};
+    }
 
     return this._accessor(object, options);
   };
 
   _createClass(SimpleColumn, [{
-    key: 'type',
+    key: "type",
     get: function get() {
       return this._type;
     }
   }, {
-    key: 'id',
+    key: "id",
     get: function get() {
       if (this._sql) {
         // The double underscore is the marker for an internal column id
-        return '__' + this._index + ':' + this._columnName;
+        return "__" + this._index + ":" + this._columnName;
       }
+
       return this._columnName;
     }
   }, {
-    key: 'name',
+    key: "name",
     get: function get() {
       return this._name;
     }
   }, {
-    key: 'join',
+    key: "join",
     get: function get() {
       return this._join;
     }
   }, {
-    key: 'source',
+    key: "source",
     get: function get() {
       if (this.join) {
         return this._columnName.split('.')[0];
@@ -105,12 +109,12 @@ var SimpleColumn = function (_Column) {
       return null;
     }
   }, {
-    key: 'joinedColumnName',
+    key: "joinedColumnName",
     get: function get() {
       return this.columnName;
     }
   }, {
-    key: 'columnName',
+    key: "columnName",
     get: function get() {
       if (this.join) {
         return this._columnName.split('.')[1];
@@ -119,19 +123,19 @@ var SimpleColumn = function (_Column) {
       return this._columnName;
     }
   }, {
-    key: 'attributeName',
+    key: "attributeName",
     get: function get() {
       return this._attributeName;
     }
   }, {
-    key: 'isSQL',
+    key: "isSQL",
     get: function get() {
       return this._sql;
     }
   }]);
 
   return SimpleColumn;
-}(_column2.default);
+}(_column["default"]);
 
-exports.default = SimpleColumn;
+exports["default"] = SimpleColumn;
 //# sourceMappingURL=simple-column.js.map

@@ -1,52 +1,50 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _elementColumn = _interopRequireDefault(require("./schema/element-column"));
 
-var _elementColumn = require('./schema/element-column');
+var _simpleColumn = _interopRequireDefault(require("./schema/simple-column"));
 
-var _elementColumn2 = _interopRequireDefault(_elementColumn);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _simpleColumn = require('./schema/simple-column');
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-var _simpleColumn2 = _interopRequireDefault(_simpleColumn);
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var FormFieldSchema = function () {
+var FormFieldSchema =
+/*#__PURE__*/
+function () {
   function FormFieldSchema(_ref) {
     var _ref$fullSchema = _ref.fullSchema,
-        fullSchema = _ref$fullSchema === undefined ? false : _ref$fullSchema;
-
-    _classCallCheck(this, FormFieldSchema);
-
+        fullSchema = _ref$fullSchema === void 0 ? false : _ref$fullSchema;
     this.fullSchema = fullSchema;
   }
 
-  FormFieldSchema.prototype.addSystemColumn = function addSystemColumn(label, attribute, columnName, type, accessor, join, sql) {
-    var column = new _simpleColumn2.default({ name: label,
+  var _proto = FormFieldSchema.prototype;
+
+  _proto.addSystemColumn = function addSystemColumn(label, attribute, columnName, type, accessor, join, sql) {
+    var column = new _simpleColumn["default"]({
+      name: label,
       attributeName: attribute,
       columnName: columnName,
       type: type,
       accessor: accessor,
       join: join,
       sql: sql,
-      index: this._columns.length });
-    this._columns.push(column);
-    this._columnsByKey[column.id] = column;
+      index: this._columns.length
+    });
 
+    this._columns.push(column);
+
+    this._columnsByKey[column.id] = column;
     return column;
   };
 
-  FormFieldSchema.prototype.addElementColumn = function addElementColumn(element, part, type) {
+  _proto.addElementColumn = function addElementColumn(element, part, type) {
     var columnKey = part ? element.key + '_' + part : element.key;
-
-    var rawColumn = this._rawColumnsByKey[columnKey];
-
-    // if (column == null) {
+    var rawColumn = this._rawColumnsByKey[columnKey]; // if (column == null) {
     //   if the column is null, that means it's a materialized column
     //   throw new Error('Column not found for element ' + columnKey + Object.keys(this._rawColumnsByKey));
     // }
@@ -54,16 +52,23 @@ var FormFieldSchema = function () {
     return this.addRawElementColumn(element, rawColumn, null, type || rawColumn.type, part, columnKey);
   };
 
-  FormFieldSchema.prototype.addRawElementColumn = function addRawElementColumn(element, rawColumn, id, type, part, columnKey) {
-    var columnObject = new _elementColumn2.default({ element: element, rawColumn: rawColumn, type: type, id: id, part: part, index: this._columns.length });
+  _proto.addRawElementColumn = function addRawElementColumn(element, rawColumn, id, type, part, columnKey) {
+    var columnObject = new _elementColumn["default"]({
+      element: element,
+      rawColumn: rawColumn,
+      type: type,
+      id: id,
+      part: part,
+      index: this._columns.length
+    });
 
     this._columns.push(columnObject);
-    this._columnsByKey[columnKey] = columnObject;
 
+    this._columnsByKey[columnKey] = columnObject;
     return columnObject;
   };
 
-  FormFieldSchema.prototype.setupElementColumns = function setupElementColumns() {
+  _proto.setupElementColumns = function setupElementColumns() {
     for (var _iterator = this.elementsForColumns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
       var _ref2;
 
@@ -81,7 +86,6 @@ var FormFieldSchema = function () {
       // if (element.isHidden || element.hasHiddenParent) {
       //   continue;
       // }
-
       // repeatable elements don't have any physical columns, but we want to add a column that has the count of items
       if (element.isRepeatableElement) {
         this.addElementColumn(element, null, 'integer');
@@ -111,13 +115,13 @@ var FormFieldSchema = function () {
     }
   };
 
-  FormFieldSchema.prototype.findColumnByID = function findColumnByID(id) {
+  _proto.findColumnByID = function findColumnByID(id) {
     return this.columns.find(function (e) {
       return e.id === id;
     });
   };
 
-  FormFieldSchema.prototype.columnForFieldKey = function columnForFieldKey(fieldKey, part) {
+  _proto.columnForFieldKey = function columnForFieldKey(fieldKey, part) {
     if (part) {
       return this._columnsByKey[fieldKey + '_' + part];
     }
@@ -126,31 +130,31 @@ var FormFieldSchema = function () {
   };
 
   _createClass(FormFieldSchema, [{
-    key: 'geometryColumns',
+    key: "geometryColumns",
     get: function get() {
       return this._columns.filter(function (c) {
         return c.isGeometry;
       });
     }
   }, {
-    key: 'columns',
+    key: "columns",
     get: function get() {
       return this._columns;
     }
   }, {
-    key: 'allElements',
+    key: "allElements",
     get: function get() {
       if (!this._allElements) {
         this._allElements = this.container.flattenElements(false);
       }
+
       return this._allElements;
     }
   }, {
-    key: 'elementsForColumns',
+    key: "elementsForColumns",
     get: function get() {
       if (!this._elementsForColumns) {
         this._elementsForColumns = [];
-
         var elements = this.allElements;
 
         for (var _iterator2 = elements, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
@@ -166,7 +170,6 @@ var FormFieldSchema = function () {
           }
 
           var element = _ref3;
-
           var skip = element.isSectionElement || element.isLabelElement;
 
           if (!skip) {
@@ -182,5 +185,5 @@ var FormFieldSchema = function () {
   return FormFieldSchema;
 }();
 
-exports.default = FormFieldSchema;
+exports["default"] = FormFieldSchema;
 //# sourceMappingURL=form-field-schema.js.map

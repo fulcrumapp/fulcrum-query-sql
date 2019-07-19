@@ -1,9 +1,6 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 exports.SelectStmt = SelectStmt;
 exports.StringValue = StringValue;
 exports.IntegerValue = IntegerValue;
@@ -30,6 +27,9 @@ exports.CommonTableExpr = CommonTableExpr;
 exports.RangeFunction = RangeFunction;
 exports.SubLink = SubLink;
 exports.CoalesceExpr = CoalesceExpr;
+
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
 function SelectStmt(_ref) {
   var targetList = _ref.targetList,
       fromClause = _ref.fromClause,
@@ -39,7 +39,6 @@ function SelectStmt(_ref) {
       limitCount = _ref.limitCount,
       groupClause = _ref.groupClause,
       withClause = _ref.withClause;
-
   return {
     SelectStmt: {
       targetList: targetList,
@@ -98,8 +97,10 @@ function RangeVar(name, alias) {
   };
 }
 
-function ResTarget(node) {
-  var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+function ResTarget(node, name) {
+  if (name === void 0) {
+    name = null;
+  }
 
   return {
     ResTarget: {
@@ -129,9 +130,7 @@ function WindowDef(orderClause, frameOptions) {
 
 function ColumnRef(name, source) {
   var nameValue = typeof name === 'string' ? StringValue(name) : name;
-
   var fields = source ? [StringValue(source), nameValue] : [nameValue];
-
   return {
     ColumnRef: {
       fields: fields
@@ -227,10 +226,10 @@ function SortBy(node, direction, nulls) {
       sortby_nulls: nulls
     }
   };
-}
-
-// 0 : IS NULL
+} // 0 : IS NULL
 // 1 : IS NOT NULL
+
+
 function NullTest(type, arg) {
   return {
     NullTest: {

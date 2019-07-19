@@ -1,79 +1,82 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Column = function () {
-  function Column() {
-    _classCallCheck(this, Column);
-  }
+var Column =
+/*#__PURE__*/
+function () {
+  function Column() {}
 
-  Column.prototype.toJSON = function toJSON() {
+  var _proto = Column.prototype;
+
+  _proto.toJSON = function toJSON() {
     return {
       id: this.id
     };
   };
 
   _createClass(Column, [{
-    key: 'isArray',
+    key: "isArray",
     get: function get() {
       return this.type === 'array';
     }
   }, {
-    key: 'isDate',
+    key: "isDate",
     get: function get() {
       return this.type === 'timestamp' || this.type === 'date';
     }
   }, {
-    key: 'isTime',
+    key: "isTime",
     get: function get() {
       return this.type === 'time';
     }
   }, {
-    key: 'isDateTime',
+    key: "isDateTime",
     get: function get() {
       return this.type === 'timestamp';
     }
   }, {
-    key: 'isNumber',
+    key: "isNumber",
     get: function get() {
       return this.isDouble || this.isInteger;
     }
   }, {
-    key: 'isDouble',
+    key: "isDouble",
     get: function get() {
       return this.type === 'double';
     }
   }, {
-    key: 'isInteger',
+    key: "isInteger",
     get: function get() {
       return this.type === 'integer';
     }
   }, {
-    key: 'isGeometry',
+    key: "isGeometry",
     get: function get() {
       return this.type === 'geometry';
     }
   }, {
-    key: 'supportsRanges',
+    key: "supportsRanges",
     get: function get() {
       return this.isNumber || this.isDate;
     }
   }, {
-    key: 'canSearch',
+    key: "canSearch",
     get: function get() {
       return true;
     }
   }, {
-    key: 'isSortable',
+    key: "isSortable",
     get: function get() {
       return true;
     }
   }, {
-    key: 'index',
+    key: "index",
     get: function get() {
       return this._index;
     }
@@ -82,5 +85,5 @@ var Column = function () {
   return Column;
 }();
 
-exports.default = Column;
+exports["default"] = Column;
 //# sourceMappingURL=column.js.map

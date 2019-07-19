@@ -1,36 +1,29 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _arrayMove = _interopRequireDefault(require("array-move"));
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _columnSettingsItem = _interopRequireDefault(require("./column-settings-item"));
 
-var _arrayMove = require('array-move');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _arrayMove2 = _interopRequireDefault(_arrayMove);
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-var _columnSettingsItem = require('./column-settings-item');
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-var _columnSettingsItem2 = _interopRequireDefault(_columnSettingsItem);
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ColumnSettings = function () {
+var ColumnSettings =
+/*#__PURE__*/
+function () {
   function ColumnSettings(schema, settings) {
-    _classCallCheck(this, ColumnSettings);
-
     this._schema = schema;
-
     this._columns = [];
     this._columnsByID = {};
-
     this._allColumns = [];
-
     var newColumns = [];
-
     var existingSettingsByID = {};
 
     if (settings) {
@@ -47,7 +40,6 @@ var ColumnSettings = function () {
         }
 
         var setting = _ref;
-
         existingSettingsByID[setting.column.id] = setting;
       }
     }
@@ -56,16 +48,20 @@ var ColumnSettings = function () {
 
     for (var index = 0; index < columns.length; ++index) {
       var column = columns[index];
-
       var existingAttributes = existingSettingsByID[column.id];
-
-      var item = new _columnSettingsItem2.default(_extends({}, existingAttributes, { column: column }), this._schema);
+      var item = new _columnSettingsItem["default"](_extends({}, existingAttributes, {
+        column: column
+      }), this._schema);
 
       if (existingAttributes == null) {
-        newColumns.push({ column: item, index: index });
+        newColumns.push({
+          column: item,
+          index: index
+        });
       }
 
       this._allColumns.push(item);
+
       this._columnsByID[column.id] = item;
     }
 
@@ -83,7 +79,6 @@ var ColumnSettings = function () {
         }
 
         var _setting = _ref2;
-
         var _item = this._columnsByID[_setting.column.id];
 
         if (_item) {
@@ -92,66 +87,58 @@ var ColumnSettings = function () {
       }
     }
 
-    for (var _iterator3 = newColumns, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator]();;) {
-      var _ref3;
-
-      if (_isArray3) {
-        if (_i3 >= _iterator3.length) break;
-        _ref3 = _iterator3[_i3++];
-      } else {
-        _i3 = _iterator3.next();
-        if (_i3.done) break;
-        _ref3 = _i3.value;
-      }
-
-      var newColumn = _ref3;
+    for (var _i3 = 0, _newColumns = newColumns; _i3 < _newColumns.length; _i3++) {
+      var newColumn = _newColumns[_i3];
 
       this._columns.splice(newColumn.index, 0, newColumn.column);
     }
   }
 
-  ColumnSettings.prototype.reset = function reset() {
+  var _proto = ColumnSettings.prototype;
+
+  _proto.reset = function reset() {
     this._columns = this._allColumns.slice();
+
     this._columns.map(function (o) {
       return o.clear();
     });
   };
 
-  ColumnSettings.prototype.toJSON = function toJSON() {
+  _proto.toJSON = function toJSON() {
     return this.columns.map(function (o) {
       return o.toJSON();
     });
   };
 
-  ColumnSettings.prototype.move = function move(from, to) {
-    this._columns = (0, _arrayMove2.default)(this._columns, from, to);
+  _proto.move = function move(from, to) {
+    this._columns = (0, _arrayMove["default"])(this._columns, from, to);
   };
 
-  ColumnSettings.prototype.byColumn = function byColumn(column) {
+  _proto.byColumn = function byColumn(column) {
     return this._columnsByID[column.id];
   };
 
   _createClass(ColumnSettings, [{
-    key: 'enabledColumns',
+    key: "enabledColumns",
     get: function get() {
       return this.enabledColumnSettings.map(function (c) {
         return c.column;
       });
     }
   }, {
-    key: 'enabledColumnSettings',
+    key: "enabledColumnSettings",
     get: function get() {
       return this.columns.filter(function (c) {
         return c.isVisible;
       });
     }
   }, {
-    key: 'columns',
+    key: "columns",
     get: function get() {
       return this._columns;
     }
   }, {
-    key: 'columnsByID',
+    key: "columnsByID",
     get: function get() {
       return this._columnsByID;
     }
@@ -160,5 +147,5 @@ var ColumnSettings = function () {
   return ColumnSettings;
 }();
 
-exports.default = ColumnSettings;
+exports["default"] = ColumnSettings;
 //# sourceMappingURL=column-settings.js.map

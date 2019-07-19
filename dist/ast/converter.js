@@ -1,24 +1,23 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _helpers = require("./helpers");
 
-var _helpers = require('./helpers');
+var _condition = require("../condition");
 
-var _condition = require('../condition');
+var _operator = require("../operator");
 
-var _operator = require('../operator');
+var _aggregate = require("../aggregate");
 
-var _aggregate = require('../aggregate');
+var _momentTimezone = _interopRequireDefault(require("moment-timezone"));
 
-var _momentTimezone = require('moment-timezone');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var MAX_DISTINCT_VALUES = 1000;
 var MAX_TILE_RECORDS = 1000;
@@ -27,13 +26,13 @@ var columnRef = function columnRef(column) {
   return column.isSQL ? (0, _helpers.ColumnRef)(column.id, column.source) : (0, _helpers.ColumnRef)(column.columnName, column.source);
 };
 
-var Converter = function () {
+var Converter =
+/*#__PURE__*/
+function () {
   function Converter() {
     var _this = this;
 
-    _classCallCheck(this, Converter);
-
-    this.BooleanConverter = function (type, condition, options) {
+    _defineProperty(this, "BooleanConverter", function (type, condition, options) {
       var args = _this.nodeForExpressions(condition.expressions, options);
 
       if (args && args.length) {
@@ -41,57 +40,57 @@ var Converter = function () {
       }
 
       return null;
-    };
+    });
 
-    this.AndConverter = function (condition, options) {
+    _defineProperty(this, "AndConverter", function (condition, options) {
       return _this.BooleanConverter(0, condition, options);
-    };
+    });
 
-    this.OrConverter = function (condition, options) {
+    _defineProperty(this, "OrConverter", function (condition, options) {
       return _this.BooleanConverter(1, condition, options);
-    };
+    });
 
-    this.NotConverter = function (condition, options) {
+    _defineProperty(this, "NotConverter", function (condition, options) {
       if (condition.expressions.length > 1) {
         return (0, _helpers.BoolExpr)(2, [_this.BooleanConverter(0, condition, options)]);
       }
 
       return _this.BooleanConverter(2, condition, options);
-    };
+    });
 
-    this.NotEmptyConverter = function (expression) {
+    _defineProperty(this, "NotEmptyConverter", function (expression) {
       return (0, _helpers.NullTest)(1, columnRef(expression.column));
-    };
+    });
 
-    this.EmptyConverter = function (expression) {
+    _defineProperty(this, "EmptyConverter", function (expression) {
       return (0, _helpers.NullTest)(0, columnRef(expression.column));
-    };
+    });
 
-    this.EqualConverter = function (expression) {
+    _defineProperty(this, "EqualConverter", function (expression) {
       return _this.BinaryConverter(0, '=', expression);
-    };
+    });
 
-    this.NotEqualConverter = function (expression) {
+    _defineProperty(this, "NotEqualConverter", function (expression) {
       return _this.BinaryConverter(0, '<>', expression);
-    };
+    });
 
-    this.GreaterThanConverter = function (expression) {
+    _defineProperty(this, "GreaterThanConverter", function (expression) {
       return _this.BinaryConverter(0, '>', expression);
-    };
+    });
 
-    this.GreaterThanOrEqualConverter = function (expression) {
+    _defineProperty(this, "GreaterThanOrEqualConverter", function (expression) {
       return _this.BinaryConverter(0, '>=', expression);
-    };
+    });
 
-    this.LessThanConverter = function (expression) {
+    _defineProperty(this, "LessThanConverter", function (expression) {
       return _this.BinaryConverter(0, '<', expression);
-    };
+    });
 
-    this.LessThanOrEqualConverter = function (expression) {
+    _defineProperty(this, "LessThanOrEqualConverter", function (expression) {
       return _this.BinaryConverter(0, '<=', expression);
-    };
+    });
 
-    this.BetweenConverter = function (expression, options) {
+    _defineProperty(this, "BetweenConverter", function (expression, options) {
       var value1 = expression.value1;
       var value2 = expression.value2;
 
@@ -101,9 +100,9 @@ var Converter = function () {
       }
 
       return _this.Between(expression.column, value1, value2);
-    };
+    });
 
-    this.NotBetweenConverter = function (expression, options) {
+    _defineProperty(this, "NotBetweenConverter", function (expression, options) {
       var value1 = expression.value1;
       var value2 = expression.value2;
 
@@ -113,98 +112,94 @@ var Converter = function () {
       }
 
       return _this.NotBetween(expression.column, value1, value2);
-    };
+    });
 
-    this.InConverter = function (expression) {
+    _defineProperty(this, "InConverter", function (expression) {
       return _this.In(expression.column, expression.arrayValue);
-    };
+    });
 
-    this.NotInConverter = function (expression) {
+    _defineProperty(this, "NotInConverter", function (expression) {
       return _this.NotIn(expression.column, expression.arrayValue);
-    };
+    });
 
-    this.BinaryConverter = function (kind, operator, expression) {
+    _defineProperty(this, "BinaryConverter", function (kind, operator, expression) {
       return (0, _helpers.AExpr)(kind, operator, columnRef(expression.column), _this.ConstValue(expression.column, expression.scalarValue));
-    };
+    });
 
-    this.FieldConverter = function (expression) {
+    _defineProperty(this, "FieldConverter", function (expression) {
       return (0, _helpers.ColumnRef)(expression.name);
-    };
+    });
 
-    this.ConstantConverter = function (expression) {
+    _defineProperty(this, "ConstantConverter", function (expression) {
       return _this.ConstValue(expression.column, expression.scalarValue);
-    };
+    });
 
-    this.TextEqualConverter = function (expression) {
+    _defineProperty(this, "TextEqualConverter", function (expression) {
       return (0, _helpers.AExpr)(8, '~~*', _this.ConvertToText(expression.column), _this.ConstValue(expression.column, expression.scalarValue));
-    };
+    });
 
-    this.TextNotEqualConverter = function (expression) {
+    _defineProperty(this, "TextNotEqualConverter", function (expression) {
       return (0, _helpers.AExpr)(8, '!~~*', _this.ConvertToText(expression.column), _this.ConstValue(expression.column, expression.scalarValue));
-    };
+    });
 
-    this.TextContainConverter = function (expression) {
+    _defineProperty(this, "TextContainConverter", function (expression) {
       return (0, _helpers.AExpr)(8, '~~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue) + '%')));
-    };
+    });
 
-    this.TextNotContainConverter = function (expression) {
+    _defineProperty(this, "TextNotContainConverter", function (expression) {
       return (0, _helpers.AExpr)(8, '!~~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue) + '%')));
-    };
+    });
 
-    this.TextStartsWithConverter = function (expression) {
+    _defineProperty(this, "TextStartsWithConverter", function (expression) {
       return (0, _helpers.AExpr)(8, '~~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(_this.escapeLikePercent(expression.scalarValue) + '%')));
-    };
+    });
 
-    this.TextEndsWithConverter = function (expression) {
+    _defineProperty(this, "TextEndsWithConverter", function (expression) {
       return (0, _helpers.AExpr)(8, '~~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + _this.escapeLikePercent(expression.scalarValue))));
-    };
+    });
 
-    this.TextMatchConverter = function (expression) {
+    _defineProperty(this, "TextMatchConverter", function (expression) {
       if (_this.IsValidRegExp(expression.scalarValue)) {
         return (0, _helpers.AExpr)(0, '~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
       }
 
       return null;
-    };
+    });
 
-    this.TextNotMatchConverter = function (expression) {
+    _defineProperty(this, "TextNotMatchConverter", function (expression) {
       if (_this.IsValidRegExp(expression.scalarValue)) {
         return (0, _helpers.AExpr)(0, '!~*', _this.ConvertToText(expression.column), (0, _helpers.AConst)((0, _helpers.StringValue)(expression.scalarValue)));
       }
+
       return null;
-    };
+    });
 
-    this.ArrayAnyOfConverter = function (expression) {
+    _defineProperty(this, "ArrayAnyOfConverter", function (expression) {
       return _this.AnyOf(expression.column, expression.arrayValue);
-    };
+    });
 
-    this.ArrayAllOfConverter = function (expression) {
+    _defineProperty(this, "ArrayAllOfConverter", function (expression) {
       var values = (0, _helpers.AArrayExpr)(expression.arrayValue.map(function (v) {
         return _this.ConstValue(expression.column, v);
       }));
-
       return (0, _helpers.AExpr)(0, '@>', columnRef(expression.column), values);
-    };
+    });
 
-    this.ArrayEqualConverter = function (expression) {
+    _defineProperty(this, "ArrayEqualConverter", function (expression) {
       var values = (0, _helpers.AArrayExpr)(expression.arrayValue.map(function (v) {
         return _this.ConstValue(expression.column, v);
       }));
-
       var a = (0, _helpers.AExpr)(0, '<@', columnRef(expression.column), values);
-
       var b = (0, _helpers.AExpr)(0, '@>', columnRef(expression.column), values);
-
       return (0, _helpers.BoolExpr)(0, [a, b]);
-    };
+    });
 
-    this.SearchConverter = function (expression) {
+    _defineProperty(this, "SearchConverter", function (expression) {
       var rhs = (0, _helpers.FuncCall)('to_tsquery', [_this.ConstValue(expression.column, expression.scalarValue)]);
-
       return (0, _helpers.AExpr)(0, '@@', columnRef(expression.column), rhs);
-    };
+    });
 
-    this.DynamicDateConverter = function (expression, options) {
+    _defineProperty(this, "DynamicDateConverter", function (expression, options) {
       // Let the caller specify the timezone to be used for dynamic date calculations. This
       // makes sure when the browser calculates a dynamic range, the server would calculate
       // the same range. So 'Today' is midnight to midnight in the user's local time. It would
@@ -214,12 +209,13 @@ var Converter = function () {
       var range = (0, _operator.calculateDateRange)(expression.operator, expression.value, now);
 
       var value1 = _this.ConvertDateValue(range[0]);
+
       var value2 = _this.ConvertDateValue(range[1]);
 
       return _this.Between(expression.column, value1, value2);
-    };
+    });
 
-    this.NotBetween = function (column, value1, value2) {
+    _defineProperty(this, "NotBetween", function (column, value1, value2) {
       if (value1 != null && value2 != null) {
         return (0, _helpers.AExpr)(11, 'NOT BETWEEN', columnRef(column), [_this.ConstValue(column, value1), _this.ConstValue(column, value2)]);
       } else if (value1 != null) {
@@ -229,20 +225,18 @@ var Converter = function () {
       }
 
       return null;
-    };
+    });
 
-    this.AnyOf = function (column, values) {
+    _defineProperty(this, "AnyOf", function (column, values) {
       var arrayValues = (0, _helpers.AArrayExpr)(values.map(function (v) {
         return _this.ConstValue(column, v);
       }));
-
       return (0, _helpers.AExpr)(0, '&&', columnRef(column), arrayValues);
-    };
+    });
 
-    this.In = function (column, values) {
+    _defineProperty(this, "In", function (column, values) {
       var hasNull = false;
       var inValues = [];
-
       values.forEach(function (v) {
         if (v != null) {
           inValues.push(v);
@@ -250,7 +244,6 @@ var Converter = function () {
           hasNull = true;
         }
       });
-
       var expression = null;
 
       if (inValues.length) {
@@ -266,12 +259,11 @@ var Converter = function () {
       }
 
       return expression;
-    };
+    });
 
-    this.NotIn = function (column, values) {
+    _defineProperty(this, "NotIn", function (column, values) {
       var hasNull = false;
       var inValues = [];
-
       values.forEach(function (v) {
         if (v != null) {
           inValues.push(v);
@@ -279,7 +271,6 @@ var Converter = function () {
           hasNull = true;
         }
       });
-
       var expression = null;
 
       if (inValues.length) {
@@ -295,9 +286,9 @@ var Converter = function () {
       }
 
       return expression;
-    };
+    });
 
-    this.Between = function (column, value1, value2) {
+    _defineProperty(this, "Between", function (column, value1, value2) {
       if (value1 != null && value2 != null) {
         return (0, _helpers.AExpr)(10, 'BETWEEN', columnRef(column), [_this.ConstValue(column, value1), _this.ConstValue(column, value2)]);
       } else if (value1 != null) {
@@ -307,9 +298,9 @@ var Converter = function () {
       }
 
       return null;
-    };
+    });
 
-    this.ConstValue = function (column, value) {
+    _defineProperty(this, "ConstValue", function (column, value) {
       if (value == null) {
         return null;
       }
@@ -323,9 +314,9 @@ var Converter = function () {
       }
 
       return (0, _helpers.AConst)((0, _helpers.StringValue)(value));
-    };
+    });
 
-    this.GetDate = function (date, options, isDateTime) {
+    _defineProperty(this, "GetDate", function (date, options, isDateTime) {
       date = date || new Date().toISOString();
 
       if (!isDateTime) {
@@ -333,93 +324,93 @@ var Converter = function () {
         // purposes of the SQL query generation. So we convert the local timestamp to a UTC one. We don't care if it's
         // in a different timezone, we just need to make sure the date component of the timestamp is identical to the
         // value stored in the date field. We are effectively disregarding the time component of the timestamp.
-        return (0, _momentTimezone2.default)(date.replace(' ', 'T') + 'Z').utc();
+        return (0, _momentTimezone["default"])(date.replace(' ', 'T') + 'Z').utc();
       }
 
-      var timeZone = options && options.timeZone || _momentTimezone2.default.tz.guess();
+      var timeZone = options && options.timeZone || _momentTimezone["default"].tz.guess();
 
-      return _momentTimezone2.default.tz(date, timeZone);
-    };
+      return _momentTimezone["default"].tz(date, timeZone);
+    });
 
-    this.ConvertDateValue = function (date) {
+    _defineProperty(this, "ConvertDateValue", function (date) {
       if (date) {
         return date.clone().toISOString();
       }
-      return null;
-    };
 
-    this.ConvertToText = function (column) {
+      return null;
+    });
+
+    _defineProperty(this, "ConvertToText", function (column) {
       if (column.isDate || column.isTime || column.isArray) {
         return (0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), columnRef(column));
       }
 
       return columnRef(column);
-    };
+    });
 
-    this.IsValidRegExp = function (string) {
+    _defineProperty(this, "IsValidRegExp", function (string) {
       try {
         return !!new RegExp(string);
       } catch (ex) {
         return false;
       }
-    };
+    });
   }
 
-  Converter.prototype.toAST = function toAST(query, _ref) {
+  var _proto = Converter.prototype;
+
+  _proto.toAST = function toAST(query, _ref) {
     var sort = _ref.sort,
         pageSize = _ref.pageSize,
         pageIndex = _ref.pageIndex,
         boundingBox = _ref.boundingBox,
         searchFilter = _ref.searchFilter;
-
     var targetList = this.targetList(query, sort, boundingBox);
-
     var joins = query.joinColumnsWithSorting.map(function (o) {
       return o.join;
     });
-
     var fromClause = this.fromClause(query, joins);
-
     var whereClause = this.whereClause(query, boundingBox, searchFilter);
-
     var sortClause = sort;
-
     var limitOffset = this.limitOffset(pageSize, pageIndex);
-
     var limitCount = this.limitCount(pageSize);
-
-    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause, sortClause: sortClause, limitOffset: limitOffset, limitCount: limitCount });
+    return (0, _helpers.SelectStmt)({
+      targetList: targetList,
+      fromClause: fromClause,
+      whereClause: whereClause,
+      sortClause: sortClause,
+      limitOffset: limitOffset,
+      limitCount: limitCount
+    });
   };
 
-  Converter.prototype.toCountAST = function toCountAST(query, _ref2) {
+  _proto.toCountAST = function toCountAST(query, _ref2) {
     var boundingBox = _ref2.boundingBox,
         searchFilter = _ref2.searchFilter;
-
     var targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))]), 'total_count')];
-
     var joins = query.joinColumns.map(function (o) {
       return o.join;
     });
-
     var fromClause = this.fromClause(query, joins);
-
     var whereClause = this.whereClause(query, boundingBox, searchFilter);
-
-    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause });
+    return (0, _helpers.SelectStmt)({
+      targetList: targetList,
+      fromClause: fromClause,
+      whereClause: whereClause
+    });
   };
 
-  Converter.prototype.toTileAST = function toTileAST(query, _ref3) {
+  _proto.toTileAST = function toTileAST(query, _ref3) {
     var searchFilter = _ref3.searchFilter;
-
     var targetList = null;
 
     if (query.ast) {
       var sort = [(0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), 0, 0)];
-
-      targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, { over: (0, _helpers.WindowDef)(sort, 530) }), '__id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('__geometry'))];
+      targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, {
+        over: (0, _helpers.WindowDef)(sort, 530)
+      }), '__id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('__geometry'))];
     } else {
       var statusColumn = query.schema.repeatable ? '_record_status' : '_status';
-
       targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)(query.schema.repeatable ? '_child_record_id' : '_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_geometry'), 'geometry'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)(statusColumn), 'status'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(query.form.id))), 'form_id')];
 
       if (query.schema.repeatable) {
@@ -431,17 +422,18 @@ var Converter = function () {
     var joins = query.joinColumns.map(function (o) {
       return o.join;
     });
-
     var fromClause = this.fromClause(query, joins);
-
     var whereClause = this.whereClause(query, null, searchFilter);
-
     var limitCount = this.limitCount(MAX_TILE_RECORDS);
-
-    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause, limitCount: limitCount });
+    return (0, _helpers.SelectStmt)({
+      targetList: targetList,
+      fromClause: fromClause,
+      whereClause: whereClause,
+      limitCount: limitCount
+    });
   };
 
-  Converter.prototype.toHistogramAST = function toHistogramAST(query, _ref4) {
+  _proto.toHistogramAST = function toHistogramAST(query, _ref4) {
     var column = _ref4.column,
         bucketSize = _ref4.bucketSize,
         type = _ref4.type,
@@ -463,48 +455,50 @@ var Converter = function () {
     };
 
     var targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('series', 'series'), 'bucket'), (0, _helpers.ResTarget)((0, _helpers.CoalesceExpr)([(0, _helpers.ColumnRef)('count', 'sub'), (0, _helpers.AConst)((0, _helpers.IntegerValue)(0))]), 'count'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('min_value', 'sub'), 'min_value'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('max_value', 'sub'), 'max_value'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('avg_value', 'sub'), 'avg_value'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('sum_value', 'sub'), 'sum_value'), (0, _helpers.ResTarget)(expr(subLinkColumn('min_value', '__stats'), '+', expr(expr((0, _helpers.ColumnRef)('series', 'series'), '-', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1))), '*', subLinkColumn('bucket_width', '__stats'))), 'bucket_min'), (0, _helpers.ResTarget)(expr(subLinkColumn('min_value', '__stats'), '+', expr((0, _helpers.ColumnRef)('series', 'series'), '*', subLinkColumn('bucket_width', '__stats'))), 'bucket_max'), (0, _helpers.ResTarget)(subLinkColumn('range', '__stats'), 'range'), (0, _helpers.ResTarget)(subLinkColumn('bucket_width', '__stats'), 'bucket_width')];
-
     var withClause = this.histogramWithClause(column, bucketSize, type, query, boundingBox, searchFilter);
-
     var seriesFunctionSublinkSelect = (0, _helpers.SelectStmt)({
       targetList: [(0, _helpers.ResTarget)((0, _helpers.AExpr)(0, '+', (0, _helpers.ColumnRef)('buckets'), (0, _helpers.AConst)((0, _helpers.IntegerValue)(1))))],
       fromClause: [(0, _helpers.RangeVar)('__stats')]
     });
-
     var seriesFunctionArgs = [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), (0, _helpers.SubLink)(4, seriesFunctionSublinkSelect)];
-
     var seriesFunctionCall = (0, _helpers.FuncCall)('generate_series', seriesFunctionArgs);
     var seriesFunction = (0, _helpers.RangeFunction)([[seriesFunctionCall]], (0, _helpers.Alias)('series'));
-
-    var bucketWidthFunctionCallArgs = [(0, _helpers.TypeCast)((0, _helpers.TypeName)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('float8')]), (0, _helpers.ColumnRef)('value')), (0, _helpers.SubLink)(4, (0, _helpers.SelectStmt)({ targetList: [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('min_value'))], fromClause: [(0, _helpers.RangeVar)('__stats')] })), (0, _helpers.SubLink)(4, (0, _helpers.SelectStmt)({ targetList: [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('max_value'))], fromClause: [(0, _helpers.RangeVar)('__stats')] })), (0, _helpers.SubLink)(4, (0, _helpers.SelectStmt)({ targetList: [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('buckets'))], fromClause: [(0, _helpers.RangeVar)('__stats')] }))];
-
+    var bucketWidthFunctionCallArgs = [(0, _helpers.TypeCast)((0, _helpers.TypeName)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('float8')]), (0, _helpers.ColumnRef)('value')), (0, _helpers.SubLink)(4, (0, _helpers.SelectStmt)({
+      targetList: [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('min_value'))],
+      fromClause: [(0, _helpers.RangeVar)('__stats')]
+    })), (0, _helpers.SubLink)(4, (0, _helpers.SelectStmt)({
+      targetList: [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('max_value'))],
+      fromClause: [(0, _helpers.RangeVar)('__stats')]
+    })), (0, _helpers.SubLink)(4, (0, _helpers.SelectStmt)({
+      targetList: [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('buckets'))],
+      fromClause: [(0, _helpers.RangeVar)('__stats')]
+    }))];
     var bucketsSubqueryTargetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('width_bucket', bucketWidthFunctionCallArgs), 'bucket'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))]), 'count'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('min', [(0, _helpers.ColumnRef)('value')]), 'min_value'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('max', [(0, _helpers.ColumnRef)('value')]), 'max_value'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('avg', [(0, _helpers.ColumnRef)('value')]), 'avg_value'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('sum', [(0, _helpers.ColumnRef)('value')]), 'sum_value')];
-
     var bucketsSubqueryFromClause = [(0, _helpers.RangeVar)('__records')];
     var bucketsSubqueryGroupClause = [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))];
     var bucketsSubquerySortClause = [(0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), 0, 0)];
-
     var bucketsSubquery = (0, _helpers.SelectStmt)({
       targetList: bucketsSubqueryTargetList,
       fromClause: bucketsSubqueryFromClause,
       groupClause: bucketsSubqueryGroupClause,
       sortClause: bucketsSubquerySortClause
     });
-
     var bucketsSubselect = (0, _helpers.RangeSubselect)(bucketsSubquery, (0, _helpers.Alias)('sub'));
-
     var joinExpr = (0, _helpers.JoinExpr)(1, seriesFunction, bucketsSubselect, (0, _helpers.AExpr)(0, '=', (0, _helpers.ColumnRef)('series', 'series'), (0, _helpers.ColumnRef)('bucket', 'sub')));
-
-    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: [joinExpr], withClause: withClause });
+    return (0, _helpers.SelectStmt)({
+      targetList: targetList,
+      fromClause: [joinExpr],
+      withClause: withClause
+    });
   };
 
-  Converter.prototype.toDistinctValuesAST = function toDistinctValuesAST(query) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  _proto.toDistinctValuesAST = function toDistinctValuesAST(query, options) {
+    if (options === void 0) {
+      options = {};
+    }
 
     var valueColumn = query.ast ? (0, _helpers.ColumnRef)(options.column.id) : columnRef(options.column);
-
     var targetList = null;
-
     var isLinkedRecord = options.column.element && options.column.element.isRecordLinkElement;
 
     if (isLinkedRecord) {
@@ -513,7 +507,6 @@ var Converter = function () {
       targetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('unnest', [valueColumn]), 'value')];
     } else if (options.column.element && options.column.element.isCalculatedElement && options.column.element.display.isDate) {
       // SELECT pg_catalog.timezone('UTC', to_timestamp(column_name))::date
-
       var timeZoneCast = function timeZoneCast(param) {
         return (0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('timezone')], [(0, _helpers.AConst)((0, _helpers.StringValue)('UTC')), param]);
       };
@@ -542,33 +535,32 @@ var Converter = function () {
     }
 
     if (isLinkedRecord) {
-      joins.push({ inner: false,
-        tableName: query.form.id + '/' + options.column.element.key,
+      joins.push({
+        inner: false,
+        tableName: query.form.id + "/" + options.column.element.key,
         alias: '__linked_join',
         sourceColumn: '_record_id',
-        joinColumn: 'source_record_id' });
-
+        joinColumn: 'source_record_id'
+      });
       var subQuery = (0, _helpers.SelectStmt)({
         targetList: [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_title'), '__title'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), '__record_id')],
-        fromClause: [(0, _helpers.RangeVar)('' + options.column.element.form.id)]
+        fromClause: [(0, _helpers.RangeVar)("" + options.column.element.form.id)]
       });
-
       var linkedSubselect = (0, _helpers.RangeSubselect)(subQuery, (0, _helpers.Alias)('__linked'));
-
-      joins.push({ inner: false,
+      joins.push({
+        inner: false,
         rarg: linkedSubselect,
         alias: '__linked',
         sourceTableName: '__linked_join',
         sourceColumn: 'linked_record_id',
-        joinColumn: '__record_id' });
+        joinColumn: '__record_id'
+      });
     }
 
-    var fromClause = this.fromClause(query, joins, [options.column]);
-
-    // const whereClause = null; // options.all ? null : this.whereClause(query);
+    var fromClause = this.fromClause(query, joins, [options.column]); // const whereClause = null; // options.all ? null : this.whereClause(query);
     // TODO(zhm) need to pass the bbox and search here?
-    var whereClause = this.whereClause(query, null, null, options);
 
+    var whereClause = this.whereClause(query, null, null, options);
     var groupClause = [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))];
 
     if (isLinkedRecord) {
@@ -586,13 +578,18 @@ var Converter = function () {
     }
 
     sortClause.push((0, _helpers.SortBy)((0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), 1, 0));
-
     var limitCount = this.limitCount(MAX_DISTINCT_VALUES);
-
-    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause, groupClause: groupClause, sortClause: sortClause, limitCount: limitCount });
+    return (0, _helpers.SelectStmt)({
+      targetList: targetList,
+      fromClause: fromClause,
+      whereClause: whereClause,
+      groupClause: groupClause,
+      sortClause: sortClause,
+      limitCount: limitCount
+    });
   };
 
-  Converter.prototype.toSummaryAST = function toSummaryAST(query, columnSetting, _ref5) {
+  _proto.toSummaryAST = function toSummaryAST(query, columnSetting, _ref5) {
     var boundingBox = _ref5.boundingBox,
         searchFilter = _ref5.searchFilter;
 
@@ -605,12 +602,10 @@ var Converter = function () {
         boundingBox: boundingBox,
         searchFilter: searchFilter
       };
-
       return this.toHistogramAST(query, histogramAttributes);
     }
 
     var targetList = this.summaryTargetList(query, columnSetting);
-
     var joins = query.joinColumns.map(function (o) {
       return o.join;
     });
@@ -620,18 +615,22 @@ var Converter = function () {
     }
 
     var fromClause = this.fromClause(query, joins, [columnSetting.column]);
-
-    var whereClause = this.summaryWhereClause(query, columnSetting, { boundingBox: boundingBox, searchFilter: searchFilter });
-
-    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause });
+    var whereClause = this.summaryWhereClause(query, columnSetting, {
+      boundingBox: boundingBox,
+      searchFilter: searchFilter
+    });
+    return (0, _helpers.SelectStmt)({
+      targetList: targetList,
+      fromClause: fromClause,
+      whereClause: whereClause
+    });
   };
 
-  Converter.prototype.histogramWithClause = function histogramWithClause(column, bucketSize, type, query, boundingBox, searchFilter) {
+  _proto.histogramWithClause = function histogramWithClause(column, bucketSize, type, query, boundingBox, searchFilter) {
     var recordsTargetList = null;
 
     if (type === 'date') {
       var datePartArgs = [(0, _helpers.AConst)((0, _helpers.StringValue)('epoch')), (0, _helpers.TypeCast)((0, _helpers.TypeName)('date'), columnRef(column))];
-
       recordsTargetList = [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('date_part', datePartArgs), 'value')];
     } else {
       recordsTargetList = [(0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('float8')]), columnRef(column)), 'value')];
@@ -640,36 +639,40 @@ var Converter = function () {
     var joins = query.joinColumnsWithSorting.map(function (o) {
       return o.join;
     });
-
     var recordsFromClause = this.fromClause(query, joins, [column]);
-
     var recordsWhere = this.whereClause(query, boundingBox, searchFilter);
-    var recordsSelect = (0, _helpers.SelectStmt)({ targetList: recordsTargetList, fromClause: recordsFromClause, whereClause: recordsWhere });
+    var recordsSelect = (0, _helpers.SelectStmt)({
+      targetList: recordsTargetList,
+      fromClause: recordsFromClause,
+      whereClause: recordsWhere
+    });
     var recordsExpr = (0, _helpers.CommonTableExpr)('__records', recordsSelect);
-
     var statsTargetList = [(0, _helpers.ResTarget)((0, _helpers.AConst)((0, _helpers.IntegerValue)(bucketSize)), 'buckets'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [(0, _helpers.AConst)((0, _helpers.IntegerValue)(1))]), 'count'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('min', [(0, _helpers.ColumnRef)('value')]), 'min_value'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('max', [(0, _helpers.ColumnRef)('value')]), 'max_value'), (0, _helpers.ResTarget)((0, _helpers.AExpr)(0, '-', (0, _helpers.FuncCall)('max', [(0, _helpers.ColumnRef)('value')]), (0, _helpers.FuncCall)('min', [(0, _helpers.ColumnRef)('value')])), 'range'), (0, _helpers.ResTarget)((0, _helpers.AExpr)(0, '/', (0, _helpers.AExpr)(0, '-', (0, _helpers.TypeCast)((0, _helpers.TypeName)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('float8')]), (0, _helpers.FuncCall)('max', [(0, _helpers.ColumnRef)('value')])), (0, _helpers.TypeCast)((0, _helpers.TypeName)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('float8')]), (0, _helpers.FuncCall)('min', [(0, _helpers.ColumnRef)('value')]))), (0, _helpers.AConst)((0, _helpers.FloatValue)(bucketSize))), 'bucket_width')];
-
     var statsFromClause = [(0, _helpers.RangeVar)('__records')];
-    var statsSelect = (0, _helpers.SelectStmt)({ targetList: statsTargetList, fromClause: statsFromClause });
+    var statsSelect = (0, _helpers.SelectStmt)({
+      targetList: statsTargetList,
+      fromClause: statsFromClause
+    });
     var statsExpr = (0, _helpers.CommonTableExpr)('__stats', statsSelect);
-
     return (0, _helpers.WithClause)([recordsExpr, statsExpr]);
   };
 
-  Converter.prototype.toSchemaAST = function toSchemaAST(query) {
-    var _ref6 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+  _proto.toSchemaAST = function toSchemaAST(query, _temp) {
+    var _ref6 = _temp === void 0 ? {} : _temp,
         schemaOnly = _ref6.schemaOnly;
 
     // wrap the query in a subquery with 1=0
-
     var targetList = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)()))];
     var fromClause = [(0, _helpers.RangeSubselect)(query, (0, _helpers.Alias)('wrapped'))];
     var whereClause = schemaOnly ? (0, _helpers.AExpr)(0, '=', (0, _helpers.AConst)((0, _helpers.IntegerValue)(0)), (0, _helpers.AConst)((0, _helpers.IntegerValue)(1))) : null;
-
-    return (0, _helpers.SelectStmt)({ targetList: targetList, fromClause: fromClause, whereClause: whereClause });
+    return (0, _helpers.SelectStmt)({
+      targetList: targetList,
+      fromClause: fromClause,
+      whereClause: whereClause
+    });
   };
 
-  Converter.prototype.limitOffset = function limitOffset(pageSize, pageIndex) {
+  _proto.limitOffset = function limitOffset(pageSize, pageIndex) {
     if (pageSize != null && pageIndex != null) {
       return (0, _helpers.AConst)((0, _helpers.IntegerValue)(+pageIndex * +pageSize));
     }
@@ -677,7 +680,7 @@ var Converter = function () {
     return null;
   };
 
-  Converter.prototype.limitCount = function limitCount(pageSize) {
+  _proto.limitCount = function limitCount(pageSize) {
     if (pageSize != null) {
       return (0, _helpers.AConst)((0, _helpers.IntegerValue)(+pageSize));
     }
@@ -685,9 +688,8 @@ var Converter = function () {
     return null;
   };
 
-  Converter.prototype.targetList = function targetList(query, sort, boundingBox) {
+  _proto.targetList = function targetList(query, sort, boundingBox) {
     var list = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)()))];
-
     var subJoinColumns = query.joinColumnsWithSorting;
 
     if (subJoinColumns.indexOf(query.schema.createdByColumn) !== -1) {
@@ -706,23 +708,22 @@ var Converter = function () {
       list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', query.schema.projectColumn.join.alias), query.schema.projectColumn.id));
     }
 
-    list.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, { over: (0, _helpers.WindowDef)(sort, 530) }), '__row_number'));
-
+    list.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, {
+      over: (0, _helpers.WindowDef)(sort, 530)
+    }), '__row_number'));
     return list;
   };
 
-  Converter.prototype.fromClause = function fromClause(query) {
-    var leftJoins = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-    var exactColumns = arguments[2];
+  _proto.fromClause = function fromClause(query, leftJoins, exactColumns) {
+    if (leftJoins === void 0) {
+      leftJoins = [];
+    }
 
     var baseQuery = null;
 
     if (query.ast) {
       var queryAST = query.ast;
-
-      var referencedColumns = query.referencedColumns.concat(exactColumns || []);
-
-      // If there's an `exactColumn`, pick it out specifically with a guaranteed unique alias so it can be
+      var referencedColumns = query.referencedColumns.concat(exactColumns || []); // If there's an `exactColumn`, pick it out specifically with a guaranteed unique alias so it can be
       // referenced with certainty in outer queries. The following is an oversimplified example of the problem:
       //
       // if `id` is part of the table and needs to be references in the outer query, it must be called out specifically:
@@ -736,6 +737,7 @@ var Converter = function () {
       // Given arbitrary subqueries, we must be able to reference columns in them exactly even when there are duplicates.
       // We can't assume they're all simple ColumnRef's either. Some ResTarget's might be entire graphs of expressions which
       // needs to be duplicated to ensure uniqueness.
+
       if (referencedColumns.length) {
         queryAST = JSON.parse(JSON.stringify(queryAST));
 
@@ -752,7 +754,6 @@ var Converter = function () {
           }
 
           var column = _ref7;
-
           Converter.duplicateResTargetWithExactName(query, queryAST.SelectStmt.targetList, column, column.id);
         }
       }
@@ -761,7 +762,6 @@ var Converter = function () {
     }
 
     baseQuery = this.formQueryRangeVar(query);
-
     var visitedTables = {};
 
     if (leftJoins) {
@@ -781,7 +781,6 @@ var Converter = function () {
 
         if (!visitedTables[join.alias]) {
           visitedTables[join.alias] = join;
-
           baseQuery = Converter.joinClause(baseQuery, join);
         }
       }
@@ -790,12 +789,13 @@ var Converter = function () {
     return [baseQuery];
   };
 
-  Converter.prototype.whereClause = function whereClause(query, boundingBox, search) {
-    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  _proto.whereClause = function whereClause(query, boundingBox, search, options) {
+    if (options === void 0) {
+      options = {};
+    }
 
     var systemParts = [];
-    options = _extends({}, query.options || {}, options);
-
+    options = _extends({}, query.options || {}, {}, options);
     var filterNode = this.nodeForCondition(query.filter, options);
 
     if (boundingBox) {
@@ -876,14 +876,12 @@ var Converter = function () {
         joinColumn = _ref10.joinColumn,
         sourceTableName = _ref10.sourceTableName,
         rarg = _ref10.rarg;
-
     return (0, _helpers.JoinExpr)(inner ? 0 : 1, baseQuery, rarg || (0, _helpers.RangeVar)(tableName, (0, _helpers.Alias)(alias)), (0, _helpers.AExpr)(0, '=', (0, _helpers.ColumnRef)(sourceColumn, sourceTableName || 'records'), (0, _helpers.ColumnRef)(joinColumn, alias)));
   };
 
   Converter.duplicateResTargetWithExactName = function duplicateResTargetWithExactName(query, targetList, column, exactName) {
-    var resTarget = Converter.findResTarget(query, column);
+    var resTarget = Converter.findResTarget(query, column); // If a column is referenced more than once don't add it again
 
-    // If a column is referenced more than once don't add it again
     for (var _iterator4 = targetList, _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : _iterator4[Symbol.iterator]();;) {
       var _ref11;
 
@@ -901,9 +899,9 @@ var Converter = function () {
       if (existing.ResTarget.name === exactName) {
         return;
       }
-    }
+    } // If we found a matching restarget, copy the entire node and give it a new name
 
-    // If we found a matching restarget, copy the entire node and give it a new name
+
     if (resTarget) {
       resTarget = JSON.parse(JSON.stringify(resTarget));
       resTarget.ResTarget.name = exactName;
@@ -918,28 +916,27 @@ var Converter = function () {
     // UNION's don't have targetList's
     if (!query.ast.SelectStmt.targetList) {
       return null;
-    }
-
-    // look for any A_Star nodes, a SELECT * modifies how we process the res targets. If there's
+    } // look for any A_Star nodes, a SELECT * modifies how we process the res targets. If there's
     // an A_Star node in the targetList, it means that we can't just get the column by index because
     // the * might expand to columns that cause the indexes to be different.
+
+
     var hasStar = query.ast.SelectStmt.targetList.find(function (target) {
       return target.ResTarget && target.ResTarget.val && target.ResTarget.val.ColumnRef && target.ResTarget.val.ColumnRef.fields && target.ResTarget.val.ColumnRef.fields[0] && target.ResTarget.val.ColumnRef.fields[0].A_Star;
-    });
+    }); // the simple case is when there is no * in the query
 
-    // the simple case is when there is no * in the query
     if (!hasStar && query.ast.SelectStmt.targetList.length === query.schema.columns.length) {
       return query.ast.SelectStmt.targetList[column.index];
-    }
-
-    // Find the ResTarget node by name, or else return null, which means the column
+    } // Find the ResTarget node by name, or else return null, which means the column
     // must be coming from a * node and we can just use a simple ResTarget + ColumnRef
+
+
     return query.ast.SelectStmt.targetList.find(function (target) {
       return target.ResTarget.name === column.name;
     });
   };
 
-  Converter.prototype.formQueryRangeVar = function formQueryRangeVar(query) {
+  _proto.formQueryRangeVar = function formQueryRangeVar(query) {
     if (query.repeatableKey) {
       return (0, _helpers.RangeVar)(query.form.id + '/' + query.repeatableKey + '/_full', (0, _helpers.Alias)('records'));
     }
@@ -947,9 +944,7 @@ var Converter = function () {
     return (0, _helpers.RangeVar)(query.form.id + '/_full', (0, _helpers.Alias)('records'));
   };
 
-  Converter.prototype.createExpressionForColumnFilter = function createExpressionForColumnFilter(filter, options) {
-    var _this2 = this;
-
+  _proto.createExpressionForColumnFilter = function createExpressionForColumnFilter(filter, options) {
     var expression = null;
 
     if (filter === options.except) {
@@ -957,36 +952,33 @@ var Converter = function () {
     }
 
     if (filter.hasValues) {
-      (function () {
-        var hasNull = false;
-        var values = [];
-
-        filter.value.forEach(function (v) {
-          if (v != null) {
-            values.push(v);
-          } else {
-            hasNull = true;
-          }
-        });
-
-        if (values.length) {
-          if (filter.column.isArray) {
-            expression = _this2.AnyOf(filter.column, values);
-          } else if (filter.column.element && filter.column.element.isCalculatedElement && filter.column.element.display.isDate) {
-            expression = _this2.In(filter.column, values.map(function (value) {
-              return new Date(value).getTime() / 1000;
-            }));
-          } else {
-            expression = _this2.In(filter.column, values);
-          }
-
-          if (hasNull) {
-            expression = (0, _helpers.BoolExpr)(1, [(0, _helpers.NullTest)(0, columnRef(filter.column)), expression]);
-          }
-        } else if (hasNull) {
-          expression = (0, _helpers.NullTest)(0, columnRef(filter.column));
+      var hasNull = false;
+      var values = [];
+      filter.value.forEach(function (v) {
+        if (v != null) {
+          values.push(v);
+        } else {
+          hasNull = true;
         }
-      })();
+      });
+
+      if (values.length) {
+        if (filter.column.isArray) {
+          expression = this.AnyOf(filter.column, values);
+        } else if (filter.column.element && filter.column.element.isCalculatedElement && filter.column.element.display.isDate) {
+          expression = this.In(filter.column, values.map(function (value) {
+            return new Date(value).getTime() / 1000;
+          }));
+        } else {
+          expression = this.In(filter.column, values);
+        }
+
+        if (hasNull) {
+          expression = (0, _helpers.BoolExpr)(1, [(0, _helpers.NullTest)(0, columnRef(filter.column)), expression]);
+        }
+      } else if (hasNull) {
+        expression = (0, _helpers.NullTest)(0, columnRef(filter.column));
+      }
     } else if (filter.isEmptySet) {
       // add 1 = 0 clause to return 0 rows
       expression = (0, _helpers.AExpr)(0, '=', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1)), (0, _helpers.AConst)((0, _helpers.IntegerValue)(0)));
@@ -995,44 +987,37 @@ var Converter = function () {
     return expression;
   };
 
-  Converter.prototype.boundingBoxFilter = function boundingBoxFilter(query, boundingBox) {
+  _proto.boundingBoxFilter = function boundingBoxFilter(query, boundingBox) {
     var xmin = boundingBox[0],
         ymin = boundingBox[1],
         xmax = boundingBox[2],
         ymax = boundingBox[3];
-
-
-    var columnName = query.ast ? '__geometry' : '_geometry';
-
-    // if the east value is less than the west value, the bbox spans the 180 meridian.
+    var columnName = query.ast ? '__geometry' : '_geometry'; // if the east value is less than the west value, the bbox spans the 180 meridian.
     // Split the box into 2 separate boxes on either side of the meridian and use
     // an OR statement in the where clause so records on either side of the meridian
     // will be returned.
+
     if (xmax < xmin) {
       var box1 = [xmin, ymin, 180, ymax];
       var box2 = [-180, ymin, xmax, ymax];
-
       var boxes = [this.geometryQuery(columnName, box1), this.geometryQuery(columnName, box2)];
-
       return (0, _helpers.BoolExpr)(1, boxes);
     }
 
     return this.geometryQuery(columnName, boundingBox);
   };
 
-  Converter.prototype.geometryQuery = function geometryQuery(columnName, boundingBox) {
+  _proto.geometryQuery = function geometryQuery(columnName, boundingBox) {
     var args = [(0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[0])), (0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[1])), (0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[2])), (0, _helpers.AConst)((0, _helpers.FloatValue)(boundingBox[3])), (0, _helpers.AConst)((0, _helpers.IntegerValue)(4326))];
-
     var rhs = (0, _helpers.FuncCall)('st_makeenvelope', args);
-
     return (0, _helpers.AExpr)(0, '&&', (0, _helpers.ColumnRef)(columnName), rhs);
   };
 
-  Converter.prototype.escapeLikePercent = function escapeLikePercent(value) {
+  _proto.escapeLikePercent = function escapeLikePercent(value) {
     return value.replace(/\%/g, '\\%').replace(/_/g, '\\_%');
   };
 
-  Converter.prototype.searchFilter = function searchFilter(query, search) {
+  _proto.searchFilter = function searchFilter(query, search) {
     /*
        Search takes the general form:
         SELECT ...
@@ -1048,17 +1033,14 @@ var Converter = function () {
        set before applying the much slower ILIKE operation. So, we can reduce the result very quickly
        with the tsvector index first, and then only run the ILIKE on what's left.
     */
+    search = search.trim(); // if it's a fully custom SQL statement, use a simpler form with no index
 
-    search = search.trim();
-
-    // if it's a fully custom SQL statement, use a simpler form with no index
     if (query.ast) {
       return (0, _helpers.AExpr)(8, '~~*', (0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.ColumnRef)('records')), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(search) + '%')));
     }
 
     var toTsQuery = function toTsQuery(dictionary, term) {
       var args = [(0, _helpers.AConst)((0, _helpers.StringValue)(dictionary)), (0, _helpers.AConst)((0, _helpers.StringValue)("'" + term + "':*"))];
-
       return (0, _helpers.FuncCall)('to_tsquery', args);
     };
 
@@ -1069,9 +1051,7 @@ var Converter = function () {
     var terms = search.split(' ').filter(function (s) {
       return s.trim().length;
     });
-
     var term = terms.shift();
-
     var tsQueries = makeTsQueryCall(term);
 
     while (terms.length) {
@@ -1080,22 +1060,17 @@ var Converter = function () {
     }
 
     var ftsExpression = (0, _helpers.AExpr)(0, '@@', (0, _helpers.ColumnRef)('_record_index'), tsQueries);
-
     var ilikeExpression = (0, _helpers.AExpr)(8, '~~*', (0, _helpers.ColumnRef)('_record_index_text'), (0, _helpers.AConst)((0, _helpers.StringValue)('%' + this.escapeLikePercent(search) + '%')));
-
     var andArgs = [ftsExpression, ilikeExpression];
-
     return (0, _helpers.BoolExpr)(0, andArgs);
   };
 
-  Converter.prototype.summaryWhereClause = function summaryWhereClause(query, columnSetting, _ref12) {
+  _proto.summaryWhereClause = function summaryWhereClause(query, columnSetting, _ref12) {
     var _converters;
 
     var boundingBox = _ref12.boundingBox,
         searchFilter = _ref12.searchFilter;
-
     var expressions = [];
-
     var converters = (_converters = {}, _converters[_aggregate.AggregateType.Empty.name] = function () {
       return (0, _helpers.NullTest)(0, columnRef(columnSetting.column));
     }, _converters[_aggregate.AggregateType.NotEmpty.name] = function () {
@@ -1105,17 +1080,18 @@ var Converter = function () {
     }, _converters[_aggregate.AggregateType.PercentNotEmpty.name] = function () {
       return (0, _helpers.NullTest)(1, columnRef(columnSetting.column));
     }, _converters);
-
     var expressionConverter = converters[columnSetting.summary.aggregate];
 
     if (expressionConverter) {
       expressions.push(expressionConverter());
     }
 
-    return this.whereClause(query, boundingBox, searchFilter, { expressions: expressions });
+    return this.whereClause(query, boundingBox, searchFilter, {
+      expressions: expressions
+    });
   };
 
-  Converter.prototype.summaryTargetList = function summaryTargetList(query, columnSetting) {
+  _proto.summaryTargetList = function summaryTargetList(query, columnSetting) {
     var _converter;
 
     var simpleFunctionResTarget = function simpleFunctionResTarget(funcName, param) {
@@ -1125,31 +1101,31 @@ var Converter = function () {
     };
 
     var converter = (_converter = {}, _converter[_aggregate.AggregateType.Sum.name] = simpleFunctionResTarget('sum'), _converter[_aggregate.AggregateType.Average.name] = simpleFunctionResTarget('avg'), _converter[_aggregate.AggregateType.Min.name] = simpleFunctionResTarget('min'), _converter[_aggregate.AggregateType.Max.name] = simpleFunctionResTarget('max'), _converter[_aggregate.AggregateType.StdDev.name] = simpleFunctionResTarget('stddev'), _converter[_aggregate.AggregateType.Histogram.name] = simpleFunctionResTarget('count'), _converter[_aggregate.AggregateType.Empty.name] = simpleFunctionResTarget('count', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1))), _converter[_aggregate.AggregateType.NotEmpty.name] = simpleFunctionResTarget('count', (0, _helpers.AConst)((0, _helpers.IntegerValue)(1))), _converter[_aggregate.AggregateType.Unique.name] = function () {
-      return [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [columnRef(columnSetting.column)], { agg_distinct: true }), 'value')];
+      return [(0, _helpers.ResTarget)((0, _helpers.FuncCall)('count', [columnRef(columnSetting.column)], {
+        agg_distinct: true
+      }), 'value')];
     }, _converter[_aggregate.AggregateType.PercentEmpty.name] = simpleFunctionResTarget('count'), _converter[_aggregate.AggregateType.PercentNotEmpty.name] = simpleFunctionResTarget('count'), _converter[_aggregate.AggregateType.PercentUnique.name] = simpleFunctionResTarget('count'), _converter);
-
     return converter[columnSetting.summary.aggregate]();
   };
 
-  Converter.prototype.nodeForExpressions = function nodeForExpressions(expressions, options) {
-    var _this3 = this;
+  _proto.nodeForExpressions = function nodeForExpressions(expressions, options) {
+    var _this2 = this;
 
     return expressions.map(function (e) {
-      return _this3.nodeForExpression(e, options);
+      return _this2.nodeForExpression(e, options);
     }).filter(function (e) {
       return e;
     });
   };
 
-  Converter.prototype.nodeForCondition = function nodeForCondition(condition, options) {
+  _proto.nodeForCondition = function nodeForCondition(condition, options) {
     var _converter2;
 
     var converter = (_converter2 = {}, _converter2[_condition.ConditionType.And] = this.AndConverter, _converter2[_condition.ConditionType.Or] = this.OrConverter, _converter2[_condition.ConditionType.Not] = this.NotConverter, _converter2);
-
     return converter[condition.type](condition, options);
   };
 
-  Converter.prototype.nodeForExpression = function nodeForExpression(expression, options) {
+  _proto.nodeForExpression = function nodeForExpression(expression, options) {
     var _converter3;
 
     if (expression.expressions) {
@@ -1172,5 +1148,5 @@ var Converter = function () {
   return Converter;
 }();
 
-exports.default = Converter;
+exports["default"] = Converter;
 //# sourceMappingURL=converter.js.map

@@ -1,40 +1,48 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _sort = require("./sort");
 
-var _sort = require('./sort');
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var SortExpressions = function () {
+var SortExpressions =
+/*#__PURE__*/
+function () {
   function SortExpressions(sorts, schema) {
-    _classCallCheck(this, SortExpressions);
-
     sorts = sorts || [];
-
     this._expressions = sorts.map(function (o) {
       return new _sort.Sort(o, schema);
     });
     this._schema = schema;
   }
 
-  SortExpressions.prototype.sortByAsc = function sortByAsc(column) {
-    this._expressions = [new _sort.Sort({ field: column.id, direction: 'asc' }, this._schema)];
+  var _proto = SortExpressions.prototype;
+
+  _proto.sortByAsc = function sortByAsc(column) {
+    this._expressions = [new _sort.Sort({
+      field: column.id,
+      direction: 'asc'
+    }, this._schema)];
   };
 
-  SortExpressions.prototype.sortByDesc = function sortByDesc(column) {
-    this._expressions = [new _sort.Sort({ field: column.id, direction: 'desc' }, this._schema)];
+  _proto.sortByDesc = function sortByDesc(column) {
+    this._expressions = [new _sort.Sort({
+      field: column.id,
+      direction: 'desc'
+    }, this._schema)];
   };
 
-  SortExpressions.prototype.toJSON = function toJSON() {
+  _proto.toJSON = function toJSON() {
     return this.expressions.map(function (o) {
       return o.toJSON();
     });
   };
 
-  SortExpressions.prototype.toHumanDescription = function toHumanDescription() {
+  _proto.toHumanDescription = function toHumanDescription() {
     if (!this.hasSort) {
       return null;
     }
@@ -45,19 +53,19 @@ var SortExpressions = function () {
   };
 
   _createClass(SortExpressions, [{
-    key: 'isEmpty',
+    key: "isEmpty",
     get: function get() {
       return this._expressions.find(function (e) {
         return e.isValid;
       }) == null;
     }
   }, {
-    key: 'hasSort',
+    key: "hasSort",
     get: function get() {
       return !this.isEmpty;
     }
   }, {
-    key: 'expressions',
+    key: "expressions",
     get: function get() {
       return this._expressions;
     }
@@ -66,5 +74,5 @@ var SortExpressions = function () {
   return SortExpressions;
 }();
 
-exports.default = SortExpressions;
+exports["default"] = SortExpressions;
 //# sourceMappingURL=sort-expressions.js.map

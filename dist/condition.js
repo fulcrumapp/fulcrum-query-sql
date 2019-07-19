@@ -1,32 +1,30 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
-exports.Condition = exports.ConditionType = undefined;
+exports.Condition = exports.ConditionType = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _expression = require("./expression");
 
-var _expression = require('./expression');
+var _lodash = _interopRequireDefault(require("lodash"));
 
-var _lodash = require('lodash');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _lodash2 = _interopRequireDefault(_lodash);
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ConditionType = exports.ConditionType = {
+var ConditionType = {
   And: 'and',
   Or: 'or',
   Not: 'not'
 };
+exports.ConditionType = ConditionType;
 
-var Condition = exports.Condition = function () {
+var Condition =
+/*#__PURE__*/
+function () {
   function Condition(attrs, schema) {
-    _classCallCheck(this, Condition);
-
     attrs = attrs || {};
-
     this._type = attrs.type || ConditionType.And;
     this._schema = schema;
     this._expressions = [];
@@ -46,19 +44,20 @@ var Condition = exports.Condition = function () {
     this.ensureEmptyExpression();
   }
 
-  Condition.prototype.addEmptyCondition = function addEmptyCondition() {
-    var condition = new Condition({}, this._schema);
+  var _proto = Condition.prototype;
 
+  _proto.addEmptyCondition = function addEmptyCondition() {
+    var condition = new Condition({}, this._schema);
     condition.addEmptyExpression();
 
     this._expressions.push(condition);
   };
 
-  Condition.prototype.removeCondition = function removeCondition(condition) {
-    this._expressions = _lodash2.default.without(this._expressions, condition);
+  _proto.removeCondition = function removeCondition(condition) {
+    this._expressions = _lodash["default"].without(this._expressions, condition);
   };
 
-  Condition.prototype.ensureEmptyExpression = function ensureEmptyExpression() {
+  _proto.ensureEmptyExpression = function ensureEmptyExpression() {
     var hasEmpty = false;
 
     for (var _iterator = this._expressions, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
@@ -86,15 +85,15 @@ var Condition = exports.Condition = function () {
     }
   };
 
-  Condition.prototype.addEmptyExpression = function addEmptyExpression() {
+  _proto.addEmptyExpression = function addEmptyExpression() {
     this._expressions.push(new _expression.Expression({}, this._schema));
   };
 
-  Condition.prototype.removeExpression = function removeExpression(expression) {
-    this._expressions = _lodash2.default.without(this._expressions, expression);
+  _proto.removeExpression = function removeExpression(expression) {
+    this._expressions = _lodash["default"].without(this._expressions, expression);
   };
 
-  Condition.prototype.toJSON = function toJSON() {
+  _proto.toJSON = function toJSON() {
     var expressions = this.expressions.map(function (o) {
       return o.toJSON();
     }).filter(function (o) {
@@ -111,8 +110,10 @@ var Condition = exports.Condition = function () {
     };
   };
 
-  Condition.prototype.toHumanDescription = function toHumanDescription() {
-    var topLevel = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  _proto.toHumanDescription = function toHumanDescription(topLevel) {
+    if (topLevel === void 0) {
+      topLevel = false;
+    }
 
     if (this.expressions.length === 0) {
       return null;
@@ -133,7 +134,6 @@ var Condition = exports.Condition = function () {
       }
 
       var expression = _ref2;
-
       var desc = expression.toHumanDescription();
 
       if (desc) {
@@ -153,7 +153,7 @@ var Condition = exports.Condition = function () {
   };
 
   _createClass(Condition, [{
-    key: 'type',
+    key: "type",
     get: function get() {
       return this._type;
     },
@@ -161,12 +161,12 @@ var Condition = exports.Condition = function () {
       this._type = type;
     }
   }, {
-    key: 'expressions',
+    key: "expressions",
     get: function get() {
       return this._expressions;
     }
   }, {
-    key: 'allExpressions',
+    key: "allExpressions",
     get: function get() {
       var expressions = [];
 
@@ -197,4 +197,6 @@ var Condition = exports.Condition = function () {
 
   return Condition;
 }();
+
+exports.Condition = Condition;
 //# sourceMappingURL=condition.js.map

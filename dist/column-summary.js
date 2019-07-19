@@ -1,46 +1,50 @@
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _aggregate = require("./aggregate");
 
-var _aggregate = require('./aggregate');
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var ColumnSummary = function () {
+var ColumnSummary =
+/*#__PURE__*/
+function () {
   function ColumnSummary(attrs, schema) {
-    _classCallCheck(this, ColumnSummary);
-
     this._field = attrs.field;
     this._aggregate = attrs.aggregate;
     this._schema = schema;
   }
 
-  ColumnSummary.prototype.availableAggregates = function availableAggregates() {
+  var _proto = ColumnSummary.prototype;
+
+  _proto.availableAggregates = function availableAggregates() {
     return (0, _aggregate.availableAggregatesForColumn)(this.column);
   };
 
   _createClass(ColumnSummary, [{
-    key: 'field',
+    key: "field",
     get: function get() {
       return this._field;
     }
   }, {
-    key: 'column',
+    key: "column",
     get: function get() {
       return this._schema.columnForFieldKey(this.field);
     }
   }, {
-    key: 'columnName',
+    key: "columnName",
     get: function get() {
       if (this.column) {
         return this.column.columnName;
       }
+
       return null;
     }
   }, {
-    key: 'aggregate',
+    key: "aggregate",
     set: function set(aggregate) {
       this._aggregate = aggregate;
     },
@@ -52,5 +56,5 @@ var ColumnSummary = function () {
   return ColumnSummary;
 }();
 
-exports.default = ColumnSummary;
+exports["default"] = ColumnSummary;
 //# sourceMappingURL=column-summary.js.map
