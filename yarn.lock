@@ -1838,10 +1838,10 @@ fstream@^1.0.0, fstream@^1.0.2, fstream@~1.0.10:
     mkdirp ">=0.5 0"
     rimraf "2"
 
-fulcrum-core@^0.11.1:
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/fulcrum-core/-/fulcrum-core-0.11.1.tgz#21e08bf1ac2be2899d0810d50d59f97438918f2b"
-  integrity sha512-WBxIK/Jzq8TQJDgROs5GM9bErtx9i7BhzbC1VwlJ9nlcSmJX58ZWF/7abrA8WKpMjPmj6D8oCLR2kkWxA482Ow==
+fulcrum-core@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/fulcrum-core/-/fulcrum-core-0.12.0.tgz#e858f47ea364e973e9b25ec676f82c80dd1266c6"
+  integrity sha512-3dJ9rcxzhhWbEj15xg9FwP+PZKo72Z7IBO4+eIKlso+hJi3lkvTmfQeCT4YSnC7ts8gRg3GYbyTVMbuKje9Pdg==
   dependencies:
     async "^2.1.4"
     lodash.compact "^3.0.1"
