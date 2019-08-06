@@ -160,4 +160,8 @@ export default class FormSchema extends FormFieldSchema {
   get tableName() {
     return this.form.name.toLowerCase().replace(/ /g, '_');
   }
+
+  get tableNameWithoutPrefix() {
+    return this.tableName;
+  }
 }

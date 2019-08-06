@@ -143,6 +143,11 @@ function (_FormFieldSchema) {
     get: function get() {
       return this.formSchema.tableName + '_' + this.repeatable.dataName;
     }
+  }, {
+    key: "tableNameWithoutPrefix",
+    get: function get() {
+      return this.repeatable.dataName;
+    }
   }]);
 
   return RepeatableSchema;

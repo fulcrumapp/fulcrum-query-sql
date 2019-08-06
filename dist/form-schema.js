@@ -162,6 +162,11 @@ function (_FormFieldSchema) {
     get: function get() {
       return this.form.name.toLowerCase().replace(/ /g, '_');
     }
+  }, {
+    key: "tableNameWithoutPrefix",
+    get: function get() {
+      return this.tableName;
+    }
   }]);
 
   return FormSchema;

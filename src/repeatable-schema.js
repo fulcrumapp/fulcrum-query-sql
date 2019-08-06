@@ -159,4 +159,8 @@ export default class RepeatableSchema extends FormFieldSchema {
   get tableName() {
     return this.formSchema.tableName + '_' + this.repeatable.dataName;
   }
+
+  get tableNameWithoutPrefix() {
+    return this.repeatable.dataName;
+  }
 }
