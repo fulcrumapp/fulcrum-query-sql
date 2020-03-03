@@ -39,6 +39,7 @@ export default class Query {
     this._projectFilter = new ColumnFilter({...attrs.project_filter, field: attrs.repeatableKey ? 'record_project.name' : 'project.name'}, this._schema);
     this._assignmentFilter = new ColumnFilter({...attrs.assignment_filter, field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name'}, this._schema);
     this._changesetFilter = new ColumnFilter({...attrs.changeset_filter, field: '_changeset_id'}, this._schema);
+    this._full = attrs.full != null ? !!attrs.full : true;
 
     this.setup();
   }
@@ -93,6 +94,10 @@ export default class Query {
 
   get options() {
     return this._options;
+  }
+
+  get full() {
+    return this._full;
   }
 
   get hasFilter() {

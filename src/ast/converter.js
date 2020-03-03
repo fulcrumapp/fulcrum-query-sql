@@ -584,11 +584,13 @@ export default class Converter {
   }
 
   formQueryRangeVar(query) {
+    const full = query.full ? '/_full' : '';
+
     if (query.repeatableKey) {
-      return RangeVar(query.form.id + '/' + query.repeatableKey + '/_full', Alias('records'));
+      return RangeVar(query.form.id + '/' + query.repeatableKey + full, Alias('records'));
     }
 
-    return RangeVar(query.form.id + '/_full', Alias('records'));
+    return RangeVar(query.form.id + full, Alias('records'));
   }
 
   createExpressionForColumnFilter(filter, options) {

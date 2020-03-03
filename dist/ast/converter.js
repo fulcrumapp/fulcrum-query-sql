@@ -937,11 +937,13 @@ function () {
   };
 
   _proto.formQueryRangeVar = function formQueryRangeVar(query) {
+    var full = query.full ? '/_full' : '';
+
     if (query.repeatableKey) {
-      return (0, _helpers.RangeVar)(query.form.id + '/' + query.repeatableKey + '/_full', (0, _helpers.Alias)('records'));
+      return (0, _helpers.RangeVar)(query.form.id + '/' + query.repeatableKey + full, (0, _helpers.Alias)('records'));
     }
 
-    return (0, _helpers.RangeVar)(query.form.id + '/_full', (0, _helpers.Alias)('records'));
+    return (0, _helpers.RangeVar)(query.form.id + full, (0, _helpers.Alias)('records'));
   };
 
   _proto.createExpressionForColumnFilter = function createExpressionForColumnFilter(filter, options) {

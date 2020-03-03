@@ -60,6 +60,7 @@ function () {
     this._changesetFilter = new _columnFilter["default"](_extends({}, attrs.changeset_filter, {
       field: '_changeset_id'
     }), this._schema);
+    this._full = attrs.full != null ? !!attrs.full : true;
     this.setup();
   }
 
@@ -429,6 +430,11 @@ function () {
     key: "options",
     get: function get() {
       return this._options;
+    }
+  }, {
+    key: "full",
+    get: function get() {
+      return this._full;
     }
   }, {
     key: "hasFilter",
