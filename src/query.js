@@ -314,6 +314,22 @@ export default class Query {
       return [ ResTarget(ColumnRef(AStar())) ];
     }
 
+    if (!this.full) {
+      return _.compact(this.columnSettings.enabledColumns.map(column => {
+        if (column.element && !column.rawColumn) {
+          return null;
+        }
+
+        let columnAlias = column.columnName;
+
+        if (column.join) {
+          columnAlias = [column.join.alias, column.columnName].join('_');
+        }
+
+        return ResTarget(ColumnRef(column.columnName, column.source || 'records'), columnAlias);
+      }));
+    }
+
     const timeZoneCast = (columnRef) => {
       return FuncCall([ StringValue('pg_catalog'), StringValue('timezone') ], [ AConst(StringValue('UTC')), columnRef ]);
     };

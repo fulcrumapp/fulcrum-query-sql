@@ -191,6 +191,22 @@ function () {
       return [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)()))];
     }
 
+    if (!this.full) {
+      return _lodash["default"].compact(this.columnSettings.enabledColumns.map(function (column) {
+        if (column.element && !column.rawColumn) {
+          return null;
+        }
+
+        var columnAlias = column.columnName;
+
+        if (column.join) {
+          columnAlias = [column.join.alias, column.columnName].join('_');
+        }
+
+        return (0, _helpers.ResTarget)((0, _helpers.ColumnRef)(column.columnName, column.source || 'records'), columnAlias);
+      }));
+    }
+
     var timeZoneCast = function timeZoneCast(columnRef) {
       return (0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('timezone')], [(0, _helpers.AConst)((0, _helpers.StringValue)('UTC')), columnRef]);
     };
