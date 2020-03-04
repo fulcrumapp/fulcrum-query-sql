@@ -105,6 +105,7 @@ export default class Query {
            this.projectFilter.hasFilter ||
            this.assignmentFilter.hasFilter ||
            this.changesetFilter.hasFilter ||
+           this.columnSettings.hasChanges ||
            this.columnSettings.columns.find(o => o.hasFilter) ||
            this.searchFilter ||
            this.dateFilter.isValid ||

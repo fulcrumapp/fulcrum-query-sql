@@ -455,7 +455,7 @@ function () {
   }, {
     key: "hasFilter",
     get: function get() {
-      return this.statusFilter.hasFilter || this.projectFilter.hasFilter || this.assignmentFilter.hasFilter || this.changesetFilter.hasFilter || this.columnSettings.columns.find(function (o) {
+      return this.statusFilter.hasFilter || this.projectFilter.hasFilter || this.assignmentFilter.hasFilter || this.changesetFilter.hasFilter || this.columnSettings.hasChanges || this.columnSettings.columns.find(function (o) {
         return o.hasFilter;
       }) || this.searchFilter || this.dateFilter.isValid || this.filter.expressions.find(function (o) {
         return o.isValid;

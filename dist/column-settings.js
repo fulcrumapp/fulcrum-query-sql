@@ -7,6 +7,8 @@ var _arrayMove = _interopRequireDefault(require("array-move"));
 
 var _columnSettingsItem = _interopRequireDefault(require("./column-settings-item"));
 
+var _lodash = require("lodash");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
@@ -102,6 +104,18 @@ function () {
     this._columns.map(function (o) {
       return o.clear();
     });
+  };
+
+  _proto.hasChanges = function hasChanges() {
+    var enabledColumns = this.enabledColumnSettings.map(function (o) {
+      return [o.column.id, o.isVisible];
+    });
+
+    var defaultColumns = this._allColumns.map(function (o) {
+      return [o.column.id, o.isVisible];
+    });
+
+    return !(0, _lodash.isEqual)(enabledColumns, defaultColumns);
   };
 
   _proto.toJSON = function toJSON() {

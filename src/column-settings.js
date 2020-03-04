@@ -1,5 +1,6 @@
 import arrayMove from 'array-move';
 import ColumnSettingsItem from './column-settings-item';
+import { isEqual } from 'lodash';
 
 export default class ColumnSettings {
   constructor(schema, settings) {
@@ -55,6 +56,13 @@ export default class ColumnSettings {
   reset() {
     this._columns = this._allColumns.slice();
     this._columns.map(o => o.clear());
+  }
+
+  hasChanges() {
+    const enabledColumns = this.enabledColumnSettings.map(o => [o.column.id, o.isVisible]);
+    const defaultColumns = this._allColumns.map(o => [o.column.id, o.isVisible]);
+
+    return !isEqual(enabledColumns, defaultColumns);
   }
 
   toJSON() {
