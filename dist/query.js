@@ -582,7 +582,7 @@ function () {
           return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)(sort.column.id, sort.column.source), direction, 0)];
         }
 
-        return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)(sort.column.columnName, sort.column.source), direction, 0), (0, _helpers.SortBy)((0, _helpers.ColumnRef)('_record_id'), direction, 0)];
+        return [(0, _helpers.SortBy)((0, _helpers.ColumnRef)(sort.column.columnName, sort.column.source || 'records'), direction, 0), (0, _helpers.SortBy)((0, _helpers.ColumnRef)('_record_id', 'records'), direction, 0)];
       });
       return _lodash["default"].flatten(sorts);
     }

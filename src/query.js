@@ -512,8 +512,8 @@ export default class Query {
       }
 
       return [
-        SortBy(ColumnRef(sort.column.columnName, sort.column.source), direction, 0),
-        SortBy(ColumnRef('_record_id'), direction, 0)
+        SortBy(ColumnRef(sort.column.columnName, sort.column.source || 'records'), direction, 0),
+        SortBy(ColumnRef('_record_id', 'records'), direction, 0)
       ];
     });
 
