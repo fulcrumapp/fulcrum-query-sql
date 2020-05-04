@@ -376,7 +376,7 @@ function availableOperatorsForColumn(column) {
       operators.push.apply(operators, TEXTUAL_OPERATORS);
     }
 
-    if (element.isClassificationElement) {
+    if (element.isClassificationElement || element.isRecordLinkElement) {
       operators.push.apply(operators, ARRAY_OPERATORS);
     }
 
