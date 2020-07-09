@@ -321,9 +321,15 @@ export default class Query {
         }
 
         let columnAlias = column.columnName;
+        let columnSort = false;
 
         if (column.join) {
+          columnSort = this.sortColumnExists(column.join.alias)
           columnAlias = [column.join.alias, column.columnName].join('_');
+        }
+
+        if (columnSort) {
+          return ResTarget(ColumnRef(`${column.join.alias}.name`), columnAlias);
         }
 
         return ResTarget(ColumnRef(column.columnName, column.source || 'records'), columnAlias);
@@ -461,6 +467,11 @@ export default class Query {
       ResTarget(ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
       ...joinedColumns
     ];
+  }
+
+  sortColumnExists(columnName) {
+    let expression = this.sorting.expressions.find(sort => sort.field == `${columnName}.name`)
+    return expression ? true : false
   }
 
   fromClause({applySort, pageSize, pageIndex, boundingBox, searchFilter}) {
