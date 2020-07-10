@@ -475,21 +475,20 @@ export default class Query {
 
     // The "subJoinColumns" are joins that need to happen in the inner sub-select from Converter.
     // We don't need to join them in the outer part.
-    const subJoinColumns = this.joinColumnsWithSorting;
 
-    if (this.schema.createdByColumn && subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
+    if (this.schema.createdByColumn) {
       baseQuery = Converter.joinClause(baseQuery, this.schema.createdByColumn.join);
     }
 
-    if (this.schema.updatedByColumn && subJoinColumns.indexOf(this.schema.updatedByColumn) === -1) {
+    if (this.schema.updatedByColumn) {
       baseQuery = Converter.joinClause(baseQuery, this.schema.updatedByColumn.join);
     }
 
-    if (this.schema.assignedToColumn && subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
+    if (this.schema.assignedToColumn) {
       baseQuery = Converter.joinClause(baseQuery, this.schema.assignedToColumn.join);
     }
 
-    if (this.schema.projectColumn && subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
+    if (this.schema.projectColumn) {
       baseQuery = Converter.joinClause(baseQuery, this.schema.projectColumn.join);
     }
 
