@@ -385,17 +385,17 @@ export default class Converter {
 
   targetList(query, sort, boundingBox) {
     const list = [
-      ResTarget(ColumnRef(AStar()))
+      ResTarget(ColumnRef(AStar(), 'records'))
     ];
 
     const subJoinColumns = query.joinColumnsWithSorting;
 
     if (subJoinColumns.indexOf(query.schema.createdByColumn) !== -1) {
-      list.push(ResTarget(ColumnRef('name', 'created_by'), 'created_by.name'));
+      list.push(ResTarget(ColumnRef('name', query.schema.createdByColumn.join.alias), query.schema.createdByColumn.id));
     }
 
     if (subJoinColumns.indexOf(query.schema.updatedByColumn) !== -1) {
-      list.push(ResTarget(ColumnRef('name', 'updated_by'), 'updated_by.name'));
+      list.push(ResTarget(ColumnRef('name', query.schema.updatedByColumn.join.alias), query.schema.updatedByColumn.id));
     }
 
     if (subJoinColumns.indexOf(query.schema.assignedToColumn) !== -1) {
