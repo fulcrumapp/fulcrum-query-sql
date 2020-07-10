@@ -689,15 +689,15 @@ function () {
   };
 
   _proto.targetList = function targetList(query, sort, boundingBox) {
-    var list = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)()))];
+    var list = [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)((0, _helpers.AStar)(), 'records'))];
     var subJoinColumns = query.joinColumnsWithSorting;
 
     if (subJoinColumns.indexOf(query.schema.createdByColumn) !== -1) {
-      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'created_by'), 'created_by.name'));
+      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', query.schema.createdByColumn.join.alias), query.schema.createdByColumn.id));
     }
 
     if (subJoinColumns.indexOf(query.schema.updatedByColumn) !== -1) {
-      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'updated_by'), 'updated_by.name'));
+      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', query.schema.updatedByColumn.join.alias), query.schema.updatedByColumn.id));
     }
 
     if (subJoinColumns.indexOf(query.schema.assignedToColumn) !== -1) {

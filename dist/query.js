@@ -284,21 +284,19 @@ function () {
     // We don't need to join them in the outer part.
 
 
-    var subJoinColumns = this.joinColumnsWithSorting;
-
-    if (this.schema.createdByColumn && subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
+    if (this.schema.createdByColumn) {
       baseQuery = _converter["default"].joinClause(baseQuery, this.schema.createdByColumn.join);
     }
 
-    if (this.schema.updatedByColumn && subJoinColumns.indexOf(this.schema.updatedByColumn) === -1) {
+    if (this.schema.updatedByColumn) {
       baseQuery = _converter["default"].joinClause(baseQuery, this.schema.updatedByColumn.join);
     }
 
-    if (this.schema.assignedToColumn && subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
+    if (this.schema.assignedToColumn) {
       baseQuery = _converter["default"].joinClause(baseQuery, this.schema.assignedToColumn.join);
     }
 
-    if (this.schema.projectColumn && subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
+    if (this.schema.projectColumn) {
       baseQuery = _converter["default"].joinClause(baseQuery, this.schema.projectColumn.join);
     }
 
