@@ -30,6 +30,7 @@ export default class ColumnSettings {
       const item = new ColumnSettingsItem({...existingAttributes, column}, this._schema);
 
       if (existingAttributes == null) {
+        item.hidden = true;
         newColumns.push({column: item, index});
       }
 

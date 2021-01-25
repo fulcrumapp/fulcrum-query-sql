@@ -54,6 +54,7 @@ function () {
       }), this._schema);
 
       if (existingAttributes == null) {
+        item.hidden = true;
         newColumns.push({
           column: item,
           index: index
