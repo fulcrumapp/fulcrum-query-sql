@@ -1,6 +1,6 @@
 {
   "name": "fulcrum-query-sql",
-  "version": "0.1.11",
+  "version": "0.2.0",
   "description": "Fulcrum Query SQL Utilities",
   "homepage": "http://github.com/fulcrumapp/fulcrum-query-sql",
   "main": "dist/index.js",
@@ -47,7 +47,7 @@
     "fulcrum"
   ],
   "peerDependencies": {
-    "fulcrum-core": "^0.12.1",
+    "fulcrum-core": "^0.13.0",
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.11"
   }
