@@ -572,7 +572,8 @@ export function availableOperatorsForColumn(column) {
     if (element.isPhotoElement ||
           element.isVideoElement ||
           element.isAudioElement ||
-          element.isSignatureElement) {
+          element.isSignatureElement ||
+          element.isAttachmentElement) {
       operators.push.apply(operators, MEDIA_OPERATORS);
     }
   } else if (column.isSQL) {

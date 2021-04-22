@@ -84,6 +84,7 @@ export default class ElementColumn extends Column {
         this.element.isVideoElement ||
         this.element.isAudioElement ||
         this.element.isSignatureElement ||
+        this.element.isAttachmentElement ||
         this.element.isRepeatableElement) {
       return false;
     }
@@ -106,6 +107,7 @@ export default class ElementColumn extends Column {
         this.element.isVideoElement ||
         this.element.isAudioElement ||
         this.element.isSignatureElement ||
+        this.element.isAttachmentElement ||
         this.element.isRepeatableElement) {
       return false;
     }

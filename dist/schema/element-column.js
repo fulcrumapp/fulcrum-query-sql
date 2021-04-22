@@ -123,7 +123,7 @@ function (_Column) {
   }, {
     key: "canSearch",
     get: function get() {
-      if (this.element.isPhotoElement || this.element.isVideoElement || this.element.isAudioElement || this.element.isSignatureElement || this.element.isRepeatableElement) {
+      if (this.element.isPhotoElement || this.element.isVideoElement || this.element.isAudioElement || this.element.isSignatureElement || this.element.isAttachmentElement || this.element.isRepeatableElement) {
         return false;
       }
 
@@ -143,7 +143,7 @@ function (_Column) {
   }, {
     key: "isSortable",
     get: function get() {
-      if (this.element.isPhotoElement || this.element.isVideoElement || this.element.isAudioElement || this.element.isSignatureElement || this.element.isRepeatableElement) {
+      if (this.element.isPhotoElement || this.element.isVideoElement || this.element.isAudioElement || this.element.isSignatureElement || this.element.isAttachmentElement || this.element.isRepeatableElement) {
         return false;
       }
 

@@ -384,7 +384,7 @@ function availableOperatorsForColumn(column) {
       operators.push.apply(operators, TEXTUAL_OPERATORS);
     }
 
-    if (element.isPhotoElement || element.isVideoElement || element.isAudioElement || element.isSignatureElement) {
+    if (element.isPhotoElement || element.isVideoElement || element.isAudioElement || element.isSignatureElement || element.isAttachmentElement) {
       operators.push.apply(operators, MEDIA_OPERATORS);
     }
   } else if (column.isSQL) {
