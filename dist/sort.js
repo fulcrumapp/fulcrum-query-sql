@@ -17,9 +17,7 @@ var DIRECTIONS = {
 };
 exports.DIRECTIONS = DIRECTIONS;
 
-var Sort =
-/*#__PURE__*/
-function () {
+var Sort = /*#__PURE__*/function () {
   function Sort(attrs, schema) {
     this._field = attrs.field || null;
     this._direction = attrs.direction || null;
