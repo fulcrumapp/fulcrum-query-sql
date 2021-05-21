@@ -17,6 +17,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
+function _createForOfIteratorHelperLoose(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (it) return (it = it.call(o)).next.bind(it); if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; return function () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var MAX_DISTINCT_VALUES = 1000;
@@ -26,9 +32,7 @@ var columnRef = function columnRef(column) {
   return column.isSQL ? (0, _helpers.ColumnRef)(column.id, column.source) : (0, _helpers.ColumnRef)(column.columnName, column.source);
 };
 
-var Converter =
-/*#__PURE__*/
-function () {
+var Converter = /*#__PURE__*/function () {
   function Converter() {
     var _this = this;
 
@@ -741,19 +745,8 @@ function () {
       if (referencedColumns.length) {
         queryAST = JSON.parse(JSON.stringify(queryAST));
 
-        for (var _iterator = referencedColumns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-          var _ref7;
-
-          if (_isArray) {
-            if (_i >= _iterator.length) break;
-            _ref7 = _iterator[_i++];
-          } else {
-            _i = _iterator.next();
-            if (_i.done) break;
-            _ref7 = _i.value;
-          }
-
-          var column = _ref7;
+        for (var _iterator = _createForOfIteratorHelperLoose(referencedColumns), _step; !(_step = _iterator()).done;) {
+          var column = _step.value;
           Converter.duplicateResTargetWithExactName(query, queryAST.SelectStmt.targetList, column, column.id);
         }
       }
@@ -765,19 +758,8 @@ function () {
     var visitedTables = {};
 
     if (leftJoins) {
-      for (var _iterator2 = leftJoins, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
-        var _ref8;
-
-        if (_isArray2) {
-          if (_i2 >= _iterator2.length) break;
-          _ref8 = _iterator2[_i2++];
-        } else {
-          _i2 = _iterator2.next();
-          if (_i2.done) break;
-          _ref8 = _i2.value;
-        }
-
-        var join = _ref8;
+      for (var _iterator2 = _createForOfIteratorHelperLoose(leftJoins), _step2; !(_step2 = _iterator2()).done;) {
+        var join = _step2.value;
 
         if (!visitedTables[join.alias]) {
           visitedTables[join.alias] = join;
@@ -795,7 +777,7 @@ function () {
     }
 
     var systemParts = [];
-    options = _extends({}, query.options || {}, {}, options);
+    options = _extends({}, query.options || {}, options);
     var filterNode = this.nodeForCondition(query.filter, options);
 
     if (boundingBox) {
@@ -812,19 +794,8 @@ function () {
     systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
     systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
 
-    for (var _iterator3 = query.columnSettings.columns, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator]();;) {
-      var _ref9;
-
-      if (_isArray3) {
-        if (_i3 >= _iterator3.length) break;
-        _ref9 = _iterator3[_i3++];
-      } else {
-        _i3 = _iterator3.next();
-        if (_i3.done) break;
-        _ref9 = _i3.value;
-      }
-
-      var item = _ref9;
+    for (var _iterator3 = _createForOfIteratorHelperLoose(query.columnSettings.columns), _step3; !(_step3 = _iterator3()).done;) {
+      var item = _step3.value;
 
       if (item.hasFilter) {
         var expression = this.createExpressionForColumnFilter(item.filter, options);
@@ -868,33 +839,22 @@ function () {
     return filterNode;
   };
 
-  Converter.joinClause = function joinClause(baseQuery, _ref10) {
-    var inner = _ref10.inner,
-        tableName = _ref10.tableName,
-        alias = _ref10.alias,
-        sourceColumn = _ref10.sourceColumn,
-        joinColumn = _ref10.joinColumn,
-        sourceTableName = _ref10.sourceTableName,
-        rarg = _ref10.rarg;
+  Converter.joinClause = function joinClause(baseQuery, _ref7) {
+    var inner = _ref7.inner,
+        tableName = _ref7.tableName,
+        alias = _ref7.alias,
+        sourceColumn = _ref7.sourceColumn,
+        joinColumn = _ref7.joinColumn,
+        sourceTableName = _ref7.sourceTableName,
+        rarg = _ref7.rarg;
     return (0, _helpers.JoinExpr)(inner ? 0 : 1, baseQuery, rarg || (0, _helpers.RangeVar)(tableName, (0, _helpers.Alias)(alias)), (0, _helpers.AExpr)(0, '=', (0, _helpers.ColumnRef)(sourceColumn, sourceTableName || 'records'), (0, _helpers.ColumnRef)(joinColumn, alias)));
   };
 
   Converter.duplicateResTargetWithExactName = function duplicateResTargetWithExactName(query, targetList, column, exactName) {
     var resTarget = Converter.findResTarget(query, column); // If a column is referenced more than once don't add it again
 
-    for (var _iterator4 = targetList, _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : _iterator4[Symbol.iterator]();;) {
-      var _ref11;
-
-      if (_isArray4) {
-        if (_i4 >= _iterator4.length) break;
-        _ref11 = _iterator4[_i4++];
-      } else {
-        _i4 = _iterator4.next();
-        if (_i4.done) break;
-        _ref11 = _i4.value;
-      }
-
-      var existing = _ref11;
+    for (var _iterator4 = _createForOfIteratorHelperLoose(targetList), _step4; !(_step4 = _iterator4()).done;) {
+      var existing = _step4.value;
 
       if (existing.ResTarget.name === exactName) {
         return;
@@ -1025,7 +985,7 @@ function () {
         SELECT ...
        FROM ...
        WHERE
-         _record_index @@ to_tsquery('english', '''bacon'':*'::tsquery::text) AND
+         _record_index @@ to_tsquery('simple', '''bacon'':*'::tsquery::text) AND
          _record_index_text ILIKE '%bacon%'
         NB: The awkward cast through a text type is to properly escape raw user input as a tsquery.
         For example:
@@ -1047,7 +1007,7 @@ function () {
     };
 
     var makeTsQueryCall = function makeTsQueryCall(term) {
-      return toTsQuery('english', term.toLowerCase().replace(/'/g, "''"));
+      return toTsQuery('simple', term.toLowerCase().replace(/'/g, "''"));
     };
 
     var terms = search.split(' ').filter(function (s) {
@@ -1067,11 +1027,11 @@ function () {
     return (0, _helpers.BoolExpr)(0, andArgs);
   };
 
-  _proto.summaryWhereClause = function summaryWhereClause(query, columnSetting, _ref12) {
+  _proto.summaryWhereClause = function summaryWhereClause(query, columnSetting, _ref8) {
     var _converters;
 
-    var boundingBox = _ref12.boundingBox,
-        searchFilter = _ref12.searchFilter;
+    var boundingBox = _ref8.boundingBox,
+        searchFilter = _ref8.searchFilter;
     var expressions = [];
     var converters = (_converters = {}, _converters[_aggregate.AggregateType.Empty.name] = function () {
       return (0, _helpers.NullTest)(0, columnRef(columnSetting.column));

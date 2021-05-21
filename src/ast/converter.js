@@ -684,7 +684,7 @@ export default class Converter {
        SELECT ...
        FROM ...
        WHERE
-         _record_index @@ to_tsquery('english', '''bacon'':*'::tsquery::text) AND
+         _record_index @@ to_tsquery('simple', '''bacon'':*'::tsquery::text) AND
          _record_index_text ILIKE '%bacon%'
 
        NB: The awkward cast through a text type is to properly escape raw user input as a tsquery.
@@ -713,7 +713,7 @@ export default class Converter {
     };
 
     const makeTsQueryCall = (term) => {
-      return toTsQuery('english', term.toLowerCase().replace(/'/g, "''"));
+      return toTsQuery('simple', term.toLowerCase().replace(/'/g, "''"));
     };
 
     const terms = search.split(' ').filter(s => s.trim().length);
