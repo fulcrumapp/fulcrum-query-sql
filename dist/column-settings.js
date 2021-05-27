@@ -11,17 +11,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-function _createForOfIteratorHelperLoose(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (it) return (it = it.call(o)).next.bind(it); if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; return function () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var ColumnSettings = /*#__PURE__*/function () {
+var ColumnSettings =
+/*#__PURE__*/
+function () {
   function ColumnSettings(schema, settings) {
     this._schema = schema;
     this._columns = [];
@@ -31,8 +27,19 @@ var ColumnSettings = /*#__PURE__*/function () {
     var existingSettingsByID = {};
 
     if (settings) {
-      for (var _iterator = _createForOfIteratorHelperLoose(settings), _step; !(_step = _iterator()).done;) {
-        var setting = _step.value;
+      for (var _iterator = settings, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+        var _ref;
+
+        if (_isArray) {
+          if (_i >= _iterator.length) break;
+          _ref = _iterator[_i++];
+        } else {
+          _i = _iterator.next();
+          if (_i.done) break;
+          _ref = _i.value;
+        }
+
+        var setting = _ref;
         existingSettingsByID[setting.column.id] = setting;
       }
     }
@@ -60,8 +67,19 @@ var ColumnSettings = /*#__PURE__*/function () {
     }
 
     if (settings) {
-      for (var _iterator2 = _createForOfIteratorHelperLoose(settings), _step2; !(_step2 = _iterator2()).done;) {
-        var _setting = _step2.value;
+      for (var _iterator2 = settings, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
+        var _ref2;
+
+        if (_isArray2) {
+          if (_i2 >= _iterator2.length) break;
+          _ref2 = _iterator2[_i2++];
+        } else {
+          _i2 = _iterator2.next();
+          if (_i2.done) break;
+          _ref2 = _i2.value;
+        }
+
+        var _setting = _ref2;
         var _item = this._columnsByID[_setting.column.id];
 
         if (_item) {
@@ -70,8 +88,8 @@ var ColumnSettings = /*#__PURE__*/function () {
       }
     }
 
-    for (var _i = 0, _newColumns = newColumns; _i < _newColumns.length; _i++) {
-      var newColumn = _newColumns[_i];
+    for (var _i3 = 0, _newColumns = newColumns; _i3 < _newColumns.length; _i3++) {
+      var newColumn = _newColumns[_i3];
 
       this._columns.splice(newColumn.index, 0, newColumn.column);
     }

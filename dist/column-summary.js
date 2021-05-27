@@ -9,7 +9,9 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var ColumnSummary = /*#__PURE__*/function () {
+var ColumnSummary =
+/*#__PURE__*/
+function () {
   function ColumnSummary(attrs, schema) {
     this._field = attrs.field;
     this._aggregate = attrs.aggregate;
@@ -43,11 +45,11 @@ var ColumnSummary = /*#__PURE__*/function () {
     }
   }, {
     key: "aggregate",
-    get: function get() {
-      return this._aggregate;
-    },
     set: function set(aggregate) {
       this._aggregate = aggregate;
+    },
+    get: function get() {
+      return this._aggregate;
     }
   }]);
 

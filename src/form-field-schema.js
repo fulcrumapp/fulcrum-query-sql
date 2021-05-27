@@ -67,7 +67,7 @@ export default class FormFieldSchema {
         this.addElementColumn(element, 'country');
       }
 
-      if (this.fullSchema && (element.isPhotoElement || element.isVideoElement || element.isAudioElement || element.isAttachmentElement)) {
+      if (this.fullSchema && (element.isPhotoElement || element.isVideoElement || element.isAudioElement)) {
         this.addElementColumn(element, 'captions', 'array');
         this.addElementColumn(element, 'urls', 'array');
       }
