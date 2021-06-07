@@ -39,6 +39,7 @@ var _expression = require("./expression");
 Object.keys(_expression).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _expression[key]) return;
   exports[key] = _expression[key];
 });
 
@@ -47,6 +48,7 @@ var _condition = require("./condition");
 Object.keys(_condition).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _condition[key]) return;
   exports[key] = _condition[key];
 });
 
@@ -55,6 +57,7 @@ var _operator = require("./operator");
 Object.keys(_operator).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _operator[key]) return;
   exports[key] = _operator[key];
 });
 
@@ -63,6 +66,7 @@ var _aggregate = require("./aggregate");
 Object.keys(_aggregate).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _aggregate[key]) return;
   exports[key] = _aggregate[key];
 });
 

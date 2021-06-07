@@ -3,9 +3,7 @@
 exports.__esModule = true;
 exports["default"] = void 0;
 
-var QueryOptions =
-/*#__PURE__*/
-function () {
+var QueryOptions = /*#__PURE__*/function () {
   function QueryOptions(attrs) {
     if (attrs === void 0) {
       attrs = {};
