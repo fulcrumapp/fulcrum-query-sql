@@ -1025,7 +1025,7 @@ function () {
         SELECT ...
        FROM ...
        WHERE
-         _record_index @@ to_tsquery('simple', '''bacon'':*'::tsquery::text) AND
+         _record_index @@ to_tsquery('english', '''bacon'':*'::tsquery::text) AND
          _record_index_text ILIKE '%bacon%'
         NB: The awkward cast through a text type is to properly escape raw user input as a tsquery.
         For example:
@@ -1047,7 +1047,7 @@ function () {
     };
 
     var makeTsQueryCall = function makeTsQueryCall(term) {
-      return toTsQuery('simple', term.toLowerCase().replace(/'/g, "''"));
+      return toTsQuery('english', term.toLowerCase().replace(/'/g, "''"));
     };
 
     var terms = search.split(' ').filter(function (s) {
