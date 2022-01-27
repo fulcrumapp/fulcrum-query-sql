@@ -275,6 +275,7 @@ exports.FRIENDLY_DATE_OPERATORS = FRIENDLY_DATE_OPERATORS;
 var NUMERIC_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.GreaterThan, OperatorType.GreaterThanOrEqual, OperatorType.LessThan, OperatorType.LessThanOrEqual, // OperatorType.Between,
 // OperatorType.NotBetween,
 OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
+var BOOLEAN_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
 var ARRAY_OPERATORS = [OperatorType.ArrayAnyOf, OperatorType.ArrayAllOf, OperatorType.ArrayEqual, OperatorType.Empty, OperatorType.NotEmpty];
 var GEOSPATIAL_OPERATORS = [];
 var MEDIA_OPERATORS = [OperatorType.Empty, OperatorType.NotEmpty];
@@ -348,6 +349,14 @@ function availableOperatorsForColumn(column) {
       } else {
         operators.push.apply(operators, TEXTUAL_OPERATORS);
       }
+    }
+
+    if (element.isCheckboxElement) {
+      operators.push.apply(operators, BOOLEAN_OPERATORS);
+    }
+
+    if (element.isDynamicElement) {
+      operators.push.apply(operators, ARRAY_OPERATORS);
     }
 
     if (element.isCalculatedElement) {

@@ -427,6 +427,15 @@ const NUMERIC_OPERATORS = [
   OperatorType.NotIn
 ];
 
+const BOOLEAN_OPERATORS = [
+  OperatorType.Equal,
+  OperatorType.NotEqual,
+  OperatorType.Empty,
+  OperatorType.NotEmpty,
+  OperatorType.In,
+  OperatorType.NotIn
+];
+
 const ARRAY_OPERATORS = [
   OperatorType.ArrayAnyOf,
   OperatorType.ArrayAllOf,
@@ -533,6 +542,14 @@ export function availableOperatorsForColumn(column) {
       } else {
         operators.push.apply(operators, TEXTUAL_OPERATORS);
       }
+    }
+
+    if (element.isCheckboxElement) {
+      operators.push.apply(operators, BOOLEAN_OPERATORS);
+    }
+
+    if (element.isDynamicElement) {
+      operators.push.apply(operators, ARRAY_OPERATORS);
     }
 
     if (element.isCalculatedElement) {

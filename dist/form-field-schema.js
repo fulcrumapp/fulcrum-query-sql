@@ -112,6 +112,12 @@ function () {
       if (this.fullSchema && element.isSignatureElement) {
         this.addElementColumn(element, 'timestamp');
       }
+
+      if (this.fullSchema && element.isDynamicElement) {
+        this.addElementColumn(element, 'metadata', 'array');
+        this.addElementColumn(element, 'elements', 'array');
+        this.addElementColumn(element, 'values', 'array');
+      }
     }
   };
 
