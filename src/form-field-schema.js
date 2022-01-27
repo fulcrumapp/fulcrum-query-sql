@@ -52,7 +52,7 @@ export default class FormFieldSchema {
       // repeatable elements don't have any physical columns, but we want to add a column that has the count of items
       if (element.isRepeatableElement) {
         this.addElementColumn(element, null, 'integer');
-      } else {
+      } else if (!element.isDynamicElement) {
         this.addElementColumn(element);
       }
 
