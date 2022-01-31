@@ -52,7 +52,7 @@ export default class FormFieldSchema {
       // repeatable elements don't have any physical columns, but we want to add a column that has the count of items
       if (element.isRepeatableElement) {
         this.addElementColumn(element, null, 'integer');
-      } else {
+      } else if (!element.isDynamicElement) {
         this.addElementColumn(element);
       }
 
@@ -74,6 +74,12 @@ export default class FormFieldSchema {
 
       if (this.fullSchema && element.isSignatureElement) {
         this.addElementColumn(element, 'timestamp');
+      }
+
+      if (this.fullSchema && (element.isDynamicElement)) {
+        this.addElementColumn(element, 'metadata', 'array');
+        this.addElementColumn(element, 'elements', 'array');
+        this.addElementColumn(element, 'values', 'array');
       }
     }
   }
