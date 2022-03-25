@@ -244,6 +244,10 @@ var OperatorType = {
     name: 'array_all_of',
     label: 'All of'
   },
+  ArrayIsContainedIn: {
+    name: 'array_is_contained_in',
+    label: 'Contained In'
+  },
   ArrayNoneOf: {
     name: 'array_none_of',
     label: 'None of'
@@ -276,7 +280,7 @@ var NUMERIC_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType
 // OperatorType.NotBetween,
 OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
 var BOOLEAN_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
-var ARRAY_OPERATORS = [OperatorType.ArrayAnyOf, OperatorType.ArrayAllOf, OperatorType.ArrayEqual, OperatorType.Empty, OperatorType.NotEmpty];
+var ARRAY_OPERATORS = [OperatorType.ArrayAnyOf, OperatorType.ArrayAllOf, OperatorType.ArrayIsContainedIn, OperatorType.ArrayEqual, OperatorType.Empty, OperatorType.NotEmpty];
 var GEOSPATIAL_OPERATORS = [];
 var MEDIA_OPERATORS = [OperatorType.Empty, OperatorType.NotEmpty];
 var NO_VALUE_OPERATORS = [OperatorType.Empty, OperatorType.NotEmpty, OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateLast90Days, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear];

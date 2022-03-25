@@ -849,6 +849,7 @@ export default class Converter {
       [OperatorType.DateNotBetween.name]: this.NotBetweenConverter,
       [OperatorType.ArrayAnyOf.name]: this.ArrayAnyOfConverter,
       [OperatorType.ArrayAllOf.name]: this.ArrayAllOfConverter,
+      [OperatorType.ArrayIsContainedIn.name]: this.ArrayIsContainedIn,
       [OperatorType.ArrayEqual.name]: this.ArrayEqualConverter,
       [OperatorType.Search.name]: this.SearchConverter,
       [OperatorType.DateToday.name]: this.DynamicDateConverter,
@@ -1046,6 +1047,13 @@ export default class Converter {
     const values = AArrayExpr(expression.arrayValue.map(v => this.ConstValue(expression.column, v)));
 
     return AExpr(0, '@>', columnRef(expression.column),
+                 values);
+  }
+
+  ArrayIsContainedIn = (expression) => {
+    const values = AArrayExpr(expression.arrayValue.map(v => this.ConstValue(expression.column, v)));
+
+    return AExpr(0, '<@', columnRef(expression.column),
                  values);
   }
 

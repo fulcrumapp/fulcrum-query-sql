@@ -291,6 +291,11 @@ export const OperatorType = {
     label: 'All of'
   },
 
+  ArrayIsContainedIn: {
+    name: 'array_is_contained_in',
+    label: 'Contained In'
+  },
+
   ArrayNoneOf: {
     name: 'array_none_of',
     label: 'None of'
@@ -439,6 +444,7 @@ const BOOLEAN_OPERATORS = [
 const ARRAY_OPERATORS = [
   OperatorType.ArrayAnyOf,
   OperatorType.ArrayAllOf,
+  OperatorType.ArrayIsContainedIn,
   OperatorType.ArrayEqual,
   OperatorType.Empty,
   OperatorType.NotEmpty
