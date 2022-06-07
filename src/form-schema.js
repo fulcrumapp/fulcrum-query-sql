@@ -35,7 +35,9 @@ const SYSTEM_COLUMNS = [
   '_updated_horizontal_accuracy',
   '_created_duration',
   '_updated_duration',
-  '_edited_duration'
+  '_edited_duration',
+  '_record_key',
+  '_record_sequence'
 ];
 
 export default class FormSchema extends FormFieldSchema {
