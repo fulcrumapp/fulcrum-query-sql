@@ -152,6 +152,7 @@ function (_FormFieldSchema) {
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
+      this.addSystemColumn('Record Key', 'recordKey', '_record_key', 'string');
     }
 
     this.setupElementColumns();
