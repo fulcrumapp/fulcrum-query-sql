@@ -35,9 +35,7 @@ const SYSTEM_COLUMNS = [
   '_updated_horizontal_accuracy',
   '_created_duration',
   '_updated_duration',
-  '_edited_duration',
-  '_record_key',
-  '_record_sequence'
+  '_edited_duration'
 ];
 
 export default class FormSchema extends FormFieldSchema {
@@ -75,6 +73,17 @@ export default class FormSchema extends FormFieldSchema {
     }
 
     this.setupColumns();
+  }
+
+  hasRecordKey() {
+    let hasColumn = false;
+    for (const column of this._rawColumns) {
+      if (column.name == '_record_key') {
+        hasColumn = true;
+              break;
+      }
+    }
+      return hasColumn;
   }
 
   setupColumns() {
@@ -154,6 +163,9 @@ export default class FormSchema extends FormFieldSchema {
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
+    }
+
+    if (this.hasRecordKey()) {
       this.addSystemColumn('Record Key', 'recordKey', '_record_key', 'string');
       this.addSystemColumn('Record Sequence', 'recordSequence', '_record_sequence', 'integer');
     }
