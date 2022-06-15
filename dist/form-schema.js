@@ -38,9 +38,6 @@ function (_FormFieldSchema) {
     _this._rawColumns = rawColumns;
     _this._rawColumnsByKey = {};
     _this._columnsByKey = {};
-    console.log('Form: ', _this.form);
-    console.log('Columns: ', _this._columns);
-    console.log('Raw columns: ', _this._rawColumns);
 
     for (var _iterator = rawColumns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
       var _ref2;
@@ -97,32 +94,6 @@ function (_FormFieldSchema) {
   }
 
   var _proto = FormSchema.prototype;
-
-  _proto.hasRecordKey = function hasRecordKey() {
-    var hasColumn = false;
-
-    for (var _iterator3 = this._rawColumns, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator]();;) {
-      var _ref4;
-
-      if (_isArray3) {
-        if (_i3 >= _iterator3.length) break;
-        _ref4 = _iterator3[_i3++];
-      } else {
-        _i3 = _iterator3.next();
-        if (_i3.done) break;
-        _ref4 = _i3.value;
-      }
-
-      var column = _ref4;
-
-      if (column.name == '_record_key') {
-        hasColumn = true;
-        break;
-      }
-    }
-
-    return hasColumn;
-  };
 
   _proto.setupColumns = function setupColumns() {
     if (this.fullSchema) {
@@ -181,14 +152,6 @@ function (_FormFieldSchema) {
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
-    }
-
-    console.log('Has record key: ', this.hasRecordKey(), "For ", this.form.name);
-
-    if (this.hasRecordKey()) {
-      console.log("Adding record keys for:", this.form.name);
-      this.addSystemColumn('Record Key', 'recordKey', '_record_key', 'string');
-      this.addSystemColumn('Record Sequence', 'recordSequence', '_record_sequence', 'integer');
     }
 
     this.setupElementColumns();
