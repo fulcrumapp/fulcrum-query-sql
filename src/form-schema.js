@@ -169,8 +169,9 @@ export default class FormSchema extends FormFieldSchema {
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
     }
 
-    console.log('Has record key: ', this.hasRecordKey());
+    console.log('Has record key: ', this.hasRecordKey(), "For ", this.form.name);
     if (this.hasRecordKey()) {
+      console.log("Adding record keys for:", this.form.name);
       this.addSystemColumn('Record Key', 'recordKey', '_record_key', 'string');
       this.addSystemColumn('Record Sequence', 'recordSequence', '_record_sequence', 'integer');
     }
