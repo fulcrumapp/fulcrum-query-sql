@@ -517,9 +517,7 @@ const SYSTEM_COLUMNS = {
   _updated_horizontal_accuracy: NUMERIC_OPERATORS,
   _created_duration: NUMERIC_OPERATORS,
   _updated_duration: NUMERIC_OPERATORS,
-  _edited_duration: NUMERIC_OPERATORS,
-  _record_key: TEXTUAL_OPERATORS,
-  _record_sequence: NUMERIC_OPERATORS
+  _edited_duration: NUMERIC_OPERATORS
 };
 
 export function isValueRequired(operator) {
