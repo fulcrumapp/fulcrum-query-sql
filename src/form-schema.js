@@ -51,6 +51,10 @@ export default class FormSchema extends FormFieldSchema {
     this._rawColumnsByKey = {};
     this._columnsByKey = {};
 
+    console.log('Form: ', this.form);
+    console.log('Columns: ', this._columns);
+    console.log('Raw columns: ', this._rawColumns);
+
     for (const column of rawColumns) {
       if (SYSTEM_COLUMNS.indexOf(column.name) !== -1) {
         this._rawColumnsByKey[column.name] = column;
@@ -163,6 +167,12 @@ export default class FormSchema extends FormFieldSchema {
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
+    }
+
+    console.log('Has record key: ', this.hasRecordKey());
+    if (this.hasRecordKey()) {
+      this.addSystemColumn('Record Key', 'recordKey', '_record_key', 'string');
+      this.addSystemColumn('Record Sequence', 'recordSequence', '_record_sequence', 'integer');
     }
 
     this.setupElementColumns();

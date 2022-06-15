@@ -38,6 +38,9 @@ function (_FormFieldSchema) {
     _this._rawColumns = rawColumns;
     _this._rawColumnsByKey = {};
     _this._columnsByKey = {};
+    console.log('Form: ', _this.form);
+    console.log('Columns: ', _this._columns);
+    console.log('Raw columns: ', _this._rawColumns);
 
     for (var _iterator = rawColumns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
       var _ref2;
@@ -178,6 +181,13 @@ function (_FormFieldSchema) {
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
+    }
+
+    console.log('Has record key: ', this.hasRecordKey());
+
+    if (this.hasRecordKey()) {
+      this.addSystemColumn('Record Key', 'recordKey', '_record_key', 'string');
+      this.addSystemColumn('Record Sequence', 'recordSequence', '_record_sequence', 'integer');
     }
 
     this.setupElementColumns();
