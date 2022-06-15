@@ -457,6 +457,8 @@ export default class Query {
       ResTarget(ColumnRef('_created_horizontal_accuracy'), 'created_horizontal_accuracy'),
       ResTarget(ColumnRef('_updated_latitude'), 'updated_latitude'),
       ResTarget(ColumnRef('_updated_longitude'), 'updated_longitude'),
+      ResTarget(ColumnRef('_record_key'), 'record_key'),
+      ResTarget(ColumnRef('_record_sequence'), 'record_sequence'),
       ...joinedColumns
     ];
   }
