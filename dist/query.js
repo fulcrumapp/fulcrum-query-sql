@@ -218,7 +218,7 @@ function () {
 
     var subJoinColumns = this.joinColumnsWithSorting;
 
-    for (var _iterator = this.schema.columns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+    for (var _iterator = this.schema._rawColumns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
       var _ref4;
 
       if (_isArray) {
@@ -232,7 +232,7 @@ function () {
 
       var column = _ref4;
 
-      if (column.columnName === '_record_key') {
+      if (column.name === '_record_key') {
         recordKeyColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_key'), 'record_key'));
         recordKeyColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_sequence'), 'record_sequence'));
         break;
