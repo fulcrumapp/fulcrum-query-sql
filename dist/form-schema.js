@@ -17,7 +17,7 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 
 function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
 
-var SYSTEM_COLUMNS = ['_record_id', '_project_id', '_assigned_to_id', '_status', '_latitude', '_longitude', '_created_at', '_updated_at', '_version', '_created_by_id', '_updated_by_id', '_server_created_at', '_server_updated_at', '_geometry', '_altitude', '_speed', '_course', '_horizontal_accuracy', '_vertical_accuracy', '_changeset_id', '_title', '_created_latitude', '_created_longitude', '_created_geometry', '_created_altitude', '_created_horizontal_accuracy', '_updated_latitude', '_updated_longitude', '_updated_geometry', '_updated_altitude', '_updated_horizontal_accuracy', '_created_duration', '_updated_duration', '_edited_duration', '_record_key', '_record_sequence'];
+var SYSTEM_COLUMNS = ['_record_id', '_project_id', '_assigned_to_id', '_status', '_latitude', '_longitude', '_created_at', '_updated_at', '_version', '_created_by_id', '_updated_by_id', '_server_created_at', '_server_updated_at', '_geometry', '_altitude', '_speed', '_course', '_horizontal_accuracy', '_vertical_accuracy', '_changeset_id', '_title', '_created_latitude', '_created_longitude', '_created_geometry', '_created_altitude', '_created_horizontal_accuracy', '_updated_latitude', '_updated_longitude', '_updated_geometry', '_updated_altitude', '_updated_horizontal_accuracy', '_created_duration', '_updated_duration', '_edited_duration'];
 
 var FormSchema =
 /*#__PURE__*/
@@ -152,8 +152,6 @@ function (_FormFieldSchema) {
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
-      this.addSystemColumn('Record Key', 'recordKey', '_record_key', 'string');
-      this.addSystemColumn('Record Sequence', 'recordSequence', '_record_sequence', 'integer');
     }
 
     this.setupElementColumns();
