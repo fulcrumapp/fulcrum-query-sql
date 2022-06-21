@@ -344,7 +344,7 @@ export default class Query {
     const subJoinColumns = this.joinColumnsWithSorting;
 
     for (const column of this.schema._rawColumns) {
-      if (column.name === '_record_key') {
+      if (column.name === '_record_key' || column.name === '_record_sequence') {
         recordKeyColumns.push(ResTarget(ColumnRef('_record_key'), 'record_key'));
         recordKeyColumns.push(ResTarget(ColumnRef('_record_sequence'), 'record_sequence'));
         break;

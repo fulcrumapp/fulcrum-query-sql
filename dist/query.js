@@ -232,7 +232,7 @@ function () {
 
       var column = _ref4;
 
-      if (column.name === '_record_key') {
+      if (column.name === '_record_key' || column.name === '_record_sequence') {
         recordKeyColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_key'), 'record_key'));
         recordKeyColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_sequence'), 'record_sequence'));
         break;
