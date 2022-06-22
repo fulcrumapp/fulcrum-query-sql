@@ -343,13 +343,13 @@ export default class Query {
     // We don't need to join them in the outer part.
     const subJoinColumns = this.joinColumnsWithSorting;
 
-    // for (const column of this.schema._rawColumns) {
-    //   if (column.name === '_record_key' || column.name === '_record_sequence') {
-    //     recordKeyColumns.push(ResTarget(ColumnRef('_record_key'), 'record_key'));
-    //     recordKeyColumns.push(ResTarget(ColumnRef('_record_sequence'), 'record_sequence'));
-    //     break;
-    //   }
-    // }
+    for (const column of this.schema._rawColumns) {
+      if (column.name === '_record_key' || column.name === '_record_sequence') {
+        recordKeyColumns.push(ResTarget(ColumnRef('_record_key'), 'record_key'));
+        recordKeyColumns.push(ResTarget(ColumnRef('_record_sequence'), 'record_sequence'));
+        break;
+      }
+    }
 
     if (this.schema.createdByColumn) {
       if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
@@ -468,8 +468,7 @@ export default class Query {
       ResTarget(ColumnRef('_updated_longitude'), 'updated_longitude'),
       ResTarget(ColumnRef('_updated_altitude'), 'updated_altitude'),
       ResTarget(ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
-      ResTarget(ColumnRef('_record_key'), 'record_key'),
-      ResTarget(ColumnRef('_record_sequence'), 'record_sequence'),
+      ...recordKeyColumns,
       ...joinedColumns
     ];
   }
