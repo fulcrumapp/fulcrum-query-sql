@@ -96,13 +96,9 @@ function (_FormFieldSchema) {
   var _proto = FormSchema.prototype;
 
   _proto.hasRecordKey = function hasRecordKey() {
-    var hasColumn = false;
     Object.values(this._rawColumns).some(function (item) {
-      if (item.name === '_record_key') {
-        hasColumn = true;
-      }
+      return item.name === '_record_key';
     });
-    return hasColumn;
   };
 
   _proto.setupColumns = function setupColumns() {
