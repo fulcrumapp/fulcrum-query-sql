@@ -75,6 +75,17 @@ export default class FormSchema extends FormFieldSchema {
     this.setupColumns();
   }
 
+  hasRecordKey() {
+    let hasColumn = false;
+    for (const column of this._rawColumns) {
+      if (column.name == 'record_key') {
+        hasColumn = true;
+        break;
+      }
+    }
+    return hasColumn;
+  }
+
   setupColumns() {
     if (this.fullSchema) {
       this.addSystemColumn('Record ID', 'id', '_record_id');
@@ -152,6 +163,9 @@ export default class FormSchema extends FormFieldSchema {
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
+    }
+
+    if (hasRecordKey()) {
       this.addSystemColumn('Record Key', 'recordKey', '_record_key', 'string');
       this.addSystemColumn('Record Sequence', 'recordSequence', '_record_sequence', 'integer');
     }
