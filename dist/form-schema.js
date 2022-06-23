@@ -95,6 +95,12 @@ function (_FormFieldSchema) {
 
   var _proto = FormSchema.prototype;
 
+  _proto.hasRecordKey = function hasRecordKey() {
+    return Object.values(this._rawColumns).some(function (item) {
+      return item.name === '_record_key';
+    });
+  };
+
   _proto.setupColumns = function setupColumns() {
     if (this.fullSchema) {
       this.addSystemColumn('Record ID', 'id', '_record_id');
@@ -152,6 +158,11 @@ function (_FormFieldSchema) {
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
+    }
+
+    if (this.hasRecordKey()) {
+      this.addSystemColumn('Record Key', 'recordKey', '_record_key', 'string');
+      this.addSystemColumn('Record Sequence', 'recordSequence', '_record_sequence', 'integer');
     }
 
     this.setupElementColumns();
