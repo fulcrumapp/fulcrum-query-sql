@@ -180,7 +180,7 @@ function (_FormFieldSchema) {
       this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
     }
 
-    if (hasRecordKey()) {
+    if (this.hasRecordKey()) {
       this.addSystemColumn('Record Key', 'recordKey', '_record_key', 'string');
       this.addSystemColumn('Record Sequence', 'recordSequence', '_record_sequence', 'integer');
     }
