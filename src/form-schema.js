@@ -76,14 +76,12 @@ export default class FormSchema extends FormFieldSchema {
   }
 
   hasRecordKey() {
-    let hasColumn = false;
-    for (const column of this._rawColumns) {
-      if (column.name == 'record_key') {
-        hasColumn = true;
-        break;
+    Object.values(this._rawColumns).some((item) => {
+      if (item === '_record_key') {
+          return true;
       }
-    }
-    return hasColumn;
+    });
+    return false;
   }
 
   setupColumns() {
