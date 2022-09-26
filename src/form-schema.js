@@ -35,7 +35,8 @@ const SYSTEM_COLUMNS = [
   '_updated_horizontal_accuracy',
   '_created_duration',
   '_updated_duration',
-  '_edited_duration'
+  '_edited_duration',
+  '_record_series_id'
 ];
 
 export default class FormSchema extends FormFieldSchema {
@@ -143,6 +144,16 @@ export default class FormSchema extends FormFieldSchema {
                                                  alias: 'updated_by',
                                                  sourceColumn: '_updated_by_id',
                                                  joinColumn: 'user_id'});
+
+    this.recordSeriesColumn = this.addSystemColumn('Record Series',
+                                                   'recordSeriesId',
+                                                   'record_series.record_series_id',
+                                                   'string',
+                                                   null,
+                                                   {tableName: 'record_series',
+                                                    alias: 'record_series',
+                                                    sourceColumn: '_record_series_id',
+                                                    joinColumn: 'record_series_id'});
 
     if (this.fullSchema) {
       this.addSystemColumn('Geometry', 'geometryAsGeoJSON', '_geometry', 'geometry');

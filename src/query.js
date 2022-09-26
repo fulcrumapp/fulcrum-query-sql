@@ -254,7 +254,6 @@ export default class Query {
   }
 
   toAST({applySort, pageSize, pageIndex, outerLimit}) {
-    debugger;
     const finalLimit = outerLimit ? AConst(IntegerValue(+outerLimit)) : null;
 
     const sortClause = applySort ? this.outerSortClause : null;
@@ -351,7 +350,7 @@ export default class Query {
         break;
       }
     }
-
+    
     if (this.schema.createdByColumn) {
       if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
         joinedColumns.push(ResTarget(ColumnRef('name', 'created_by'), 'created_by'));
@@ -385,6 +384,16 @@ export default class Query {
         joinedColumns.push(ResTarget(ColumnRef('name', alias), alias));
       } else {
         joinedColumns.push(ResTarget(ColumnRef(alias + '.name'), alias));
+      }
+    }
+
+    if (this.schema.recordSeriesColumn) {
+      const alias = this.schema.recordSeriesColumn.join.alias;
+
+      if (subJoinColumns.indexOf(this.schema.recordSeriesColumn) === -1) {
+        joinedColumns.push(ResTarget(ColumnRef('record_series_id', alias), alias));
+      } else {
+        joinedColumns.push(ResTarget(ColumnRef(`${alias}.record_series_id`), alias))
       }
     }
 
@@ -501,6 +510,10 @@ export default class Query {
 
     if (this.schema.projectColumn) {
       baseQuery = Converter.joinClause(baseQuery, this.schema.projectColumn.join);
+    }
+
+    if (this.schema.recordSeriesColumn) {
+      baseQuery = Converter.joinClause(baseQuery, this.schema.recordSeriesColumn.join);
     }
 
     return [ baseQuery ];

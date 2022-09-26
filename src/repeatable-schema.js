@@ -140,6 +140,16 @@ export default class RepeatableSchema extends FormFieldSchema {
                                                  sourceColumn: '_updated_by_id',
                                                  joinColumn: 'user_id'});
 
+    this.recordSeriesColumn = this.addSystemColumn('Record Series',
+                                                   'recordSeriesId',
+                                                   'record_series.record_series_id',
+                                                   'string',
+                                                   null,
+                                                   {tableName: 'record_series',
+                                                    alias: 'record_series',
+                                                    sourceColumn: '_record_series_id',
+                                                    joinColumn: 'record_series_id'});
+
     if (this.fullSchema) {
       this.addSystemColumn('Item Index', 'index', '_index', 'integer');
       this.addSystemColumn('Geometry', 'geometryAsGeoJSON', '_geometry', 'geometry');
