@@ -351,6 +351,7 @@ export default class Query {
       }
     }
 
+    console.log('schema: ', this.schema);
     if (this.schema.createdByColumn) {
       if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
         joinedColumns.push(ResTarget(ColumnRef('name', 'created_by'), 'created_by'));
