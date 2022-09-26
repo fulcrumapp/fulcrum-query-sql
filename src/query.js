@@ -254,6 +254,7 @@ export default class Query {
   }
 
   toAST({applySort, pageSize, pageIndex, outerLimit}) {
+    debugger;
     const finalLimit = outerLimit ? AConst(IntegerValue(+outerLimit)) : null;
 
     const sortClause = applySort ? this.outerSortClause : null;
