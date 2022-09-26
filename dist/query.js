@@ -239,6 +239,8 @@ function () {
       }
     }
 
+    console.log('schema: ', this.schema);
+
     if (this.schema.createdByColumn) {
       if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
         joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', 'created_by'), 'created_by'));
