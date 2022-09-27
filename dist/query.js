@@ -218,7 +218,7 @@ function () {
 
     var subJoinColumns = this.joinColumnsWithSorting;
 
-    for (var _iterator = this.schema._rawColumns, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+    for (var _iterator = this.schema._rawColumns.entries(), _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
       var _ref4;
 
       if (_isArray) {
@@ -249,7 +249,9 @@ function () {
       if (i >= 2) break;
     }
 
+    console.log('schema: ', this.schema);
     console.log('raw Columns: ', this.schema._rawColumns);
+    console.log('subJoin Columns: ', subJoinColumns);
 
     if (this.schema.createdByColumn) {
       if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
