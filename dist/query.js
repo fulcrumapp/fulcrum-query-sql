@@ -231,10 +231,21 @@ function () {
       }
 
       var column = _ref4;
+      var values = [];
 
       if (column.name === '_record_key') {
+        values.push('record_key');
         recordKeyColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_key'), 'record_key'));
         recordKeyColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_sequence'), 'record_sequence'));
+      }
+
+      if (column.name === '_record_series_id') {
+        values.push('record_series_id');
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_series_id'), 'record_series'));
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('record_series.rrule'), 'rrule'));
+      }
+
+      if (values.length === 2) {
         break;
       }
     }

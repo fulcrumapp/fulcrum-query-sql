@@ -344,9 +344,18 @@ export default class Query {
     const subJoinColumns = this.joinColumnsWithSorting;
 
     for (const column of this.schema._rawColumns) {
+      const values = [];
       if (column.name === '_record_key') {
+        values.push('record_key');
         recordKeyColumns.push(ResTarget(ColumnRef('_record_key'), 'record_key'));
         recordKeyColumns.push(ResTarget(ColumnRef('_record_sequence'), 'record_sequence'));
+      }
+      if (column.name === '_record_series_id') {
+        values.push('record_series_id');
+        joinedColumns.push(ResTarget(ColumnRef('_record_series_id'), 'record_series'));
+        joinedColumns.push(ResTarget(ColumnRef('record_series.rrule'), 'rrule'));
+      }
+      if (values.length === 2) {
         break;
       }
     }
