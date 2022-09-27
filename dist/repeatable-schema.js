@@ -123,9 +123,9 @@ function (_FormFieldSchema) {
       sourceColumn: '_updated_by_id',
       joinColumn: 'user_id'
     });
-    this.recordSeriesColumn = this.addSystemColumn('Record Series RRule', 'recordSeriesRrule', 'record_series.rrule', 'string', null, {
+    this.recordSeriesColumn = this.addSystemColumn('Record Series', 'recordSeriesId', 'record_series.record_series_id', 'string', null, {
       tableName: 'record_series',
-      alias: 'record_series_rrule',
+      alias: 'record_series',
       sourceColumn: '_record_series_id',
       joinColumn: 'record_series_id'
     });
