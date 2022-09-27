@@ -230,27 +230,26 @@ function () {
         _ref4 = _i.value;
       }
 
-      var column = _ref4;
-      var values = [];
+      var _ref5 = _ref4,
+          i = _ref5[0],
+          column = _ref5[1];
 
       if (column.name === '_record_key') {
-        values.push('record_key');
+        i++;
         recordKeyColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_key'), 'record_key'));
         recordKeyColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_sequence'), 'record_sequence'));
       }
 
       if (column.name === '_record_series_id') {
-        values.push('record_series_id');
+        i++;
         joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_series_id'), 'record_series'));
-        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('record_series.rrule'), 'rrule'));
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('record_series'), 'rrule'));
       }
 
-      if (values.length === 2) {
-        break;
-      }
+      if (i >= 2) break;
     }
 
-    debugger;
+    console.log('raw Columns: ', this.schema._rawColumns);
 
     if (this.schema.createdByColumn) {
       if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
@@ -295,12 +294,12 @@ function () {
     return [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_status'), 'status'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_version'), 'version'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_server_created_at')), timeZoneFormat]), 'created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_server_updated_at')), timeZoneFormat]), 'updated_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_created_at')), timeZoneFormat]), 'client_created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)('to_char', [timeZoneCast((0, _helpers.ColumnRef)('_updated_at')), timeZoneFormat]), 'client_updated_at'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_by_id'), 'created_by_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_by_id'), 'updated_by_id'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(this.form.id))), 'form_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_project_id'), 'project_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_assigned_to_id'), 'assigned_to_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_form_values'), 'form_values'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_latitude'), 'latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_longitude'), 'longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_altitude'), 'altitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_speed'), 'speed'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_course'), 'course'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_horizontal_accuracy'), 'horizontal_accuracy'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_vertical_accuracy'), 'vertical_accuracy'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_edited_duration'), 'edited_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_duration'), 'updated_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_duration'), 'created_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_changeset_id'), 'changeset_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_latitude'), 'created_latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_longitude'), 'created_longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_altitude'), 'created_altitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_horizontal_accuracy'), 'created_horizontal_accuracy'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_latitude'), 'updated_latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_longitude'), 'updated_longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_altitude'), 'updated_altitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy')].concat(recordKeyColumns, joinedColumns);
   };
 
-  _proto.fromClause = function fromClause(_ref5) {
-    var applySort = _ref5.applySort,
-        pageSize = _ref5.pageSize,
-        pageIndex = _ref5.pageIndex,
-        boundingBox = _ref5.boundingBox,
-        searchFilter = _ref5.searchFilter;
+  _proto.fromClause = function fromClause(_ref6) {
+    var applySort = _ref6.applySort,
+        pageSize = _ref6.pageSize,
+        pageIndex = _ref6.pageIndex,
+        boundingBox = _ref6.boundingBox,
+        searchFilter = _ref6.searchFilter;
     var ast = applySort ? this.toRawAST({
       sort: this.sortClause,
       pageSize: pageSize,
@@ -360,18 +359,18 @@ function () {
       return o.toHumanDescription();
     })) {
       for (var _iterator2 = description, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
-        var _ref6;
+        var _ref7;
 
         if (_isArray2) {
           if (_i2 >= _iterator2.length) break;
-          _ref6 = _iterator2[_i2++];
+          _ref7 = _iterator2[_i2++];
         } else {
           _i2 = _iterator2.next();
           if (_i2.done) break;
-          _ref6 = _i2.value;
+          _ref7 = _i2.value;
         }
 
-        var desc = _ref6;
+        var desc = _ref7;
 
         if (desc) {
           parts.push(desc);
@@ -517,6 +516,7 @@ function () {
       }).map(function (o) {
         return o.column;
       }));
+      console.log('joins: ', joins);
       return joins;
     }
   }, {

@@ -130,7 +130,8 @@ export default class Query {
     joins.push.apply(joins, this.filter.allExpressions.filter((o) => {
       return o.isValid && o.column.join;
     }).map(o => o.column));
-
+    
+    console.log('joins: ', joins);
     return joins;
   }
 
@@ -343,24 +344,24 @@ export default class Query {
     // We don't need to join them in the outer part.
     const subJoinColumns = this.joinColumnsWithSorting;
 
-    for (const column of this.schema._rawColumns) {
-      const values = [];
+    for (const [i, column] of this.schema._rawColumns) {
       if (column.name === '_record_key') {
-        values.push('record_key');
+        i++;
         recordKeyColumns.push(ResTarget(ColumnRef('_record_key'), 'record_key'));
         recordKeyColumns.push(ResTarget(ColumnRef('_record_sequence'), 'record_sequence'));
       }
       if (column.name === '_record_series_id') {
-        values.push('record_series_id');
+        i++;
         joinedColumns.push(ResTarget(ColumnRef('_record_series_id'), 'record_series'));
-        joinedColumns.push(ResTarget(ColumnRef('record_series.rrule'), 'rrule'));
+        joinedColumns.push(ResTarget(ColumnRef('record_series'), 'rrule'));
       }
-      if (values.length === 2) {
-        break;
-      }
+      
+      if (i >= 2) break;
     }
 
-    debugger;
+    console.log('schema: ', this.schema);
+    console.log('raw Columns: ', this.schema._rawColumns);
+    console.log('subJoin Columns: ', subJoinColumns);
     if (this.schema.createdByColumn) {
       if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
         joinedColumns.push(ResTarget(ColumnRef('name', 'created_by'), 'created_by'));
