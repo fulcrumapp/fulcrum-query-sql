@@ -344,19 +344,12 @@ export default class Query {
     // We don't need to join them in the outer part.
     const subJoinColumns = this.joinColumnsWithSorting;
 
-    for (const [i, column] of this.schema._rawColumns.entries()) {
+    for (const column of this.schema._rawColumns) {
       if (column.name === '_record_key') {
-        i++;
         recordKeyColumns.push(ResTarget(ColumnRef('_record_key'), 'record_key'));
         recordKeyColumns.push(ResTarget(ColumnRef('_record_sequence'), 'record_sequence'));
+        break;
       }
-      if (column.name === '_record_series_id') {
-        i++;
-        joinedColumns.push(ResTarget(ColumnRef('_record_series_id'), 'record_series'));
-        joinedColumns.push(ResTarget(ColumnRef('record_series'), 'rrule'));
-      }
-      
-      if (i >= 2) break;
     }
 
     console.log('schema: ', this.schema);
@@ -395,6 +388,15 @@ export default class Query {
         joinedColumns.push(ResTarget(ColumnRef('name', alias), alias));
       } else {
         joinedColumns.push(ResTarget(ColumnRef(alias + '.name'), alias));
+      }
+    }
+    if (this.schema.recordSeriesColumn) {
+      const alias = this.schema.recordSeriesColumn.join.alias;
+
+      if (subJoinColumns.indexOf(this.schema.recordSeriesColumn) === -1) {
+        joinedColumns.push(ResTarget(ColumnRef('rrule', alias), alias));
+      } else {
+        joinedColumns.push(ResTarget(ColumnRef(alias + '.rrule'), alias));
       }
     }
 
