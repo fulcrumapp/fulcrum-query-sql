@@ -102,7 +102,10 @@ function () {
   };
 
   _proto.toRawAST = function toRawAST(options) {
-    return new _converter["default"]().toAST(this, options);
+    console.log('options: ', options);
+    var ast = new _converter["default"]().toAST(this, options);
+    console.log('ast: ', ast);
+    return ast;
   };
 
   _proto.toCountAST = function toCountAST(options) {
@@ -133,12 +136,14 @@ function () {
       pageSize: pageSize,
       pageIndex: pageIndex
     }, this.runtimeFilters));
-    return (0, _helpers.SelectStmt)({
+    var statement = (0, _helpers.SelectStmt)({
       targetList: this.targetList(),
       fromClause: fromClause,
       sortClause: sortClause,
       limitCount: finalLimit
     });
+    console.log('to AST statement: ', statement);
+    return statement;
   };
 
   _proto.deparse = function deparse(ast) {
@@ -238,10 +243,6 @@ function () {
         break;
       }
     }
-
-    console.log('schema: ', this.schema);
-    console.log('raw Columns: ', this.schema._rawColumns);
-    console.log('subJoin Columns: ', subJoinColumns);
 
     if (this.schema.createdByColumn) {
       if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {

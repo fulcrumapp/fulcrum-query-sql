@@ -235,7 +235,10 @@ export default class Query {
   }
 
   toRawAST(options) {
-    return new Converter().toAST(this, options);
+    console.log('options: ', options);
+    const ast = new Converter().toAST(this, options);
+    console.log('ast: ', ast);
+    return ast;
   }
 
   toCountAST(options) {
@@ -261,12 +264,16 @@ export default class Query {
 
     const fromClause = this.fromClause({applySort, pageSize, pageIndex, ...this.runtimeFilters});
 
-    return SelectStmt({
+    const statement = SelectStmt({
       targetList: this.targetList(),
       fromClause: fromClause,
       sortClause: sortClause,
-      limitCount: finalLimit
+      limitCount: finalLimit,
     });
+
+    console.log('to AST statement: ', statement)
+
+    return statement
   }
 
   deparse(ast) {
@@ -352,9 +359,6 @@ export default class Query {
       }
     }
 
-    console.log('schema: ', this.schema);
-    console.log('raw Columns: ', this.schema._rawColumns);
-    console.log('subJoin Columns: ', subJoinColumns);
     if (this.schema.createdByColumn) {
       if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
         joinedColumns.push(ResTarget(ColumnRef('name', 'created_by'), 'created_by'));
