@@ -80,6 +80,10 @@ export default class FormSchema extends FormFieldSchema {
     return Object.values(this._rawColumns).some((item) => item.name === '_record_key');
   }
 
+  get hasRecordSeriesID() {
+    return Object.values(this._rawColumns).some((item) => item.name === '_record_series_id');
+  }
+
   setupColumns() {
     if (this.fullSchema) {
       this.addSystemColumn('Record ID', 'id', '_record_id');
@@ -145,7 +149,7 @@ export default class FormSchema extends FormFieldSchema {
                                                  sourceColumn: '_updated_by_id',
                                                  joinColumn: 'user_id'});
 
-    if (Object.keys(this._rawColumnsByKey).includes('_record_series_id')) {
+    if (this.hasRecordSeriesID) {
       this.recordSeriesColumn = this.addSystemColumn('Record Series',
                                                   'recordSeries',
                                                   'record_series.rrule',

@@ -148,7 +148,7 @@ function (_FormFieldSchema) {
       joinColumn: 'user_id'
     });
 
-    if (Object.keys(this._rawColumnsByKey).includes('_record_series_id')) {
+    if (this.hasRecordSeriesID) {
       this.recordSeriesColumn = this.addSystemColumn('Record Series', 'recordSeries', 'record_series.rrule', 'string', null, {
         tableName: 'record_series',
         alias: 'rrule',
@@ -180,6 +180,13 @@ function (_FormFieldSchema) {
   };
 
   _createClass(FormSchema, [{
+    key: "hasRecordSeriesID",
+    get: function get() {
+      return Object.values(this._rawColumns).some(function (item) {
+        return item.name === '_record_series_id';
+      });
+    }
+  }, {
     key: "tableName",
     get: function get() {
       return this.form.name.toLowerCase().replace(/ /g, '_');

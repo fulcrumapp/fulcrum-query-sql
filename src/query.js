@@ -131,7 +131,6 @@ export default class Query {
       return o.isValid && o.column.join;
     }).map(o => o.column));
     
-    console.log('joins: ', joins);
     return joins;
   }
 
@@ -235,9 +234,7 @@ export default class Query {
   }
 
   toRawAST(options) {
-    console.log('options: ', options);
     const ast = new Converter().toAST(this, options);
-    console.log('ast: ', ast);
     return ast;
   }
 
@@ -270,8 +267,6 @@ export default class Query {
       sortClause: sortClause,
       limitCount: finalLimit,
     });
-
-    console.log('to AST statement: ', statement)
 
     return statement
   }
@@ -444,6 +439,7 @@ export default class Query {
         ResTarget(ColumnRef('_updated_longitude'), 'updated_longitude'),
         ResTarget(ColumnRef('_updated_altitude'), 'updated_altitude'),
         ResTarget(ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
+        ...(this.schema.hasRecordSeriesID && ResTarget(ColumnRef('_record_series_id'), 'record_series_id')),
         ...joinedColumns
       ];
     }
@@ -485,7 +481,7 @@ export default class Query {
       ResTarget(ColumnRef('_updated_longitude'), 'updated_longitude'),
       ResTarget(ColumnRef('_updated_altitude'), 'updated_altitude'),
       ResTarget(ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
-      ResTarget(ColumnRef('_record_series_id'), 'record_series_id'),
+      ...(this.schema.hasRecordSeriesID && ResTarget(ColumnRef('_record_series_id'), 'record_series_id')),
       ...recordKeyColumns,
       ...joinedColumns
     ];
