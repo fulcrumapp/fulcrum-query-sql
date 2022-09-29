@@ -21,3 +21,16 @@ make
 - `npm publish`
 - Move fulcrum.npmrc back to .npmrc and `npm login` (Username: fulcrumapp, Password: 1password, Email: support@fulcrumapp.com)
 - `npm publish`
+
+### Debugging
+
+- Create a branch
+- Add logs or a `debugger` in fulcrum-query-sql where applicable
+- Build the package, commit and push the changes
+- In your other repo (most likely `fulcrum-components`)
+  -  In `package.json`, point your `fulcrum-query-sql` npm package to that branch in this format
+  - `fulcrum-query-sql: github:fulcrumapp/fulcrum-query-sql#BRANCH-NAME` 
+- Delete the existing `yarn.lock` file
+- Rebuild the lock file by running `./yarn`
+- Re-skaffold and the changes will now be visible for debugging
+
