@@ -102,8 +102,7 @@ function () {
   };
 
   _proto.toRawAST = function toRawAST(options) {
-    var ast = new _converter["default"]().toAST(this, options);
-    return ast;
+    return new _converter["default"]().toAST(this, options);
   };
 
   _proto.toCountAST = function toCountAST(options) {
@@ -134,13 +133,12 @@ function () {
       pageSize: pageSize,
       pageIndex: pageIndex
     }, this.runtimeFilters));
-    var statement = (0, _helpers.SelectStmt)({
+    return (0, _helpers.SelectStmt)({
       targetList: this.targetList(),
       fromClause: fromClause,
       sortClause: sortClause,
       limitCount: finalLimit
     });
-    return statement;
   };
 
   _proto.deparse = function deparse(ast) {

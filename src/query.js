@@ -234,8 +234,7 @@ export default class Query {
   }
 
   toRawAST(options) {
-    const ast = new Converter().toAST(this, options);
-    return ast;
+    return new Converter().toAST(this, options);
   }
 
   toCountAST(options) {
@@ -261,14 +260,12 @@ export default class Query {
 
     const fromClause = this.fromClause({applySort, pageSize, pageIndex, ...this.runtimeFilters});
 
-    const statement = SelectStmt({
+    return SelectStmt({
       targetList: this.targetList(),
       fromClause: fromClause,
       sortClause: sortClause,
       limitCount: finalLimit,
     });
-
-    return statement
   }
 
   deparse(ast) {
