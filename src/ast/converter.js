@@ -43,10 +43,8 @@ export default class Converter {
     const targetList = this.targetList(query, sort, boundingBox);
 
     const joins = query.joinColumnsWithSorting.map(o => o.join);
-    console.log('converter joins: ', joins);
     
     const fromClause = this.fromClause(query, joins);
-    console.log('from clause: ', fromClause);
 
     const whereClause = this.whereClause(query, boundingBox, searchFilter);
 

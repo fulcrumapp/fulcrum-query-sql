@@ -376,9 +376,7 @@ function () {
     var joins = query.joinColumnsWithSorting.map(function (o) {
       return o.join;
     });
-    console.log('converter joins: ', joins);
     var fromClause = this.fromClause(query, joins);
-    console.log('from clause: ', fromClause);
     var whereClause = this.whereClause(query, boundingBox, searchFilter);
     var sortClause = sort;
     var limitOffset = this.limitOffset(pageSize, pageIndex);
