@@ -81,7 +81,7 @@ export default class FormSchema extends FormFieldSchema {
   }
 
   get hasRecordSeriesID() {
-    return Object.values(this._rawColumns).some((item) => item.name === '_record_series_id');
+    return Object.keys(this._rawColumnsByKey).includes('_record_series_id');
   }
 
   setupColumns() {

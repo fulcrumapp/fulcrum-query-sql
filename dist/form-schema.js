@@ -182,9 +182,7 @@ function (_FormFieldSchema) {
   _createClass(FormSchema, [{
     key: "hasRecordSeriesID",
     get: function get() {
-      return Object.values(this._rawColumns).some(function (item) {
-        return item.name === '_record_series_id';
-      });
+      return Object.keys(this._rawColumnsByKey).includes('_record_series_id');
     }
   }, {
     key: "tableName",
