@@ -337,6 +337,10 @@ function () {
       baseQuery = _converter["default"].joinClause(baseQuery, this.schema.projectColumn.join);
     }
 
+    if (this.schema.recordSeriesColumn) {
+      baseQuery = _converter["default"].joinClause(baseQuery, this.schema.recordSeriesColumn.join);
+    }
+
     return [baseQuery];
   };
 

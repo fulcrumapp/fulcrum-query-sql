@@ -717,6 +717,10 @@ function () {
       list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('name', query.schema.projectColumn.join.alias), query.schema.projectColumn.id));
     }
 
+    if (subJoinColumns.indexOf(query.schema.recordSeriesColumn) !== -1) {
+      list.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('rrule', query.schema.recordSeriesColumn.join.alias), query.schema.recordSeriesColumn.id));
+    }
+
     list.push((0, _helpers.ResTarget)((0, _helpers.FuncCall)('row_number', null, {
       over: (0, _helpers.WindowDef)(sort, 530)
     }), '__row_number'));

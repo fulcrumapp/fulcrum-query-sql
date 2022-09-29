@@ -32,7 +32,8 @@ const SYSTEM_COLUMNS = [
   '_updated_horizontal_accuracy',
   '_created_duration',
   '_updated_duration',
-  '_edited_duration'
+  '_edited_duration',
+  '_record_series_id'
 ];
 
 export default class RepeatableSchema extends FormFieldSchema {
@@ -139,6 +140,18 @@ export default class RepeatableSchema extends FormFieldSchema {
                                                  alias: 'updated_by',
                                                  sourceColumn: '_updated_by_id',
                                                  joinColumn: 'user_id'});
+
+    if (Object.keys(this._rawColumnsByKey).includes('_record_series_id')) {
+      this.recordSeriesColumn = this.addSystemColumn('Record Series',
+                                                    'recordSeries',
+                                                    'record_series.rrule',
+                                                    'string',
+                                                    null,
+                                                    {tableName: 'record_series',
+                                                      alias: 'record_series',
+                                                      sourceColumn: '_record_series_id',
+                                                      joinColumn: 'record_series_id'});
+    };
 
     if (this.fullSchema) {
       this.addSystemColumn('Item Index', 'index', '_index', 'integer');

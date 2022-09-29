@@ -408,6 +408,10 @@ export default class Converter {
       list.push(ResTarget(ColumnRef('name', query.schema.projectColumn.join.alias), query.schema.projectColumn.id));
     }
 
+    if (subJoinColumns.indexOf(query.schema.recordSeriesColumn) !== -1) {
+      list.push(ResTarget(ColumnRef('rrule', query.schema.recordSeriesColumn.join.alias), query.schema.recordSeriesColumn.id));
+    }
+
     list.push(ResTarget(FuncCall('row_number', null, {over: WindowDef(sort, 530)}), '__row_number'));
 
     return list;
