@@ -393,9 +393,9 @@ export default class Query {
       const alias = this.schema.recordSeriesColumn.join.alias;
 
       if (subJoinColumns.indexOf(this.schema.recordSeriesColumn) === -1) {
-        joinedColumns.push(ResTarget(ColumnRef('rrule', alias), alias));
+        joinedColumns.push(ResTarget(ColumnRef('rrule', alias), 'rrule'));
       } else {
-        joinedColumns.push(ResTarget(ColumnRef(alias + '.rrule'), alias));
+        joinedColumns.push(ResTarget(ColumnRef(alias + '.rrule'), 'rrule'));
       }
     }
 

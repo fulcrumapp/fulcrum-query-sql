@@ -151,7 +151,7 @@ function (_FormFieldSchema) {
     if (this.hasRecordSeriesID) {
       this.recordSeriesColumn = this.addSystemColumn('Record Series', 'recordSeries', 'record_series.rrule', 'string', null, {
         tableName: 'record_series',
-        alias: 'rrule',
+        alias: 'record_series',
         sourceColumn: '_record_series_id',
         joinColumn: 'record_series_id'
       });

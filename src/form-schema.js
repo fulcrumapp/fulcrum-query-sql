@@ -156,7 +156,7 @@ export default class FormSchema extends FormFieldSchema {
                                                   'string',
                                                   null,
                                                   {tableName: 'record_series',
-                                                   alias: 'rrule',
+                                                   alias: 'record_series',
                                                    sourceColumn: '_record_series_id',
                                                    joinColumn: 'record_series_id'});
     };

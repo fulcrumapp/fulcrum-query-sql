@@ -7,11 +7,6 @@ This is shared code for the Fulcrum Query API and the Fulcrum Editor application
 ```sh
 make
 ```
-or
-```sh
-npm run build
-```
-
 
 ### Publishing
 

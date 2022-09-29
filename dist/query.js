@@ -281,9 +281,9 @@ function () {
       var _alias2 = this.schema.recordSeriesColumn.join.alias;
 
       if (subJoinColumns.indexOf(this.schema.recordSeriesColumn) === -1) {
-        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('rrule', _alias2), _alias2));
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('rrule', _alias2), 'rrule'));
       } else {
-        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)(_alias2 + '.rrule'), _alias2));
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)(_alias2 + '.rrule'), 'rrule'));
       }
     }
 
