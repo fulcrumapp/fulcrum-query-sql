@@ -182,6 +182,7 @@ function (_FormFieldSchema) {
   _createClass(FormSchema, [{
     key: "hasRecordSeriesID",
     get: function get() {
+      // TODO: Remove once all forms have been upgraded to v4
       return Object.keys(this._rawColumnsByKey).includes('_record_series_id');
     }
   }, {
