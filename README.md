@@ -19,8 +19,7 @@ make
 - Create vx.x.x release for tag in github
 - Move .npmrc off to fulcrum.npmrc and `npm login` (Username: fulcrumapp, Password: 1password, Email: support@fulcrumapp.com)
 - `npm publish`
-- Move fulcrum.npmrc back to .npmrc and `npm login` (Username: fulcrumapp, Password: 1password, Email: support@fulcrumapp.com)
-- `npm publish`
+- Move fulcrum.npmrc back to .npmrc to reset back to your own configurations
 
 ### Debugging
 
