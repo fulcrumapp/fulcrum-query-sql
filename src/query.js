@@ -395,6 +395,9 @@ export default class Query {
         joinedColumns.push(ResTarget(ColumnRef(alias + '.rrule'), 'rrule'));
       }
     }
+    if (this.schema.hasRecordSeriesID) {
+      joinedColumns.push(ResTarget(ColumnRef('_record_series_id'), 'record_series_id'));
+    }
 
     if (this.repeatableKey) {
       return [
@@ -436,7 +439,6 @@ export default class Query {
         ResTarget(ColumnRef('_updated_longitude'), 'updated_longitude'),
         ResTarget(ColumnRef('_updated_altitude'), 'updated_altitude'),
         ResTarget(ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
-        ...(!this.schema.hasRecordSeriesID ? [] : [ResTarget(ColumnRef('_record_series_id'), 'record_series_id')]),
         ...joinedColumns
       ];
     }
@@ -478,7 +480,6 @@ export default class Query {
       ResTarget(ColumnRef('_updated_longitude'), 'updated_longitude'),
       ResTarget(ColumnRef('_updated_altitude'), 'updated_altitude'),
       ResTarget(ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
-      ...(!this.schema.hasRecordSeriesID ? [] : [ResTarget(ColumnRef('_record_series_id'), 'record_series_id')]),
       ...recordKeyColumns,
       ...joinedColumns
     ];
