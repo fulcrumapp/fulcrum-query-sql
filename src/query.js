@@ -130,7 +130,7 @@ export default class Query {
     joins.push.apply(joins, this.filter.allExpressions.filter((o) => {
       return o.isValid && o.column.join;
     }).map(o => o.column));
-
+    
     return joins;
   }
 
@@ -264,7 +264,7 @@ export default class Query {
       targetList: this.targetList(),
       fromClause: fromClause,
       sortClause: sortClause,
-      limitCount: finalLimit
+      limitCount: finalLimit,
     });
   }
 
@@ -386,6 +386,18 @@ export default class Query {
         joinedColumns.push(ResTarget(ColumnRef(alias + '.name'), alias));
       }
     }
+    if (this.schema.recordSeriesColumn) {
+      const alias = this.schema.recordSeriesColumn.join.alias;
+
+      if (subJoinColumns.indexOf(this.schema.recordSeriesColumn) === -1) {
+        joinedColumns.push(ResTarget(ColumnRef('rrule', alias), 'rrule'));
+      } else {
+        joinedColumns.push(ResTarget(ColumnRef(alias + '.rrule'), 'rrule'));
+      }
+    }
+    if (this.schema.hasRecordSeriesID) {
+      joinedColumns.push(ResTarget(ColumnRef('_record_series_id'), 'record_series_id'));
+    }
 
     if (this.repeatableKey) {
       return [
@@ -500,6 +512,10 @@ export default class Query {
 
     if (this.schema.projectColumn) {
       baseQuery = Converter.joinClause(baseQuery, this.schema.projectColumn.join);
+    }
+
+    if (this.schema.recordSeriesColumn) {
+      baseQuery = Converter.joinClause(baseQuery, this.schema.recordSeriesColumn.join);
     }
 
     return [ baseQuery ];

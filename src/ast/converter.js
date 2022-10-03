@@ -43,7 +43,7 @@ export default class Converter {
     const targetList = this.targetList(query, sort, boundingBox);
 
     const joins = query.joinColumnsWithSorting.map(o => o.join);
-
+    
     const fromClause = this.fromClause(query, joins);
 
     const whereClause = this.whereClause(query, boundingBox, searchFilter);
@@ -404,6 +404,10 @@ export default class Converter {
 
     if (subJoinColumns.indexOf(query.schema.projectColumn) !== -1) {
       list.push(ResTarget(ColumnRef('name', query.schema.projectColumn.join.alias), query.schema.projectColumn.id));
+    }
+
+    if (subJoinColumns.indexOf(query.schema.recordSeriesColumn) !== -1) {
+      list.push(ResTarget(ColumnRef('rrule', query.schema.recordSeriesColumn.join.alias), query.schema.recordSeriesColumn.id));
     }
 
     list.push(ResTarget(FuncCall('row_number', null, {over: WindowDef(sort, 530)}), '__row_number'));

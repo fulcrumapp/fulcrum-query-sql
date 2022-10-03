@@ -275,6 +275,20 @@ function () {
       }
     }
 
+    if (this.schema.recordSeriesColumn) {
+      var _alias2 = this.schema.recordSeriesColumn.join.alias;
+
+      if (subJoinColumns.indexOf(this.schema.recordSeriesColumn) === -1) {
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('rrule', _alias2), 'rrule'));
+      } else {
+        joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)(_alias2 + '.rrule'), 'rrule'));
+      }
+    }
+
+    if (this.schema.hasRecordSeriesID) {
+      joinedColumns.push((0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_series_id'), 'record_series_id'));
+    }
+
     if (this.repeatableKey) {
       return [(0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_status'), 'record_status'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_version'), 'version'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_child_record_id'), 'id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_id'), 'record_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_parent_id'), 'parent_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_index'), 'index'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('date_part')], [(0, _helpers.AConst)((0, _helpers.StringValue)('epoch')), timeZoneCast((0, _helpers.ColumnRef)('_server_created_at'))]), 'created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('date_part')], [(0, _helpers.AConst)((0, _helpers.StringValue)('epoch')), timeZoneCast((0, _helpers.ColumnRef)('_server_updated_at'))]), 'updated_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('date_part')], [(0, _helpers.AConst)((0, _helpers.StringValue)('epoch')), timeZoneCast((0, _helpers.ColumnRef)('_created_at'))]), 'client_created_at'), (0, _helpers.ResTarget)((0, _helpers.FuncCall)([(0, _helpers.StringValue)('pg_catalog'), (0, _helpers.StringValue)('date_part')], [(0, _helpers.AConst)((0, _helpers.StringValue)('epoch')), timeZoneCast((0, _helpers.ColumnRef)('_updated_at'))]), 'client_updated_at'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_by_id'), 'created_by_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_by_id'), 'updated_by_id'), (0, _helpers.ResTarget)((0, _helpers.TypeCast)((0, _helpers.TypeName)('text'), (0, _helpers.AConst)((0, _helpers.StringValue)(this.form.id))), 'form_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_project_id'), 'record_project_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_record_assigned_to_id'), 'record_assigned_to_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_form_values'), 'form_values'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_latitude'), 'latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_longitude'), 'longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_edited_duration'), 'edited_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_duration'), 'updated_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_duration'), 'created_duration'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_changeset_id'), 'changeset_id'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_latitude'), 'created_latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_longitude'), 'created_longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_altitude'), 'created_altitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_created_horizontal_accuracy'), 'created_horizontal_accuracy'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_latitude'), 'updated_latitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_longitude'), 'updated_longitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_altitude'), 'updated_altitude'), (0, _helpers.ResTarget)((0, _helpers.ColumnRef)('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy')].concat(joinedColumns);
     }
@@ -320,6 +334,10 @@ function () {
 
     if (this.schema.projectColumn) {
       baseQuery = _converter["default"].joinClause(baseQuery, this.schema.projectColumn.join);
+    }
+
+    if (this.schema.recordSeriesColumn) {
+      baseQuery = _converter["default"].joinClause(baseQuery, this.schema.recordSeriesColumn.join);
     }
 
     return [baseQuery];
