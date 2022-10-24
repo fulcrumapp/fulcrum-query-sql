@@ -54,9 +54,9 @@ export default class FormFieldSchema {
       if (element.isRepeatableElement) {
         this.addElementColumn(element, null, 'integer');
       } else if (element.isLocationElement) {
-        this.addElementColumn(element, 'sub_thoroughfare');
-        this.addElementColumn(element, 'thoroughfare');
-        this.addElementColumn(element, 'suite');
+        this.addElementColumn(element, 'address');
+        this.addElementColumn(element, 'latitude');
+        this.addElementColumn(element, 'longitude');
       } else if (!element.isDynamicElement) {
         this.addElementColumn(element);
       }
