@@ -82,11 +82,8 @@ function () {
       }
 
       var element = _ref2;
-      debugger; // if (element.isHidden || element.hasHiddenParent) {
-      //   continue;
-      // }
-      // repeatable elements don't have any physical columns, but we want to add a column that has the count of items
 
+      // repeatable elements don't have any physical columns, but we want to add a column that has the count of items
       if (element.isRepeatableElement) {
         this.addElementColumn(element, null, 'integer');
       } else if (element.isLocationElement) {
