@@ -82,13 +82,17 @@ function () {
       }
 
       var element = _ref2;
-
-      // if (element.isHidden || element.hasHiddenParent) {
+      debugger; // if (element.isHidden || element.hasHiddenParent) {
       //   continue;
       // }
       // repeatable elements don't have any physical columns, but we want to add a column that has the count of items
+
       if (element.isRepeatableElement) {
         this.addElementColumn(element, null, 'integer');
+      } else if (element.isLocationElement) {
+        this.addElementColumn(element, 'address');
+        this.addElementColumn(element, 'latitude');
+        this.addElementColumn(element, 'longitude');
       } else if (!element.isDynamicElement) {
         this.addElementColumn(element);
       }
