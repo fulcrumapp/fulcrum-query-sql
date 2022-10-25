@@ -44,7 +44,8 @@ export default class FormFieldSchema {
   }
 
   setupElementColumns() {
-    for (const element of this.elementsForColumns) {      // repeatable elements don't have any physical columns, but we want to add a column that has the count of items
+    for (const element of this.elementsForColumns) {
+      // repeatable elements don't have any physical columns, but we want to add a column that has the count of items
       if (element.isRepeatableElement) {
         this.addElementColumn(element, null, 'integer');
       } else if (element.isLocationElement) {
