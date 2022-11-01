@@ -26,11 +26,6 @@ export default class FormFieldSchema {
 
     const rawColumn = this._rawColumnsByKey[columnKey];
 
-    // if (column == null) {
-    //   if the column is null, that means it's a materialized column
-    //   throw new Error('Column not found for element ' + columnKey + Object.keys(this._rawColumnsByKey));
-    // }
-
     return this.addRawElementColumn(element, rawColumn, null, type || rawColumn.type, part, columnKey);
   }
 
@@ -49,9 +44,9 @@ export default class FormFieldSchema {
       if (element.isRepeatableElement) {
         this.addElementColumn(element, null, 'integer');
       } else if (element.isLocationElement) {
-        this.addElementColumn(element, 'address');
-        this.addElementColumn(element, 'latitude');
-        this.addElementColumn(element, 'longitude');
+        this.addElementColumn(element, 'address', 'string');
+        this.addElementColumn(element, 'latitude', 'double');
+        this.addElementColumn(element, 'longitude', 'double');
       } else if (!element.isDynamicElement) {
         this.addElementColumn(element);
       }
