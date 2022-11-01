@@ -44,11 +44,7 @@ function () {
 
   _proto.addElementColumn = function addElementColumn(element, part, type) {
     var columnKey = part ? element.key + '_' + part : element.key;
-    var rawColumn = this._rawColumnsByKey[columnKey]; // if (column == null) {
-    //   if the column is null, that means it's a materialized column
-    //   throw new Error('Column not found for element ' + columnKey + Object.keys(this._rawColumnsByKey));
-    // }
-
+    var rawColumn = this._rawColumnsByKey[columnKey];
     return this.addRawElementColumn(element, rawColumn, null, type || rawColumn.type, part, columnKey);
   };
 
@@ -87,9 +83,9 @@ function () {
       if (element.isRepeatableElement) {
         this.addElementColumn(element, null, 'integer');
       } else if (element.isLocationElement) {
-        this.addElementColumn(element, 'address');
-        this.addElementColumn(element, 'latitude');
-        this.addElementColumn(element, 'longitude');
+        this.addElementColumn(element, 'address', 'string');
+        this.addElementColumn(element, 'latitude', 'double');
+        this.addElementColumn(element, 'longitude', 'double');
       } else if (!element.isDynamicElement) {
         this.addElementColumn(element);
       }
