@@ -1,5 +1,9 @@
 import RepeatableSchema from './repeatable-schema';
 import FormFieldSchema from './form-field-schema';
+import { ColumnRef,
+  BoolExpr,
+  BooleanTest,
+  AExpr } from './ast/helpers';
 
 const SYSTEM_COLUMNS = [
   '_record_id',
@@ -150,6 +154,8 @@ export default class FormSchema extends FormFieldSchema {
                                                  joinColumn: 'user_id'});
 
     if (this.hasRecordSeriesID) {
+      const expr1 = AExpr(0, '=', ColumnRef('_record_series_id', 'records'), ColumnRef('record_series_id', 'record_series'));
+      const expr2 = BooleanTest(ColumnRef('enabled', 'record_series'), 0);
       this.recordSeriesColumn = this.addSystemColumn('Record Series',
                                                   'recordSeries',
                                                   'record_series.rrule',
@@ -157,8 +163,7 @@ export default class FormSchema extends FormFieldSchema {
                                                   null,
                                                   {tableName: 'record_series',
                                                    alias: 'record_series',
-                                                   sourceColumn: '_record_series_id',
-                                                   joinColumn: 'record_series_id'});
+                                                   ast: BoolExpr(0, [ expr1, expr2, ])});
     };
 
     if (this.fullSchema) {

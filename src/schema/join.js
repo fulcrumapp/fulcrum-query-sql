@@ -1,15 +1,16 @@
 import assert from 'assert';
 
 export default class Join {
-  constructor({alias, tableName, sourceTableName, sourceColumn, joinColumn, inner}) {
+  constructor({alias, tableName, sourceTableName, sourceColumn, joinColumn, inner, ast}) {
     this._alias = alias;
     this._tableName = tableName;
     this._sourceColumn = sourceColumn;
     this._joinColumn = joinColumn;
     this._inner = !!inner;
     this._sourceTableName = sourceTableName || null;
+    this._ast = ast;
 
-    assert(alias && tableName && sourceColumn && joinColumn, 'invalid join');
+    assert(alias && tableName && ((sourceColumn && joinColumn) || ast), 'invalid join');
   }
 
   get inner() {
@@ -34,5 +35,9 @@ export default class Join {
 
   get joinColumn() {
     return this._joinColumn;
+  }
+
+  get ast() {
+    return this._ast;
   }
 }

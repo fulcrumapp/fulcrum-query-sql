@@ -1,44 +1,43 @@
 "use strict";
 
 exports.__esModule = true;
-exports.SelectStmt = SelectStmt;
-exports.StringValue = StringValue;
-exports.IntegerValue = IntegerValue;
-exports.FloatValue = FloatValue;
+exports.AArrayExpr = AArrayExpr;
+exports.AConst = AConst;
+exports.AExpr = AExpr;
+exports.AStar = AStar;
 exports.Alias = Alias;
+exports.BoolExpr = BoolExpr;
+exports.BooleanTest = BooleanTest;
+exports.CoalesceExpr = CoalesceExpr;
+exports.ColumnRef = ColumnRef;
+exports.CommonTableExpr = CommonTableExpr;
+exports.FloatValue = FloatValue;
+exports.FuncCall = FuncCall;
+exports.IntegerValue = IntegerValue;
+exports.JoinExpr = JoinExpr;
+exports.NullTest = NullTest;
+exports.RangeFunction = RangeFunction;
+exports.RangeSubselect = RangeSubselect;
 exports.RangeVar = RangeVar;
 exports.ResTarget = ResTarget;
-exports.FuncCall = FuncCall;
-exports.WindowDef = WindowDef;
-exports.ColumnRef = ColumnRef;
+exports.SelectStmt = SelectStmt;
+exports.SortBy = SortBy;
+exports.StringValue = StringValue;
+exports.SubLink = SubLink;
 exports.TypeCast = TypeCast;
 exports.TypeName = TypeName;
-exports.JoinExpr = JoinExpr;
-exports.AConst = AConst;
-exports.AStar = AStar;
-exports.BoolExpr = BoolExpr;
-exports.AExpr = AExpr;
-exports.RangeSubselect = RangeSubselect;
-exports.AArrayExpr = AArrayExpr;
-exports.SortBy = SortBy;
-exports.NullTest = NullTest;
+exports.WindowDef = WindowDef;
 exports.WithClause = WithClause;
-exports.CommonTableExpr = CommonTableExpr;
-exports.RangeFunction = RangeFunction;
-exports.SubLink = SubLink;
-exports.CoalesceExpr = CoalesceExpr;
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 function SelectStmt(_ref) {
   var targetList = _ref.targetList,
-      fromClause = _ref.fromClause,
-      whereClause = _ref.whereClause,
-      sortClause = _ref.sortClause,
-      limitOffset = _ref.limitOffset,
-      limitCount = _ref.limitCount,
-      groupClause = _ref.groupClause,
-      withClause = _ref.withClause;
+    fromClause = _ref.fromClause,
+    whereClause = _ref.whereClause,
+    sortClause = _ref.sortClause,
+    limitOffset = _ref.limitOffset,
+    limitCount = _ref.limitCount,
+    groupClause = _ref.groupClause,
+    withClause = _ref.withClause;
   return {
     SelectStmt: {
       targetList: targetList,
@@ -53,7 +52,6 @@ function SelectStmt(_ref) {
     }
   };
 }
-
 function StringValue(value) {
   return {
     String: {
@@ -61,7 +59,6 @@ function StringValue(value) {
     }
   };
 }
-
 function IntegerValue(value) {
   return {
     Integer: {
@@ -69,7 +66,6 @@ function IntegerValue(value) {
     }
   };
 }
-
 function FloatValue(value) {
   return {
     Float: {
@@ -77,7 +73,6 @@ function FloatValue(value) {
     }
   };
 }
-
 function Alias(name) {
   return {
     Alias: {
@@ -85,7 +80,6 @@ function Alias(name) {
     }
   };
 }
-
 function RangeVar(name, alias) {
   return {
     RangeVar: {
@@ -96,12 +90,10 @@ function RangeVar(name, alias) {
     }
   };
 }
-
 function ResTarget(node, name) {
   if (name === void 0) {
     name = null;
   }
-
   return {
     ResTarget: {
       name: name,
@@ -109,7 +101,6 @@ function ResTarget(node, name) {
     }
   };
 }
-
 function FuncCall(name, args, options) {
   return {
     FuncCall: _extends({
@@ -118,7 +109,6 @@ function FuncCall(name, args, options) {
     }, options)
   };
 }
-
 function WindowDef(orderClause, frameOptions) {
   return {
     WindowDef: {
@@ -127,7 +117,6 @@ function WindowDef(orderClause, frameOptions) {
     }
   };
 }
-
 function ColumnRef(name, source) {
   var nameValue = typeof name === 'string' ? StringValue(name) : name;
   var fields = source ? [StringValue(source), nameValue] : [nameValue];
@@ -137,7 +126,6 @@ function ColumnRef(name, source) {
     }
   };
 }
-
 function TypeCast(typeName, arg) {
   return {
     TypeCast: {
@@ -146,7 +134,6 @@ function TypeCast(typeName, arg) {
     }
   };
 }
-
 function TypeName(names, mod) {
   return {
     TypeName: {
@@ -155,7 +142,6 @@ function TypeName(names, mod) {
     }
   };
 }
-
 function JoinExpr(type, larg, rarg, quals) {
   return {
     JoinExpr: {
@@ -166,7 +152,6 @@ function JoinExpr(type, larg, rarg, quals) {
     }
   };
 }
-
 function AConst(value) {
   return {
     A_Const: {
@@ -174,13 +159,11 @@ function AConst(value) {
     }
   };
 }
-
 function AStar() {
   return {
     A_Star: {}
   };
 }
-
 function BoolExpr(op, args) {
   return {
     BoolExpr: {
@@ -189,7 +172,14 @@ function BoolExpr(op, args) {
     }
   };
 }
-
+function BooleanTest(arg, booltesttype) {
+  return {
+    BooleanTest: {
+      arg: arg,
+      booltesttype: booltesttype
+    }
+  };
+}
 function AExpr(kind, name, lexpr, rexpr) {
   return {
     A_Expr: {
@@ -200,7 +190,6 @@ function AExpr(kind, name, lexpr, rexpr) {
     }
   };
 }
-
 function RangeSubselect(subquery, alias) {
   return {
     RangeSubselect: {
@@ -209,7 +198,6 @@ function RangeSubselect(subquery, alias) {
     }
   };
 }
-
 function AArrayExpr(values) {
   return {
     A_ArrayExpr: {
@@ -217,7 +205,6 @@ function AArrayExpr(values) {
     }
   };
 }
-
 function SortBy(node, direction, nulls) {
   return {
     SortBy: {
@@ -226,10 +213,10 @@ function SortBy(node, direction, nulls) {
       sortby_nulls: nulls
     }
   };
-} // 0 : IS NULL
+}
+
+// 0 : IS NULL
 // 1 : IS NOT NULL
-
-
 function NullTest(type, arg) {
   return {
     NullTest: {
@@ -238,7 +225,6 @@ function NullTest(type, arg) {
     }
   };
 }
-
 function WithClause(ctes) {
   return {
     WithClause: {
@@ -246,7 +232,6 @@ function WithClause(ctes) {
     }
   };
 }
-
 function CommonTableExpr(name, query) {
   return {
     CommonTableExpr: {
@@ -255,7 +240,6 @@ function CommonTableExpr(name, query) {
     }
   };
 }
-
 function RangeFunction(functions, alias) {
   return {
     RangeFunction: {
@@ -264,7 +248,6 @@ function RangeFunction(functions, alias) {
     }
   };
 }
-
 function SubLink(type, subselect) {
   return {
     SubLink: {
@@ -273,7 +256,6 @@ function SubLink(type, subselect) {
     }
   };
 }
-
 function CoalesceExpr(args) {
   return {
     CoalesceExpr: {

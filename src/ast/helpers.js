@@ -150,6 +150,15 @@ export function BoolExpr(op, args) {
   };
 }
 
+export function BooleanTest(arg, booltesttype) {
+  return {
+    BooleanTest: {
+      arg: arg,
+      booltesttype: booltesttype
+    }
+  };
+}
+
 export function AExpr(kind, name, lexpr, rexpr) {
   return {
     A_Expr: {
