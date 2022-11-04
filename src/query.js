@@ -390,13 +390,12 @@ export default class Query {
       const alias = this.schema.recordSeriesColumn.join.alias;
 
       if (subJoinColumns.indexOf(this.schema.recordSeriesColumn) === -1) {
+        joinedColumns.push(ResTarget(ColumnRef('record_series_id', alias), 'record_series_id'));
         joinedColumns.push(ResTarget(ColumnRef('rrule', alias), 'rrule'));
       } else {
+        joinedColumns.push(ResTarget(ColumnRef(alias + '.record_series_id'), 'record_series_id'));
         joinedColumns.push(ResTarget(ColumnRef(alias + '.rrule'), 'rrule'));
       }
-    }
-    if (this.schema.hasRecordSeriesID) {
-      joinedColumns.push(ResTarget(ColumnRef('_record_series_id'), 'record_series_id'));
     }
 
     if (this.repeatableKey) {

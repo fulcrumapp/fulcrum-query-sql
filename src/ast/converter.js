@@ -10,6 +10,7 @@ import { ColumnRef,
          StringValue,
          AArrayExpr,
          IntegerValue,
+         BooleanValue,
          FloatValue,
          SortBy,
          TypeCast,
@@ -408,6 +409,7 @@ export default class Converter {
 
     if (subJoinColumns.indexOf(query.schema.recordSeriesColumn) !== -1) {
       list.push(ResTarget(ColumnRef('rrule', query.schema.recordSeriesColumn.join.alias), query.schema.recordSeriesColumn.id));
+      list.push(ResTarget(ColumnRef('enabled', query.schema.recordSeriesColumn.join.alias), query.schema.recordSeriesColumn.id));
     }
 
     list.push(ResTarget(FuncCall('row_number', null, {over: WindowDef(sort, 530)}), '__row_number'));
@@ -529,11 +531,11 @@ export default class Converter {
     return filterNode;
   }
 
-  static joinClause(baseQuery, {inner, tableName, alias, sourceColumn, joinColumn, sourceTableName, rarg}) {
+  static joinClause(baseQuery, {inner, tableName, alias, sourceColumn, joinColumn, sourceTableName, rarg, ast}) {
     return JoinExpr(inner ? 0 : 1,
                     baseQuery,
                     rarg || RangeVar(tableName, Alias(alias)),
-                    AExpr(0, '=', ColumnRef(sourceColumn, sourceTableName || 'records'), ColumnRef(joinColumn, alias)));
+                    ast ? ast : AExpr(0, '=', ColumnRef(sourceColumn, sourceTableName || 'records'), ColumnRef(joinColumn, alias)));
   }
 
   static duplicateResTargetWithExactName(query, targetList, column, exactName) {

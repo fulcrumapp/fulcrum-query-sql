@@ -2,26 +2,15 @@
 
 exports.__esModule = true;
 exports["default"] = void 0;
-
 var _expression = require("./expression");
-
 var _operator = require("./operator");
-
 var _columnFilter = _interopRequireDefault(require("./column-filter"));
-
 var _columnSummary = _interopRequireDefault(require("./column-summary"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var ColumnSettingsItem =
-/*#__PURE__*/
-function () {
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var ColumnSettingsItem = /*#__PURE__*/function () {
   function ColumnSettingsItem(attrs, schema) {
     this._schema = schema;
     this._hidden = !!attrs.hidden;
@@ -41,9 +30,7 @@ function () {
       field: attrs.column.id
     }), this._schema);
   }
-
   var _proto = ColumnSettingsItem.prototype;
-
   _proto.clear = function clear() {
     this._search = '';
     this._filter = new _columnFilter["default"]({
@@ -57,32 +44,25 @@ function () {
       field: this.column.id
     }, this._schema);
   };
-
   _proto.toJSON = function toJSON() {
     var json = {
       hidden: this.isHidden,
       column: this.column.toJSON()
     };
-
     if (this.search) {
       json.search = this.search;
     }
-
     if (this.filter.hasFilter) {
       json.filter = this.filter.toJSON();
     }
-
     if (this.expression.isValid) {
       json.expression = this.expression.toJSON();
     }
-
     if (this.range.isValid) {
       json.range = this.range.toJSON();
     }
-
     return json;
   };
-
   _createClass(ColumnSettingsItem, [{
     key: "hasFilter",
     get: function get() {
@@ -137,9 +117,7 @@ function () {
       return this._range;
     }
   }]);
-
   return ColumnSettingsItem;
 }();
-
 exports["default"] = ColumnSettingsItem;
 //# sourceMappingURL=column-settings-item.js.map

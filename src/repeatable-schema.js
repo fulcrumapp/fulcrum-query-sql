@@ -142,6 +142,8 @@ export default class RepeatableSchema extends FormFieldSchema {
                                                  joinColumn: 'user_id'});
 
     if (Object.keys(this._rawColumnsByKey).includes('_record_series_id')) {
+      const expr1 = AExpr(0, '=', ColumnRef('_record_series_id', 'records'), ColumnRef('record_series_id', 'record_series'));
+      const expr2 = BooleanTest(ColumnRef('enabled', 'record_series'), 0);
       this.recordSeriesColumn = this.addSystemColumn('Record Series',
                                                     'recordSeries',
                                                     'record_series.rrule',
@@ -149,8 +151,7 @@ export default class RepeatableSchema extends FormFieldSchema {
                                                     null,
                                                     {tableName: 'record_series',
                                                       alias: 'record_series',
-                                                      sourceColumn: '_record_series_id',
-                                                      joinColumn: 'record_series_id'});
+                                                      ast: BoolExpr(0, [ expr1, expr2, ])});
     };
 
     if (this.fullSchema) {

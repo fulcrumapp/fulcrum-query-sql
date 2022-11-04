@@ -1,16 +1,13 @@
 "use strict";
 
 exports.__esModule = true;
-exports.isValueRequired = isValueRequired;
-exports.isDateOperator = isDateOperator;
+exports.OperatorsByValue = exports.OperatorType = exports.FRIENDLY_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = void 0;
 exports.availableOperatorsForColumn = availableOperatorsForColumn;
 exports.calculateDateRange = calculateDateRange;
-exports.FRIENDLY_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = exports.OperatorsByValue = exports.OperatorType = void 0;
-
+exports.isDateOperator = isDateOperator;
+exports.isValueRequired = isValueRequired;
 var _moment = _interopRequireDefault(require("moment"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
 var OperatorType = {
   Empty: {
     name: 'is_empty',
@@ -264,19 +261,18 @@ var OperatorType = {
 exports.OperatorType = OperatorType;
 var OperatorsByValue = {};
 exports.OperatorsByValue = OperatorsByValue;
-
 for (var _i = 0, _Object$keys = Object.keys(OperatorType); _i < _Object$keys.length; _i++) {
   var key = _Object$keys[_i];
   OperatorsByValue[OperatorType[key].name] = OperatorType[key];
 }
-
 var TEXTUAL_OPERATORS = [OperatorType.In, OperatorType.NotIn, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.TextContain, OperatorType.TextNotContain, OperatorType.TextStartsWith, OperatorType.TextEndsWith, OperatorType.TextEqual, OperatorType.TextNotEqual, OperatorType.TextMatch, OperatorType.TextNotMatch];
 var DATE_OPERATORS = [OperatorType.DateEqual, OperatorType.DateOnOrAfter, OperatorType.DateAfter, OperatorType.DateOnOrBefore, OperatorType.DateBefore, OperatorType.DateBetween, OperatorType.DateNotBetween, OperatorType.DateNotEqual, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn, OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateLast90Days, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear, OperatorType.DateDaysFromNow, OperatorType.DateWeeksFromNow, OperatorType.DateMonthsFromNow, OperatorType.DateYearsFromNow, OperatorType.DateDaysAgo, OperatorType.DateWeeksAgo, OperatorType.DateMonthsAgo, OperatorType.DateYearsAgo];
 var DYNAMIC_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateTomorrow, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateLast90Days, OperatorType.DateLastMonth, OperatorType.DateLastYear, OperatorType.DateNextWeek, OperatorType.DateNextMonth, OperatorType.DateNextYear, OperatorType.DateCurrentCalendarWeek, OperatorType.DateCurrentCalendarMonth, OperatorType.DateCurrentCalendarYear, OperatorType.DatePreviousCalendarWeek, OperatorType.DatePreviousCalendarMonth, OperatorType.DatePreviousCalendarYear, OperatorType.DateNextCalendarWeek, OperatorType.DateNextCalendarMonth, OperatorType.DateNextCalendarYear, OperatorType.DateDaysFromNow, OperatorType.DateWeeksFromNow, OperatorType.DateMonthsFromNow, OperatorType.DateYearsFromNow, OperatorType.DateDaysAgo, OperatorType.DateWeeksAgo, OperatorType.DateMonthsAgo, OperatorType.DateYearsAgo];
 exports.DYNAMIC_DATE_OPERATORS = DYNAMIC_DATE_OPERATORS;
 var FRIENDLY_DATE_OPERATORS = [OperatorType.DateToday, OperatorType.DateYesterday, OperatorType.DateLast7Days, OperatorType.DateLast30Days, OperatorType.DateCurrentCalendarMonth, OperatorType.DatePreviousCalendarMonth, OperatorType.DateBetween];
 exports.FRIENDLY_DATE_OPERATORS = FRIENDLY_DATE_OPERATORS;
-var NUMERIC_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.GreaterThan, OperatorType.GreaterThanOrEqual, OperatorType.LessThan, OperatorType.LessThanOrEqual, // OperatorType.Between,
+var NUMERIC_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.GreaterThan, OperatorType.GreaterThanOrEqual, OperatorType.LessThan, OperatorType.LessThanOrEqual,
+// OperatorType.Between,
 // OperatorType.NotBetween,
 OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
 var BOOLEAN_OPERATORS = [OperatorType.Equal, OperatorType.NotEqual, OperatorType.Empty, OperatorType.NotEmpty, OperatorType.In, OperatorType.NotIn];
@@ -322,32 +318,25 @@ var SYSTEM_COLUMNS = {
   _record_key: TEXTUAL_OPERATORS,
   _record_sequence: NUMERIC_OPERATORS
 };
-
 function isValueRequired(operator) {
   return !NO_VALUE_OPERATORS.find(function (o) {
     return o.name === operator;
   });
 }
-
 function isDateOperator(operator) {
   return DATE_OPERATORS.find(function (o) {
     return o.name === operator;
   });
 }
-
 function availableOperatorsForColumn(column) {
   var operators = [];
-
   if (column == null) {
     return operators;
   }
-
   if (SYSTEM_COLUMNS[column.id]) {
     return SYSTEM_COLUMNS[column.id];
   }
-
   var element = column && column.element;
-
   if (element) {
     if (element.isTextElement) {
       if (element.isNumeric) {
@@ -356,15 +345,12 @@ function availableOperatorsForColumn(column) {
         operators.push.apply(operators, TEXTUAL_OPERATORS);
       }
     }
-
     if (element.isCheckboxElement) {
       operators.push.apply(operators, BOOLEAN_OPERATORS);
     }
-
     if (element.isDynamicElement) {
       operators.push.apply(operators, ARRAY_OPERATORS);
     }
-
     if (element.isCalculatedElement) {
       if (element.display.isNumber || element.display.isCurrency) {
         operators.push.apply(operators, NUMERIC_OPERATORS);
@@ -374,11 +360,9 @@ function availableOperatorsForColumn(column) {
         operators.push.apply(operators, TEXTUAL_OPERATORS);
       }
     }
-
     if (element.isDateElement) {
       operators.push.apply(operators, DATE_OPERATORS);
     }
-
     if (element.isChoiceElement) {
       if (element.multiple) {
         operators.push.apply(operators, ARRAY_OPERATORS);
@@ -386,19 +370,15 @@ function availableOperatorsForColumn(column) {
         operators.push.apply(operators, TEXTUAL_OPERATORS);
       }
     }
-
     if (element.isYesNoElement) {
       operators.push.apply(operators, TEXTUAL_OPERATORS);
     }
-
     if (element.isClassificationElement || element.isRecordLinkElement) {
       operators.push.apply(operators, ARRAY_OPERATORS);
     }
-
     if (element.isStatusElement) {
       operators.push.apply(operators, TEXTUAL_OPERATORS);
     }
-
     if (element.isPhotoElement || element.isVideoElement || element.isAudioElement || element.isSignatureElement || element.isAttachmentElement) {
       operators.push.apply(operators, MEDIA_OPERATORS);
     }
@@ -414,111 +394,77 @@ function availableOperatorsForColumn(column) {
       operators.push.apply(operators, TEXTUAL_OPERATORS);
     }
   }
-
   if (operators.length === 0) {
     operators.push.apply(operators, TEXTUAL_OPERATORS);
   }
-
   return operators;
 }
-
 function calculateDateRange(operator, value, now) {
   now = (0, _moment["default"])(now || new Date()).clone().startOf('day');
   var date1 = now.clone();
   var date2 = now.clone();
-
   var range = function range(start, end) {
     return [start.clone(), (end || start).clone().endOf('day')];
   };
-
   switch (operator) {
     case OperatorType.DateToday.name:
       return range(date1);
-
     case OperatorType.DateYesterday.name:
       return range(date1.subtract(1, 'days'));
-
     case OperatorType.DateTomorrow.name:
       return range(date1.add(1, 'days'));
-
     case OperatorType.DateLast7Days.name:
       return range(date1.subtract(7, 'days'), date2);
-
     case OperatorType.DateLast30Days.name:
       return range(date1.subtract(30, 'days'), date2);
-
     case OperatorType.DateLast90Days.name:
       return range(date1.subtract(90, 'days'), date2);
-
     case OperatorType.DateLastMonth.name:
       return range(date1.subtract(1, 'month'), date2);
-
     case OperatorType.DateLastYear.name:
       return range(date1.subtract(1, 'year'), date2);
-
     case OperatorType.DateNextWeek.name:
       return range(date1, date2.add(1, 'week'));
-
     case OperatorType.DateNextMonth.name:
       return range(date1, date2.add(1, 'month'));
-
     case OperatorType.DateNextYear.name:
       return range(date1, date2.add(1, 'year'));
-
     case OperatorType.DateCurrentCalendarWeek.name:
       return range(date1.startOf('week'), date2.endOf('week'));
-
     case OperatorType.DatePreviousCalendarWeek.name:
       return range(date1.subtract(1, 'week').startOf('week'), date2.subtract(1, 'week').endOf('week'));
-
     case OperatorType.DateNextCalendarWeek.name:
       return range(date1.add(1, 'week').startOf('week'), date2.add(1, 'week').endOf('week'));
-
     case OperatorType.DateCurrentCalendarMonth.name:
       return range(date1.startOf('month'), date2.endOf('month'));
-
     case OperatorType.DatePreviousCalendarMonth.name:
       return range(date1.subtract(1, 'month').startOf('month'), date2.subtract(1, 'month').endOf('month'));
-
     case OperatorType.DateNextCalendarMonth.name:
       return range(date1.add(1, 'month').startOf('month'), date2.add(1, 'month').endOf('month'));
-
     case OperatorType.DateCurrentCalendarYear.name:
       return range(date1.startOf('year'), date2.endOf('year'));
-
     case OperatorType.DatePreviousCalendarYear.name:
       return range(date1.subtract(1, 'year').startOf('year'), date2.subtract(1, 'year').endOf('year'));
-
     case OperatorType.DateNextCalendarYear.name:
       return range(date1.add(1, 'year').startOf('year'), date2.add(1, 'year').endOf('year'));
-
     case OperatorType.DateDaysFromNow.name:
       return value && range(date1, date2.add(+value, 'days'));
-
     case OperatorType.DateWeeksFromNow.name:
       return value && range(date1, date2.add(+value, 'weeks'));
-
     case OperatorType.DateMonthsFromNow.name:
       return value && range(date1, date2.add(+value, 'months'));
-
     case OperatorType.DateYearsFromNow.name:
       return value && range(date1, date2.add(+value, 'years'));
-
     case OperatorType.DateDaysAgo.name:
       return value && range(date1.subtract(+value, 'days'), date2);
-
     case OperatorType.DateWeeksAgo.name:
       return value && range(date1.subtract(+value, 'weeks'), date2);
-
     case OperatorType.DateMonthsAgo.name:
       return value && range(date1.subtract(+value, 'months'), date2);
-
     case OperatorType.DateYearsAgo.name:
       return value && range(date1.subtract(+value, 'years'), date2);
-
     case OperatorType.DateBetween.name:
       return value && range(value[0] && (0, _moment["default"])(value[0]), value[1] && (0, _moment["default"])(value[1]));
-
     default:
       return null;
   }
