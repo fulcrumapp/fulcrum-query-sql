@@ -47,7 +47,7 @@ export default class FormFieldSchema {
         this.addElementColumn(element, 'address', 'string');
         this.addElementColumn(element, 'latitude', 'double');
         this.addElementColumn(element, 'longitude', 'double');
-      } else if (!element.isDynamicElement) {
+      } else if (!element.isDynamicElement && !element.isButtonElement) {
         this.addElementColumn(element);
       }
 

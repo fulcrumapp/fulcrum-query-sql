@@ -60,7 +60,7 @@ var FormFieldSchema = /*#__PURE__*/function () {
         this.addElementColumn(element, 'address', 'string');
         this.addElementColumn(element, 'latitude', 'double');
         this.addElementColumn(element, 'longitude', 'double');
-      } else if (!element.isDynamicElement) {
+      } else if (!element.isDynamicElement && !element.isButtonElement) {
         this.addElementColumn(element);
       }
       if (this.fullSchema && element.isAddressElement) {
