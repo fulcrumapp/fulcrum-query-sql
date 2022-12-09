@@ -1,8 +1,12 @@
+/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
-  clearMocks: true,
-  collectCoverage: false,
-  roots: [
-    '<rootDir>/src'
-  ]
+  preset: 'ts-jest/presets/js-with-ts',
+  roots: [ '<rootDir>/src' ],
+  testEnvironment: 'node',
+  collectCoverage: true,
+  collectCoverageFrom: [
+    'src/**/*.js',
+    'src/**/*.ts',
+  ],
+  coverageDirectory: 'coverage',
 };
-  
