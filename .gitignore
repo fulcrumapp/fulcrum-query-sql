@@ -1,2 +1,9 @@
+.env
+.secrets
+.nyc_output
+db/app*
+dist/
 node_modules/
-docs/output
+coverage/
+yarn-error.log
+*.yaml.dec

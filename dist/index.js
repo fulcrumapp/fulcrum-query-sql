@@ -1,54 +1,37 @@
 "use strict";
-
-exports.__esModule = true;
-var _exportNames = {
-  Query: true,
-  FormSchema: true,
-  SQLQuerySchema: true,
-  Column: true,
-  SimpleColumn: true,
-  ElementColumn: true
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
-exports.SimpleColumn = exports.SQLQuerySchema = exports.Query = exports.FormSchema = exports.ElementColumn = exports.Column = void 0;
-var _query = _interopRequireDefault(require("./query"));
-exports.Query = _query["default"];
-var _formSchema = _interopRequireDefault(require("./form-schema"));
-exports.FormSchema = _formSchema["default"];
-var _sqlQuerySchema = _interopRequireDefault(require("./sql-query-schema"));
-exports.SQLQuerySchema = _sqlQuerySchema["default"];
-var _column = _interopRequireDefault(require("./schema/column"));
-exports.Column = _column["default"];
-var _simpleColumn = _interopRequireDefault(require("./schema/simple-column"));
-exports.SimpleColumn = _simpleColumn["default"];
-var _elementColumn = _interopRequireDefault(require("./schema/element-column"));
-exports.ElementColumn = _elementColumn["default"];
-var _expression = require("./expression");
-Object.keys(_expression).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
-  if (key in exports && exports[key] === _expression[key]) return;
-  exports[key] = _expression[key];
-});
-var _condition = require("./condition");
-Object.keys(_condition).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
-  if (key in exports && exports[key] === _condition[key]) return;
-  exports[key] = _condition[key];
-});
-var _operator = require("./operator");
-Object.keys(_operator).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
-  if (key in exports && exports[key] === _operator[key]) return;
-  exports[key] = _operator[key];
-});
-var _aggregate = require("./aggregate");
-Object.keys(_aggregate).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
-  if (key in exports && exports[key] === _aggregate[key]) return;
-  exports[key] = _aggregate[key];
-});
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ElementColumn = exports.SimpleColumn = exports.Column = exports.SQLQuerySchema = exports.FormSchema = exports.Query = void 0;
+var query_1 = require("./query");
+Object.defineProperty(exports, "Query", { enumerable: true, get: function () { return __importDefault(query_1).default; } });
+var form_schema_1 = require("./form-schema");
+Object.defineProperty(exports, "FormSchema", { enumerable: true, get: function () { return __importDefault(form_schema_1).default; } });
+var sql_query_schema_1 = require("./sql-query-schema");
+Object.defineProperty(exports, "SQLQuerySchema", { enumerable: true, get: function () { return __importDefault(sql_query_schema_1).default; } });
+var column_1 = require("./schema/column");
+Object.defineProperty(exports, "Column", { enumerable: true, get: function () { return __importDefault(column_1).default; } });
+var simple_column_1 = require("./schema/simple-column");
+Object.defineProperty(exports, "SimpleColumn", { enumerable: true, get: function () { return __importDefault(simple_column_1).default; } });
+var element_column_1 = require("./schema/element-column");
+Object.defineProperty(exports, "ElementColumn", { enumerable: true, get: function () { return __importDefault(element_column_1).default; } });
+__exportStar(require("./expression"), exports);
+__exportStar(require("./condition"), exports);
+__exportStar(require("./operator"), exports);
+__exportStar(require("./aggregate"), exports);
 //# sourceMappingURL=index.js.map
