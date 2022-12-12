@@ -1,21 +1,14 @@
 "use strict";
-
-exports.__esModule = true;
-exports["default"] = void 0;
-var QueryOptions = /*#__PURE__*/function () {
-  function QueryOptions(attrs) {
-    if (attrs === void 0) {
-      attrs = {};
+Object.defineProperty(exports, "__esModule", { value: true });
+class QueryOptions {
+    constructor(attrs = {}) {
+        this.timeZone = attrs.time_zone || null;
     }
-    this.timeZone = attrs.time_zone || null;
-  }
-  var _proto = QueryOptions.prototype;
-  _proto.toJSON = function toJSON() {
-    return {
-      time_zone: this.timeZone
-    };
-  };
-  return QueryOptions;
-}();
-exports["default"] = QueryOptions;
+    toJSON() {
+        return {
+            time_zone: this.timeZone
+        };
+    }
+}
+exports.default = QueryOptions;
 //# sourceMappingURL=query-options.js.map

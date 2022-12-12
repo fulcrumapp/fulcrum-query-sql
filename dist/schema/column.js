@@ -1,79 +1,47 @@
 "use strict";
-
-exports.__esModule = true;
-exports["default"] = void 0;
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-var Column = /*#__PURE__*/function () {
-  function Column() {}
-  var _proto = Column.prototype;
-  _proto.toJSON = function toJSON() {
-    return {
-      id: this.id
-    };
-  };
-  _createClass(Column, [{
-    key: "isArray",
-    get: function get() {
-      return this.type === 'array';
+Object.defineProperty(exports, "__esModule", { value: true });
+class Column {
+    get isArray() {
+        return this.type === 'array';
     }
-  }, {
-    key: "isDate",
-    get: function get() {
-      return this.type === 'timestamp' || this.type === 'date';
+    get isDate() {
+        return this.type === 'timestamp' || this.type === 'date';
     }
-  }, {
-    key: "isTime",
-    get: function get() {
-      return this.type === 'time';
+    get isTime() {
+        return this.type === 'time';
     }
-  }, {
-    key: "isDateTime",
-    get: function get() {
-      return this.type === 'timestamp';
+    get isDateTime() {
+        return this.type === 'timestamp';
     }
-  }, {
-    key: "isNumber",
-    get: function get() {
-      return this.isDouble || this.isInteger;
+    get isNumber() {
+        return this.isDouble || this.isInteger;
     }
-  }, {
-    key: "isDouble",
-    get: function get() {
-      return this.type === 'double';
+    get isDouble() {
+        return this.type === 'double';
     }
-  }, {
-    key: "isInteger",
-    get: function get() {
-      return this.type === 'integer';
+    get isInteger() {
+        return this.type === 'integer';
     }
-  }, {
-    key: "isGeometry",
-    get: function get() {
-      return this.type === 'geometry';
+    get isGeometry() {
+        return this.type === 'geometry';
     }
-  }, {
-    key: "supportsRanges",
-    get: function get() {
-      return this.isNumber || this.isDate;
+    get supportsRanges() {
+        return this.isNumber || this.isDate;
     }
-  }, {
-    key: "canSearch",
-    get: function get() {
-      return true;
+    get canSearch() {
+        return true;
     }
-  }, {
-    key: "isSortable",
-    get: function get() {
-      return true;
+    get isSortable() {
+        return true;
     }
-  }, {
-    key: "index",
-    get: function get() {
-      return this._index;
+    toJSON() {
+        return {
+            id: this.id
+        };
     }
-  }]);
-  return Column;
-}();
-exports["default"] = Column;
+    get index() {
+        return this._index;
+    }
+}
+exports.default = Column;
 //# sourceMappingURL=column.js.map

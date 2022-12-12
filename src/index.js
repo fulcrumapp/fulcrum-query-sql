@@ -1,9 +1,9 @@
-export Query from './query';
-export FormSchema from './form-schema';
-export SQLQuerySchema from './sql-query-schema';
-export Column from './schema/column';
-export SimpleColumn from './schema/simple-column';
-export ElementColumn from './schema/element-column';
+export { default as Query } from './query';
+export { default as FormSchema } from './form-schema';
+export { default as SQLQuerySchema } from './sql-query-schema';
+export { default as Column } from './schema/column';
+export { default as SimpleColumn } from './schema/simple-column';
+export { default as ElementColumn } from './schema/element-column';
 export * from './expression';
 export * from './condition';
 export * from './operator';

@@ -1,131 +1,134 @@
 "use strict";
-
-exports.__esModule = true;
-exports["default"] = void 0;
-var _formFieldSchema = _interopRequireDefault(require("./form-field-schema"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-function _createForOfIteratorHelperLoose(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (it) return (it = it.call(o)).next.bind(it); if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; return function () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; _setPrototypeOf(subClass, superClass); }
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-var SYSTEM_COLUMNS = ['_child_record_id', '_record_id', '_parent_id', '_record_project_id', '_record_assigned_to_id', '_record_status', '_index', '_latitude', '_longitude', '_created_at', '_updated_at', '_version', '_created_by_id', '_updated_by_id', '_server_created_at', '_server_updated_at', '_geometry', '_changeset_id', '_title', '_created_latitude', '_created_longitude', '_created_geometry', '_created_altitude', '_created_horizontal_accuracy', '_updated_latitude', '_updated_longitude', '_updated_geometry', '_updated_altitude', '_updated_horizontal_accuracy', '_created_duration', '_updated_duration', '_edited_duration', '_record_series_id'];
-var RepeatableSchema = /*#__PURE__*/function (_FormFieldSchema) {
-  _inheritsLoose(RepeatableSchema, _FormFieldSchema);
-  function RepeatableSchema(formSchema, repeatable, rawColumns, _ref) {
-    var _this;
-    var _ref$fullSchema = _ref.fullSchema,
-      fullSchema = _ref$fullSchema === void 0 ? false : _ref$fullSchema;
-    _this = _FormFieldSchema.call(this, {
-      fullSchema: fullSchema
-    }) || this;
-    _this.formSchema = formSchema;
-    _this.repeatable = repeatable;
-    _this.container = repeatable;
-    _this._columns = [];
-    _this._rawColumns = rawColumns;
-    _this._rawColumnsByKey = {};
-    _this._columnsByKey = {};
-    for (var _iterator = _createForOfIteratorHelperLoose(rawColumns), _step; !(_step = _iterator()).done;) {
-      var column = _step.value;
-      if (SYSTEM_COLUMNS.indexOf(column.name) !== -1) {
-        _this._rawColumnsByKey[column.name] = column;
-      } else if (column.field) {
-        var key = column.part ? column.field + '_' + column.part : column.field;
-        _this._rawColumnsByKey[key] = column;
-      }
-    }
-    _this.setupColumns();
-    return _this;
-  }
-  var _proto = RepeatableSchema.prototype;
-  _proto.setupColumns = function setupColumns() {
-    if (this.fullSchema) {
-      this.addSystemColumn('Child Record ID', 'id', '_child_record_id', 'string');
-      this.addSystemColumn('Record ID', null, '_record_id', 'string', function (feature, options) {
-        if (feature.recordID) {
-          return feature.recordID;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const form_field_schema_1 = __importDefault(require("./form-field-schema"));
+const SYSTEM_COLUMNS = [
+    '_child_record_id',
+    '_record_id',
+    '_parent_id',
+    '_record_project_id',
+    '_record_assigned_to_id',
+    '_record_status',
+    '_index',
+    '_latitude',
+    '_longitude',
+    '_created_at',
+    '_updated_at',
+    '_version',
+    '_created_by_id',
+    '_updated_by_id',
+    '_server_created_at',
+    '_server_updated_at',
+    '_geometry',
+    '_changeset_id',
+    '_title',
+    '_created_latitude',
+    '_created_longitude',
+    '_created_geometry',
+    '_created_altitude',
+    '_created_horizontal_accuracy',
+    '_updated_latitude',
+    '_updated_longitude',
+    '_updated_geometry',
+    '_updated_altitude',
+    '_updated_horizontal_accuracy',
+    '_created_duration',
+    '_updated_duration',
+    '_edited_duration',
+    '_record_series_id'
+];
+class RepeatableSchema extends form_field_schema_1.default {
+    constructor(formSchema, repeatable, rawColumns, { fullSchema = false }) {
+        super({ fullSchema });
+        this.formSchema = formSchema;
+        this.repeatable = repeatable;
+        this.container = repeatable;
+        this._columns = [];
+        this._rawColumns = rawColumns;
+        this._rawColumnsByKey = {};
+        this._columnsByKey = {};
+        for (const column of rawColumns) {
+            if (SYSTEM_COLUMNS.indexOf(column.name) !== -1) {
+                this._rawColumnsByKey[column.name] = column;
+            }
+            else if (column.field) {
+                const key = column.part ? column.field + '_' + column.part : column.field;
+                this._rawColumnsByKey[key] = column;
+            }
         }
-        return options && options.record && options.record.id;
-      });
-      this.addSystemColumn('Parent ID', null, '_parent_id', 'string', function (feature, options) {
-        if (feature.parentID) {
-          return feature.parentID;
+        this.setupColumns();
+    }
+    setupColumns() {
+        if (this.fullSchema) {
+            this.addSystemColumn('Child Record ID', 'id', '_child_record_id', 'string');
+            this.addSystemColumn('Record ID', null, '_record_id', 'string', (feature, options) => {
+                if (feature.recordID) {
+                    return feature.recordID;
+                }
+                return options && options.record && options.record.id;
+            });
+            this.addSystemColumn('Parent ID', null, '_parent_id', 'string', (feature, options) => {
+                if (feature.parentID) {
+                    return feature.parentID;
+                }
+                return options && options.parent && options.parent.id;
+            });
         }
-        return options && options.parent && options.parent.id;
-      });
+        if (this.formSchema.form.statusField.isEnabled) {
+            this.addRawElementColumn(this.formSchema.form.statusField, this._rawColumnsByKey._record_status, '_record_status', 'string', null, '_record_status');
+        }
+        this.addSystemColumn('Title', 'displayValue', '_title', 'string');
+        this.addSystemColumn('Version', 'version', '_version', 'integer');
+        this.addSystemColumn('Device Created', 'createdAt', '_created_at', 'timestamp');
+        this.addSystemColumn('Device Updated', 'updatedAt', '_updated_at', 'timestamp');
+        if (this.formSchema.form.isProjectEnabled) {
+            this.projectColumn = this.addSystemColumn('Project', 'recordProjectName', 'record_project.name', 'string', null, { tableName: 'projects',
+                alias: 'record_project',
+                sourceColumn: '_record_project_id',
+                joinColumn: 'project_id' });
+        }
+        if (this.formSchema.form.isAssignmentEnabled) {
+            this.assignedToColumn = this.addSystemColumn('Assigned', 'recordAssignedToName', 'record_assigned_to.name', 'string', null, { tableName: 'memberships',
+                alias: 'record_assigned_to',
+                sourceColumn: '_record_assigned_to_id',
+                joinColumn: 'user_id' });
+        }
+        this.createdByColumn = this.addSystemColumn('Created By', 'createdByName', 'created_by.name', 'string', null, { tableName: 'memberships',
+            alias: 'created_by',
+            sourceColumn: '_created_by_id',
+            joinColumn: 'user_id' });
+        this.updatedByColumn = this.addSystemColumn('Updated By', 'updatedByName', 'updated_by.name', 'string', null, { tableName: 'memberships',
+            alias: 'updated_by',
+            sourceColumn: '_updated_by_id',
+            joinColumn: 'user_id' });
+        if (Object.keys(this._rawColumnsByKey).includes('_record_series_id')) {
+            const expr1 = AExpr(0, '=', ColumnRef('_record_series_id', 'records'), ColumnRef('record_series_id', 'record_series'));
+            const expr2 = BooleanTest(ColumnRef('enabled', 'record_series'), 0);
+            this.recordSeriesColumn = this.addSystemColumn('Record Series', 'recordSeries', 'record_series.rrule', 'string', null, { tableName: 'record_series',
+                alias: 'record_series',
+                ast: BoolExpr(0, [expr1, expr2,]) });
+        }
+        ;
+        if (this.fullSchema) {
+            this.addSystemColumn('Item Index', 'index', '_index', 'integer');
+            this.addSystemColumn('Geometry', 'geometryAsGeoJSON', '_geometry', 'geometry');
+            this.addSystemColumn('Latitude', 'latitude', '_latitude', 'double');
+            this.addSystemColumn('Longitude', 'longitude', '_longitude', 'double');
+            this.addSystemColumn('Changeset', 'changesetID', '_changeset_id', 'string');
+            this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
+            this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
+            this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
+        }
+        this.setupElementColumns();
     }
-    if (this.formSchema.form.statusField.isEnabled) {
-      this.addRawElementColumn(this.formSchema.form.statusField, this._rawColumnsByKey._record_status, '_record_status', 'string', null, '_record_status');
+    get tableName() {
+        return this.formSchema.tableName + '_' + this.repeatable.dataName;
     }
-    this.addSystemColumn('Title', 'displayValue', '_title', 'string');
-    this.addSystemColumn('Version', 'version', '_version', 'integer');
-    this.addSystemColumn('Device Created', 'createdAt', '_created_at', 'timestamp');
-    this.addSystemColumn('Device Updated', 'updatedAt', '_updated_at', 'timestamp');
-    if (this.formSchema.form.isProjectEnabled) {
-      this.projectColumn = this.addSystemColumn('Project', 'recordProjectName', 'record_project.name', 'string', null, {
-        tableName: 'projects',
-        alias: 'record_project',
-        sourceColumn: '_record_project_id',
-        joinColumn: 'project_id'
-      });
+    get tableNameWithoutPrefix() {
+        return this.repeatable.dataName;
     }
-    if (this.formSchema.form.isAssignmentEnabled) {
-      this.assignedToColumn = this.addSystemColumn('Assigned', 'recordAssignedToName', 'record_assigned_to.name', 'string', null, {
-        tableName: 'memberships',
-        alias: 'record_assigned_to',
-        sourceColumn: '_record_assigned_to_id',
-        joinColumn: 'user_id'
-      });
-    }
-    this.createdByColumn = this.addSystemColumn('Created By', 'createdByName', 'created_by.name', 'string', null, {
-      tableName: 'memberships',
-      alias: 'created_by',
-      sourceColumn: '_created_by_id',
-      joinColumn: 'user_id'
-    });
-    this.updatedByColumn = this.addSystemColumn('Updated By', 'updatedByName', 'updated_by.name', 'string', null, {
-      tableName: 'memberships',
-      alias: 'updated_by',
-      sourceColumn: '_updated_by_id',
-      joinColumn: 'user_id'
-    });
-    if (Object.keys(this._rawColumnsByKey).includes('_record_series_id')) {
-      var expr1 = AExpr(0, '=', ColumnRef('_record_series_id', 'records'), ColumnRef('record_series_id', 'record_series'));
-      var expr2 = BooleanTest(ColumnRef('enabled', 'record_series'), 0);
-      this.recordSeriesColumn = this.addSystemColumn('Record Series', 'recordSeries', 'record_series.rrule', 'string', null, {
-        tableName: 'record_series',
-        alias: 'record_series',
-        ast: BoolExpr(0, [expr1, expr2])
-      });
-    }
-    ;
-    if (this.fullSchema) {
-      this.addSystemColumn('Item Index', 'index', '_index', 'integer');
-      this.addSystemColumn('Geometry', 'geometryAsGeoJSON', '_geometry', 'geometry');
-      this.addSystemColumn('Latitude', 'latitude', '_latitude', 'double');
-      this.addSystemColumn('Longitude', 'longitude', '_longitude', 'double');
-      this.addSystemColumn('Changeset', 'changesetID', '_changeset_id', 'string');
-      this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
-      this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
-      this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');
-    }
-    this.setupElementColumns();
-  };
-  _createClass(RepeatableSchema, [{
-    key: "tableName",
-    get: function get() {
-      return this.formSchema.tableName + '_' + this.repeatable.dataName;
-    }
-  }, {
-    key: "tableNameWithoutPrefix",
-    get: function get() {
-      return this.repeatable.dataName;
-    }
-  }]);
-  return RepeatableSchema;
-}(_formFieldSchema["default"]);
-exports["default"] = RepeatableSchema;
+}
+exports.default = RepeatableSchema;
 //# sourceMappingURL=repeatable-schema.js.map

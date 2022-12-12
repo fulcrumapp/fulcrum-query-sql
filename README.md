@@ -5,7 +5,7 @@ This is shared code for the Fulcrum Query API and the Fulcrum Editor application
 ### Build
 
 ```sh
-make
+yarn build
 ```
 
 ### Publishing
