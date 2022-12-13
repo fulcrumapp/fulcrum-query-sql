@@ -148,7 +148,7 @@ class Converter {
             // makes sure when the browser calculates a dynamic range, the server would calculate
             // the same range. So 'Today' is midnight to midnight in the user's local time. It would
             // be much less useful and confusing if we forced "Today" to always be London's today.
-            const now = this.GetDate(null, options, expression.column.isDateTime);
+            const now = this.GetDate(null, options, true);
             const range = (0, operator_1.calculateDateRange)(expression.operator, expression.value, now);
             const value1 = this.ConvertDateValue(range[0]);
             const value2 = this.ConvertDateValue(range[1]);
@@ -934,7 +934,8 @@ class Converter {
         if (!expression.isValid) {
             return null;
         }
-        return converter[expression.operator](expression, options);
+        const mergedOptions = Object.assign(Object.assign({}, options), expression.options);
+        return converter[expression.operator](expression, mergedOptions);
     }
 }
 exports.default = Converter;

@@ -6,12 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Expression = void 0;
 const lodash_1 = __importDefault(require("lodash"));
 const operator_1 = require("./operator");
+const query_options_1 = __importDefault(require("./query-options"));
 class Expression {
     constructor(attrs, schema) {
         attrs = attrs || {};
         this._field = attrs.field || null;
         this._operator = attrs.operator || null;
         this._value = attrs.value || null;
+        this._options = new query_options_1.default(attrs.options || {});
         this._schema = schema;
     }
     get isValid() {
@@ -158,6 +160,12 @@ class Expression {
         }
         this._value = [this.value[0], date && date.endOf('day').format('YYYY-MM-DD HH:mm:ss')];
         this.clearRangeValuesIfNull();
+    }
+    get options() {
+        return this._options;
+    }
+    set options(options) {
+        this._options = options;
     }
     clearRangeValuesIfNull() {
         // if both values are null, clear it, don't allow [ null, null ]

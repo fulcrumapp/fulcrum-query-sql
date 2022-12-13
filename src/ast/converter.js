@@ -892,7 +892,9 @@ export default class Converter {
       return null;
     }
 
-    return converter[expression.operator](expression, options);
+    const mergedOptions = { ...options, ...expression.options };
+
+    return converter[expression.operator](expression, mergedOptions);
   }
 
   BooleanConverter = (type, condition, options) => {
@@ -1087,7 +1089,7 @@ export default class Converter {
     // makes sure when the browser calculates a dynamic range, the server would calculate
     // the same range. So 'Today' is midnight to midnight in the user's local time. It would
     // be much less useful and confusing if we forced "Today" to always be London's today.
-    const now = this.GetDate(null, options, expression.column.isDateTime);
+    const now = this.GetDate(null, options, true);
 
     const range = calculateDateRange(expression.operator, expression.value, now);
 

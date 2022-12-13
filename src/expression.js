@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import { availableOperatorsForColumn, isValueRequired, isDateOperator, OperatorsByValue } from './operator';
+import QueryOptions from './query-options';
 
 export class Expression {
   constructor(attrs, schema) {
@@ -9,6 +10,7 @@ export class Expression {
     this._field = attrs.field || null;
     this._operator = attrs.operator || null;
     this._value = attrs.value || null;
+    this._options = new QueryOptions(attrs.options || {});
     this._schema = schema;
   }
 
@@ -200,6 +202,14 @@ export class Expression {
     this._value = [ this.value[0], date && date.endOf('day').format('YYYY-MM-DD HH:mm:ss') ];
 
     this.clearRangeValuesIfNull();
+  }
+
+  get options() {
+    return this._options;
+  }
+
+  set options(options) {
+    this._options = options;
   }
 
   clearRangeValuesIfNull() {
