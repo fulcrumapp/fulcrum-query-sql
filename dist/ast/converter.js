@@ -934,7 +934,8 @@ class Converter {
         if (!expression.isValid) {
             return null;
         }
-        return converter[expression.operator](expression, options);
+        const mergedOptions = Object.assign(Object.assign({}, options), expression.options);
+        return converter[expression.operator](expression, mergedOptions);
     }
 }
 exports.default = Converter;

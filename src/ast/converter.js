@@ -892,7 +892,9 @@ export default class Converter {
       return null;
     }
 
-    return converter[expression.operator](expression, options);
+    const mergedOptions = { ...options, ...expression.options };
+
+    return converter[expression.operator](expression, mergedOptions);
   }
 
   BooleanConverter = (type, condition, options) => {
