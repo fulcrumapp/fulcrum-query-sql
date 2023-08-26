@@ -636,7 +636,7 @@ export function calculateDateRange(operator, value, now) {
       return range(date1);
 
     case OperatorType.DateYesterday.name:
-      return range(date1.subtract(1, 'days'));
+      return range(date1.subtract(1, 'days').startOf('day'), date1.clone().startOf('day'));
 
     case OperatorType.DateTomorrow.name:
       return range(date1.add(1, 'days'));
