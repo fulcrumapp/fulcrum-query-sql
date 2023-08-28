@@ -1091,7 +1091,7 @@ export default class Converter {
     // be much less useful and confusing if we forced "Today" to always be London's today.
     const now = this.GetDate(null, options, true);
 
-    const range = calculateDateRange(expression.operator, expression.value, now);
+    const range = calculateDateRange(expression.column, expression.operator, expression.value, now);
 
     const value1 = this.ConvertDateValue(range[0]);
     const value2 = this.ConvertDateValue(range[1]);
