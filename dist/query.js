@@ -182,6 +182,7 @@ class Query {
         };
     }
     toRawAST(options) {
+        console.log('query-sql converter object', new converter_1.default().toAST(this, options));
         return new converter_1.default().toAST(this, options);
     }
     toCountAST(options) {

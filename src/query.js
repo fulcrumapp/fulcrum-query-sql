@@ -130,7 +130,7 @@ export default class Query {
     joins.push.apply(joins, this.filter.allExpressions.filter((o) => {
       return o.isValid && o.column.join;
     }).map(o => o.column));
-    
+
     return joins;
   }
 
@@ -234,6 +234,8 @@ export default class Query {
   }
 
   toRawAST(options) {
+
+    console.log('query-sql converter object', new Converter().toAST(this, options));
     return new Converter().toAST(this, options);
   }
 

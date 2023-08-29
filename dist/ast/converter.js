@@ -96,6 +96,8 @@ class Converter {
             return (0, helpers_1.AExpr)(8, '~~*', this.ConvertToText(expression.column), this.ConstValue(expression.column, expression.scalarValue));
         };
         this.TextNotEqualConverter = (expression) => {
+            console.log('query-sql text_not_equal_converter expression:', expression);
+            console.log('query-sql text_not_equal_converter result:', (0, helpers_1.AExpr)(8, '!~~*', this.ConvertToText(expression.column), this.ConstValue(expression.column, expression.scalarValue)));
             return (0, helpers_1.AExpr)(8, '!~~*', this.ConvertToText(expression.column), this.ConstValue(expression.column, expression.scalarValue));
         };
         this.TextContainConverter = (expression) => {

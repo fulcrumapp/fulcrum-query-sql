@@ -44,7 +44,7 @@ export default class Converter {
     const targetList = this.targetList(query, sort, boundingBox);
 
     const joins = query.joinColumnsWithSorting.map(o => o.join);
-    
+
     const fromClause = this.fromClause(query, joins);
 
     const whereClause = this.whereClause(query, boundingBox, searchFilter);
@@ -1006,6 +1006,9 @@ export default class Converter {
   }
 
   TextNotEqualConverter = (expression) => {
+    console.log('query-sql text_not_equal_converter expression:', expression);
+    console.log('query-sql text_not_equal_converter result:', AExpr(8, '!~~*', this.ConvertToText(expression.column),
+                 this.ConstValue(expression.column, expression.scalarValue)));
     return AExpr(8, '!~~*', this.ConvertToText(expression.column),
                  this.ConstValue(expression.column, expression.scalarValue));
   }
