@@ -1011,6 +1011,7 @@ export default class Converter {
     console.log('query-sql text_not_equal_converter result:', AExpr(8, '!~~*', this.ConvertToText(expression.column),
                  this.ConstValue(expression.column, expression.scalarValue)));
     const newOrExpression = { ...expression, type: 'or' };
+    console.log('newOrExpression', newOrExpression);
     console.log('nodeForCondition:', this.nodeForCondition(newOrExpression));
 
     return AExpr(8, '!~~*', this.ConvertToText(expression.column),
