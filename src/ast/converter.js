@@ -816,6 +816,7 @@ export default class Converter {
   }
 
   nodeForExpression(expression, options) {
+    console.log('expression.expressions', expression.expressions);
     if (expression.expressions) {
       return this.nodeForCondition(expression, options);
     }
@@ -1009,6 +1010,9 @@ export default class Converter {
     console.log('query-sql text_not_equal_converter expression:', expression);
     console.log('query-sql text_not_equal_converter result:', AExpr(8, '!~~*', this.ConvertToText(expression.column),
                  this.ConstValue(expression.column, expression.scalarValue)));
+    const newOrExpression = { ...expression, type: 'or' };
+    console.log('nodeForCondition:', this.nodeForCondition(newOrExpression));
+
     return AExpr(8, '!~~*', this.ConvertToText(expression.column),
                  this.ConstValue(expression.column, expression.scalarValue));
   }
