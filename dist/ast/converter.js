@@ -99,7 +99,8 @@ class Converter {
             console.log('query-sql text_not_equal_converter expression:', expression);
             console.log('query-sql text_not_equal_converter result:', (0, helpers_1.AExpr)(8, '!~~*', this.ConvertToText(expression.column), this.ConstValue(expression.column, expression.scalarValue)));
             const newOrExpression = Object.assign(Object.assign({}, expression), { type: 'or' });
-            console.log('nodeForCondition:', this.nodeForCondition(newOrExpression));
+            console.log('newOrExpression', newOrExpression);
+            // console.log('nodeForCondition:', this.nodeForCondition(newOrExpression));
             return (0, helpers_1.AExpr)(8, '!~~*', this.ConvertToText(expression.column), this.ConstValue(expression.column, expression.scalarValue));
         };
         this.TextContainConverter = (expression) => {
@@ -414,23 +415,27 @@ class Converter {
             joins.push(options.column.join);
         }
         if (isLinkedRecord) {
-            joins.push({ inner: false,
+            joins.push({
+                inner: false,
                 tableName: `${query.form.id}/${options.column.element.key}`,
                 alias: '__linked_join',
                 sourceColumn: '_record_id',
-                joinColumn: 'source_record_id' });
+                joinColumn: 'source_record_id'
+            });
             const subQuery = (0, helpers_1.SelectStmt)({
                 targetList: [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_title'), '__title'),
                     (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_id'), '__record_id')],
                 fromClause: [(0, helpers_1.RangeVar)(`${options.column.element.form.id}`)]
             });
             const linkedSubselect = (0, helpers_1.RangeSubselect)(subQuery, (0, helpers_1.Alias)('__linked'));
-            joins.push({ inner: false,
+            joins.push({
+                inner: false,
                 rarg: linkedSubselect,
                 alias: '__linked',
                 sourceTableName: '__linked_join',
                 sourceColumn: 'linked_record_id',
-                joinColumn: '__record_id' });
+                joinColumn: '__record_id'
+            });
         }
         const fromClause = this.fromClause(query, joins, [options.column]);
         // const whereClause = null; // options.all ? null : this.whereClause(query);
