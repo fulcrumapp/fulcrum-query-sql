@@ -1,58 +1,58 @@
 export const AggregateType = {
   Sum: {
     name: 'sum',
-    label: 'Sum'
+    label: 'Sum',
   },
   Average: {
     name: 'average',
-    label: 'Average'
+    label: 'Average',
   },
   Median: {
     name: 'median',
-    label: 'Median'
+    label: 'Median',
   },
   Min: {
     name: 'min',
-    label: 'Min'
+    label: 'Min',
   },
   Max: {
     name: 'max',
-    label: 'Max'
+    label: 'Max',
   },
   StdDev: {
     name: 'stddev',
-    label: 'Standard Deviation'
+    label: 'Standard Deviation',
   },
   Histogram: {
     name: 'histogram',
-    label: 'Histogram'
+    label: 'Histogram',
   },
   Empty: {
     name: 'empty',
     label: 'Count Blank',
-    count: true
+    count: true,
   },
   NotEmpty: {
     name: 'not_empty',
     label: 'Count Not Blank',
-    count: true
+    count: true,
   },
   Unique: {
     name: 'unique',
     label: 'Count Unique Values',
-    count: true
+    count: true,
   },
   PercentEmpty: {
     name: 'percent_empty',
-    label: '% Blank'
+    label: '% Blank',
   },
   PercentNotEmpty: {
     name: 'percent_not_empty',
-    label: '% Not Blank'
+    label: '% Not Blank',
   },
   PercentUnique: {
     name: 'percent_unique',
-    label: '% Unique'
+    label: '% Unique',
   }
 };
 
@@ -65,7 +65,7 @@ for (const key of Object.keys(AggregateType)) {
 const TEXTUAL_AGGREGATES = [
   AggregateType.Empty,
   AggregateType.NotEmpty,
-  AggregateType.Unique
+  AggregateType.Unique,
 ];
 
 const NUMERIC_AGGREGATES = [
@@ -78,7 +78,7 @@ const NUMERIC_AGGREGATES = [
   AggregateType.Histogram,
   AggregateType.Empty,
   AggregateType.NotEmpty,
-  AggregateType.Unique
+  AggregateType.Unique,
 ];
 
 const DATE_AGGREGATES = [
@@ -87,7 +87,7 @@ const DATE_AGGREGATES = [
   AggregateType.Histogram,
   AggregateType.Empty,
   AggregateType.NotEmpty,
-  AggregateType.Unique
+  AggregateType.Unique,
 ];
 
 export function availableAggregatesForColumn(column) {
