@@ -605,9 +605,9 @@ export default class Query {
   }
 
   setup() {
-    if (!this.ast) {
-      return;
-    }
+    // if (!this.ast) {
+    //   return;
+    // }
 
     const geometryColumns = this.schema.geometryColumns;
 
