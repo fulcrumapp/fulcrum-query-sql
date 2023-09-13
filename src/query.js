@@ -608,7 +608,7 @@ export default class Query {
     // if (!this.ast) {
     //   return;
     // }
-
+    console.log('we are in fqs Query setup');
     const geometryColumns = this.schema.geometryColumns;
 
     if (geometryColumns.length) {

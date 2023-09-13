@@ -480,9 +480,10 @@ class Query {
         return parts.join(', ');
     }
     setup() {
-        if (!this.ast) {
-            return;
-        }
+        // if (!this.ast) {
+        //   return;
+        // }
+        console.log('we are in fqs Query setup');
         const geometryColumns = this.schema.geometryColumns;
         if (geometryColumns.length) {
             // For custom SQL, we need to add a column called __geometry at the end that evaluates to the
