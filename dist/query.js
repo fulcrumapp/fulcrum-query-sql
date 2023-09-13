@@ -333,6 +333,7 @@ class Query {
                 (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_form_values'), 'form_values'),
                 (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_latitude'), 'latitude'),
                 (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_longitude'), 'longitude'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_geometry'), 'geometry'),
                 (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_edited_duration'), 'edited_duration'),
                 (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_duration'), 'updated_duration'),
                 (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_duration'), 'created_duration'),
@@ -480,10 +481,9 @@ class Query {
         return parts.join(', ');
     }
     setup() {
-        // if (!this.ast) {
-        //   return;
-        // }
-        console.log('we are in fqs Query setup');
+        if (!this.ast) {
+            return;
+        }
         const geometryColumns = this.schema.geometryColumns;
         if (geometryColumns.length) {
             // For custom SQL, we need to add a column called __geometry at the end that evaluates to the

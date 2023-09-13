@@ -426,6 +426,7 @@ export default class Query {
         ResTarget(ColumnRef('_form_values'), 'form_values'),
         ResTarget(ColumnRef('_latitude'), 'latitude'),
         ResTarget(ColumnRef('_longitude'), 'longitude'),
+        ResTarget(ColumnRef('_geometry'), 'geometry'),
         ResTarget(ColumnRef('_edited_duration'), 'edited_duration'),
         ResTarget(ColumnRef('_updated_duration'), 'updated_duration'),
         ResTarget(ColumnRef('_created_duration'), 'created_duration'),
@@ -605,10 +606,9 @@ export default class Query {
   }
 
   setup() {
-    // if (!this.ast) {
-    //   return;
-    // }
-    console.log('we are in fqs Query setup');
+    if (!this.ast) {
+      return;
+    }
     const geometryColumns = this.schema.geometryColumns;
 
     if (geometryColumns.length) {
