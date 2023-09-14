@@ -859,7 +859,7 @@ export default class Converter {
       [OperatorType.ArrayEqual.name]: this.ArrayEqualConverter,
       [OperatorType.Search.name]: this.SearchConverter,
       [OperatorType.DateToday.name]: this.DynamicDateConverter,
-      [OperatorType.DateYesterday.name]: this.DynamicDateConverter,
+      [OperatorType.DateYesterday.name]: this.YesterdayConverter,
       [OperatorType.DateTomorrow.name]: this.DynamicDateConverter,
       [OperatorType.DateLast7Days.name]: this.DynamicDateConverter,
       [OperatorType.DateLast30Days.name]: this.DynamicDateConverter,
