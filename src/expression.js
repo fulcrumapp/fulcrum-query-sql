@@ -34,6 +34,10 @@ export class Expression {
     return this._value;
   }
 
+  set value(value) {
+    this._value = value;
+  }
+
   get arrayValue() {
     if (this.hasValue) {
       return Array.isArray(this.value[0]) ? this.value[0] : this.value;
