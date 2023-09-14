@@ -45,7 +45,7 @@ class Converter {
             return this.BinaryConverter(0, '=', expression);
         };
         this.YesterdayConverter = (expression) => {
-            const timeZone = expression.options.timeZone;
+            const timeZone = 'Asia/Shanghai'; //hardcode timezone (last attemp 🥵)
             const today = moment_timezone_1.default.tz(timeZone).format('YYYY-MM-DD');
             const yesterday = (0, moment_timezone_1.default)(today).subtract(1, 'days').format('YYYY-MM-DD');
             expression.value = [yesterday];
