@@ -935,6 +935,15 @@ export default class Converter {
     return this.BinaryConverter(0, '=', expression);
   }
 
+  YesterdayConverter = (expression) => {
+    const timeZone = expression.options.timeZone;
+    const today = moment.tz(timeZone).format('YYYY-MM-DD');
+    const yesterday = moment(today).subtract(1, 'days').format('YYYY-MM-DD');
+    expression.value = [yesterday];
+    expression.scalarValue = yesterday;
+    return this.BinaryConverter(0, '=', expression);
+  }
+
   NotEqualConverter = (expression) => {
     return this.BinaryConverter(0, '<>', expression);
   }
