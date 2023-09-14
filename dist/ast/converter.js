@@ -911,7 +911,7 @@ class Converter {
             [operator_1.OperatorType.ArrayEqual.name]: this.ArrayEqualConverter,
             [operator_1.OperatorType.Search.name]: this.SearchConverter,
             [operator_1.OperatorType.DateToday.name]: this.DynamicDateConverter,
-            [operator_1.OperatorType.DateYesterday.name]: this.DynamicDateConverter,
+            [operator_1.OperatorType.DateYesterday.name]: this.YesterdayConverter,
             [operator_1.OperatorType.DateTomorrow.name]: this.DynamicDateConverter,
             [operator_1.OperatorType.DateLast7Days.name]: this.DynamicDateConverter,
             [operator_1.OperatorType.DateLast30Days.name]: this.DynamicDateConverter,
