@@ -45,7 +45,7 @@ class Converter {
             return this.BinaryConverter(0, '=', expression);
         };
         this.YesterdayConverter = (expression) => {
-            const timeZone = 'Asia/Shanghai'; //hardcode timezone (last attemp 🥵)
+            const timeZone = expression.options.timeZone;
             const today = moment_timezone_1.default.tz(timeZone).format('YYYY-MM-DD');
             const yesterday = (0, moment_timezone_1.default)(today).subtract(1, 'days').format('YYYY-MM-DD');
             expression.value = [yesterday];
@@ -157,7 +157,7 @@ class Converter {
             // the same range. So 'Today' is midnight to midnight in the user's local time. It would
             // be much less useful and confusing if we forced "Today" to always be London's today.
             const now = this.GetDate(null, options, true);
-            const range = (0, operator_1.calculateDateRange)(expression.column, expression.operator, expression.value, now);
+            const range = (0, operator_1.calculateDateRange)(expression.operator, expression.value, now);
             const value1 = this.ConvertDateValue(range[0]);
             const value2 = this.ConvertDateValue(range[1]);
             return this.Between(expression.column, value1, value2);

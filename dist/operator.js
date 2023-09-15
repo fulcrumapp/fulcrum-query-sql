@@ -543,14 +543,11 @@ function availableOperatorsForColumn(column) {
     return operators;
 }
 exports.availableOperatorsForColumn = availableOperatorsForColumn;
-function calculateDateRange(column, operator, value, now) {
+function calculateDateRange(operator, value, now) {
     now = (0, moment_1.default)(now || new Date()).clone().startOf('day');
     const date1 = now.clone();
     const date2 = now.clone();
     const range = (start, end) => {
-        if (column.type === 'date') {
-            return [start.clone(), (end || start).clone()];
-        }
         return [start.clone(), (end || start).clone().endOf('day')];
     };
     switch (operator) {
