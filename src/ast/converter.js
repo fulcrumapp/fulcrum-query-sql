@@ -936,7 +936,7 @@ export default class Converter {
   }
 
   YesterdayConverter = (expression) => {
-    const timeZone = 'Asia/Shanghai'; //hardcode timezone (last attemp 🥵)
+    const timeZone = expression.options.timeZone;
     const today = moment.tz(timeZone).format('YYYY-MM-DD');
     const yesterday = moment(today).subtract(1, 'days').format('YYYY-MM-DD');
     expression.value = [yesterday];
