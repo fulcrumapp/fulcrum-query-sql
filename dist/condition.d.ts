@@ -1,7 +1,7 @@
 export namespace ConditionType {
-    const And: string;
-    const Or: string;
-    const Not: string;
+    let And: string;
+    let Or: string;
+    let Not: string;
 }
 export class Condition {
     constructor(attrs: any, schema: any);

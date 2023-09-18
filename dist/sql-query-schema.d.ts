@@ -9,4 +9,4 @@ export default class SQLQuerySchema extends FormFieldSchema {
     get tableName(): any;
     get isSQL(): boolean;
 }
-import FormFieldSchema from "./form-field-schema";
+import FormFieldSchema from './form-field-schema';

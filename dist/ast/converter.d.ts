@@ -761,4 +761,4 @@ export default class Converter {
     };
     IsValidRegExp: (string: any) => boolean;
 }
-import moment from "moment-timezone";
+import moment from 'moment-timezone';

@@ -30,5 +30,5 @@ export default class SimpleColumn extends Column {
     exportValue(object: any, options?: {}): any;
     get isSQL(): boolean;
 }
-import Column from "./column";
-import Join from "./join";
+import Column from './column';
+import Join from './join';
