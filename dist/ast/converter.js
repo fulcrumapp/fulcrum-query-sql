@@ -63,8 +63,8 @@ class Converter {
             let value1 = expression.value1;
             let value2 = expression.value2;
             if (expression.isDateOperator) {
-                value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
-                value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
+                value1 = value1 && this.ConvertDateValue(expression, this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
+                value2 = value2 && this.ConvertDateValue(expression, this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
             }
             return this.Between(expression.column, value1, value2);
         };
@@ -72,8 +72,8 @@ class Converter {
             let value1 = expression.value1;
             let value2 = expression.value2;
             if (expression.isDateOperator) {
-                value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
-                value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
+                value1 = value1 && this.ConvertDateValue(expression, this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
+                value2 = value2 && this.ConvertDateValue(expression, this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
             }
             return this.NotBetween(expression.column, value1, value2);
         };
@@ -149,9 +149,9 @@ class Converter {
             // the same range. So 'Today' is midnight to midnight in the user's local time. It would
             // be much less useful and confusing if we forced "Today" to always be London's today.
             const now = this.GetDate(null, options, true);
-            const range = (0, operator_1.calculateDateRange)(expression.operator, expression.value, now);
-            const value1 = this.ConvertDateValue(range[0]);
-            const value2 = this.ConvertDateValue(range[1]);
+            const range = (0, operator_1.calculateDateRange)(expression.column, expression.operator, expression.value, now);
+            const value1 = this.ConvertDateValue(expression, range[0]);
+            const value2 = this.ConvertDateValue(expression, range[1]);
             return this.Between(expression.column, value1, value2);
         };
         this.NotBetween = (column, value1, value2) => {
@@ -252,9 +252,10 @@ class Converter {
             const timeZone = (options && options.timeZone) || moment_timezone_1.default.tz.guess();
             return moment_timezone_1.default.tz(date, timeZone);
         };
-        this.ConvertDateValue = (date) => {
+        this.ConvertDateValue = (expression, date) => {
             if (date) {
-                return date.clone().toISOString();
+                const timestamp = date.clone().toISOString();
+                return expression.column.type !== 'date' ? timestamp : timestamp.substring(0, 10);
             }
             return null;
         };

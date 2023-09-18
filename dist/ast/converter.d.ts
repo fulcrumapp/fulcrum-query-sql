@@ -748,7 +748,7 @@ export default class Converter {
         };
     } | null;
     GetDate: (date: any, options: any, isDateTime: any) => moment.Moment;
-    ConvertDateValue: (date: any) => any;
+    ConvertDateValue: (expression: any, date: any) => any;
     ConvertToText: (column: any) => {
         ColumnRef: {
             fields: any[];
@@ -761,4 +761,4 @@ export default class Converter {
     };
     IsValidRegExp: (string: any) => boolean;
 }
-import moment from 'moment-timezone';
+import moment from "moment-timezone";

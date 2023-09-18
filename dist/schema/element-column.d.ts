@@ -23,4 +23,4 @@ export default class ElementColumn extends Column {
     valueFrom(feature: any): any;
     exportValue(feature: any, options: any): any;
 }
-import Column from './column';
+import Column from "./column";

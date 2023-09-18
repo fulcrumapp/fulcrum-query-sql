@@ -48,4 +48,4 @@ export class Expression {
     }): any;
     toHumanDescription(): string | null;
 }
-import QueryOptions from './query-options';
+import QueryOptions from "./query-options";
