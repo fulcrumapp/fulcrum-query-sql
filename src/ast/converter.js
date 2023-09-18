@@ -960,8 +960,8 @@ export default class Converter {
     let value2 = expression.value2;
 
     if (expression.isDateOperator) {
-      value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
-      value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
+      value1 = value1 && this.ConvertDateValue(expression, this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
+      value2 = value2 && this.ConvertDateValue(expression, this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
     }
 
     return this.Between(expression.column, value1, value2);
@@ -972,8 +972,8 @@ export default class Converter {
     let value2 = expression.value2;
 
     if (expression.isDateOperator) {
-      value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
-      value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
+      value1 = value1 && this.ConvertDateValue(expression, this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
+      value2 = value2 && this.ConvertDateValue(expression, this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
     }
 
     return this.NotBetween(expression.column, value1, value2);
@@ -1091,10 +1091,10 @@ export default class Converter {
     // be much less useful and confusing if we forced "Today" to always be London's today.
     const now = this.GetDate(null, options, true);
 
-    const range = calculateDateRange(expression.operator, expression.value, now);
+    const range = calculateDateRange(expression.column, expression.operator, expression.value, now);
 
-    const value1 = this.ConvertDateValue(range[0]);
-    const value2 = this.ConvertDateValue(range[1]);
+    const value1 = this.ConvertDateValue(expression, range[0]);
+    const value2 = this.ConvertDateValue(expression, range[1]);
 
     return this.Between(expression.column, value1, value2);
   }
@@ -1215,9 +1215,11 @@ export default class Converter {
     return moment.tz(date, timeZone);
   }
 
-  ConvertDateValue = (date) => {
+  ConvertDateValue = (expression, date) => {
     if (date) {
-      return date.clone().toISOString();
+      const timestamp = date.clone().toISOString();
+
+      return expression.column.type !== 'date' ? timestamp : timestamp.substring(0, 10);
     }
     return null;
   }
