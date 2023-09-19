@@ -1207,9 +1207,9 @@ export default class Converter {
 
   ConvertDateValue = (expression, date) => {
     if (date) {
-      const timestamp = date.clone().toISOString();
+      const isTimestamp = expression.column.type !== 'date';
 
-      return expression.column.type !== 'date' ? timestamp : timestamp.substring(0, 10);
+      return isTimestamp ? date.toISOString() : date.format('YYYY-MM-DD');
     }
     return null;
   }
