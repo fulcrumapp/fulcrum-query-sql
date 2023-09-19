@@ -548,7 +548,7 @@ function calculateDateRange(column, operator, value, now) {
     const date1 = now.clone();
     const date2 = now.clone();
     const range = (start, end) => {
-        if (column.type === 'date') {
+        if (column.isDateOnly) {
             return [start.clone(), (end || start).clone()];
         }
         return [start.clone(), (end || start).clone().endOf('day')];
