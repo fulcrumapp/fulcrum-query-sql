@@ -7,6 +7,10 @@ export default class Column {
     return this.type === 'timestamp' || this.type === 'date';
   }
 
+  get isDateOnly() {
+    return this.type === 'date';
+  }
+
   get isTime() {
     return this.type === 'time';
   }

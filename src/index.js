@@ -4,6 +4,7 @@ export { default as SQLQuerySchema } from './sql-query-schema';
 export { default as Column } from './schema/column';
 export { default as SimpleColumn } from './schema/simple-column';
 export { default as ElementColumn } from './schema/element-column';
+export { default as Converter } from './ast/converter';
 export * from './expression';
 export * from './condition';
 export * from './operator';

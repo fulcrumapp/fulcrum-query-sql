@@ -747,8 +747,8 @@ export default class Converter {
             val: any;
         };
     } | null;
-    GetDate: (date: any, options: any, isDateTime: any) => moment.Moment;
-    ConvertDateValue: (date: any) => any;
+    GetDate: (dateString: any, options: any) => moment.Moment;
+    ConvertDateValue: (expression: any, date: any) => any;
     ConvertToText: (column: any) => {
         ColumnRef: {
             fields: any[];

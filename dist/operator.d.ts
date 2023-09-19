@@ -4,7 +4,7 @@ export function isDateOperator(operator: any): {
     label: string;
 } | undefined;
 export function availableOperatorsForColumn(column: any): any;
-export function calculateDateRange(operator: any, value: any, now: any): any;
+export function calculateDateRange(column: any, operator: any, value: any, now: any): any;
 export namespace OperatorType {
     namespace Empty {
         let name: string;
