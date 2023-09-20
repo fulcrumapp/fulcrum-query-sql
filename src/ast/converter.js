@@ -960,8 +960,8 @@ export default class Converter {
     let value2 = expression.value2;
 
     if (expression.isDateOperator) {
-      value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
-      value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
+      value1 = value1 && this.ConvertDateValue(expression, this.GetDate(value1, options).startOf('day'));
+      value2 = value2 && this.ConvertDateValue(expression, this.GetDate(value2, options).endOf('day'));
     }
 
     return this.Between(expression.column, value1, value2);
@@ -972,8 +972,8 @@ export default class Converter {
     let value2 = expression.value2;
 
     if (expression.isDateOperator) {
-      value1 = value1 && this.ConvertDateValue(this.GetDate(value1, options, expression.column.isDateTime).startOf('day'));
-      value2 = value2 && this.ConvertDateValue(this.GetDate(value2, options, expression.column.isDateTime).endOf('day'));
+      value1 = value1 && this.ConvertDateValue(expression, this.GetDate(value1, options).startOf('day'));
+      value2 = value2 && this.ConvertDateValue(expression, this.GetDate(value2, options).endOf('day'));
     }
 
     return this.NotBetween(expression.column, value1, value2);
@@ -1089,12 +1089,12 @@ export default class Converter {
     // makes sure when the browser calculates a dynamic range, the server would calculate
     // the same range. So 'Today' is midnight to midnight in the user's local time. It would
     // be much less useful and confusing if we forced "Today" to always be London's today.
-    const now = this.GetDate(null, options, true);
+    const now = this.GetDate(null, options);
 
-    const range = calculateDateRange(expression.operator, expression.value, now);
+    const range = calculateDateRange(expression.column, expression.operator, expression.value, now);
 
-    const value1 = this.ConvertDateValue(range[0]);
-    const value2 = this.ConvertDateValue(range[1]);
+    const value1 = this.ConvertDateValue(expression, range[0]);
+    const value2 = this.ConvertDateValue(expression, range[1]);
 
     return this.Between(expression.column, value1, value2);
   }
@@ -1199,25 +1199,15 @@ export default class Converter {
     return AConst(StringValue(value));
   }
 
-  GetDate = (date, options, isDateTime) => {
-    date = date || new Date().toISOString();
-
-    if (!isDateTime) {
-      // the `date` value comes in as the string "2017-11-12 23:59:59". We want it to be interpreted as UTC for the
-      // purposes of the SQL query generation. So we convert the local timestamp to a UTC one. We don't care if it's
-      // in a different timezone, we just need to make sure the date component of the timestamp is identical to the
-      // value stored in the date field. We are effectively disregarding the time component of the timestamp.
-      return moment(date.replace(' ', 'T') + 'Z').utc();
-    }
-
+  GetDate = (dateString, options) => {
     const timeZone = (options && options.timeZone) || moment.tz.guess();
 
-    return moment.tz(date, timeZone);
+    return moment.tz(dateString ?? new Date().toISOString(), timeZone);
   }
 
-  ConvertDateValue = (date) => {
+  ConvertDateValue = (expression, date) => {
     if (date) {
-      return date.clone().toISOString();
+      return expression.column.isDateTime ? date.toISOString() : date.format('YYYY-MM-DD');
     }
     return null;
   }

@@ -621,13 +621,17 @@ export function availableOperatorsForColumn(column) {
   return operators;
 }
 
-export function calculateDateRange(operator, value, now) {
+export function calculateDateRange(column, operator, value, now) {
   now = moment(now || new Date()).clone().startOf('day');
 
   const date1 = now.clone();
   const date2 = now.clone();
 
   const range = (start, end) => {
+    if (column.isDateOnly) {
+      return [ start.clone(), (end || start).clone() ];
+    }
+
     return [ start.clone(), (end || start).clone().endOf('day') ];
   };
 
