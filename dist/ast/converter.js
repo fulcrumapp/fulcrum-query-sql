@@ -596,6 +596,8 @@ class Converter {
                 }
             }
             if (item.search) {
+                console.log('Inside search >>>>');
+                console.log(item);
                 if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
                     systemParts.push((0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), columnRef(item.column)), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
                 }

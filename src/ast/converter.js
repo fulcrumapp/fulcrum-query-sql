@@ -498,6 +498,8 @@ export default class Converter {
       }
 
       if (item.search) {
+        console.log('Inside search >>>>');
+        console.log(item);
         if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
           systemParts.push(AExpr(8, '~~*', TypeCast(TypeName('text'), columnRef(item.column)),
                                           AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
