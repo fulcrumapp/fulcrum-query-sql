@@ -603,8 +603,7 @@ class Converter {
                         fromClause: [(0, helpers_1.RangeVar)(item.column.element.form.id)],
                         whereClause: (0, helpers_1.BoolExpr)(0, [
                             (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', item.column.element.form.id), columnRef(item.column)),
-                            // AExpr(8, '~~*', ColumnRef(item.column.element.form.id, '_title'), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
-                            (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), (0, helpers_1.ColumnRef)('_title', item.column.element.form.id)), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),
+                            (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_title', item.column.element.form.id), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),
                         ]),
                     })));
                 }

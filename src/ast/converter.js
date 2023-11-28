@@ -506,8 +506,7 @@ export default class Converter {
               fromClause: [RangeVar(item.column.element.form.id)],
               whereClause: BoolExpr(0, [
                 AExpr(1, '=', ColumnRef('_record_id', item.column.element.form.id), columnRef(item.column)),
-                // AExpr(8, '~~*', ColumnRef(item.column.element.form.id, '_title'), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
-                AExpr(8, '~~*', TypeCast(TypeName('text'), ColumnRef('_title', item.column.element.form.id)), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
+                AExpr(8, '~~*', ColumnRef('_title', item.column.element.form.id), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
               ]),
             }),
           ));

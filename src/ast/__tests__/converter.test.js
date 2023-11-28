@@ -1,7 +1,6 @@
 import { Form } from 'fulcrum-core';
 import Deparse from 'pg-query-deparser';
 import Converter from '../converter';
-import { ConditionType } from '../../condition';
 import FormSchema from '../../form-schema';
 import {
   ColumnRef,
@@ -41,14 +40,6 @@ describe('WhereClause converter', () => {
           label: 'Status',
           data_name: 'status',
         },
-        form_links: {
-          to: [
-            {
-              key: '3bd0',
-              form_id: 'ea635699-133f-4844-ae77-f4090fffc7b0',
-            },
-          ],
-        },
         elements: [
           {
             type: 'RecordLinkField',
@@ -83,7 +74,7 @@ describe('WhereClause converter', () => {
       const boolExpr = new Converter().whereClause(query);
       const sql = new Deparse().deparse(boolExpr);
 
-      const expectSql = '(EXISTS (SELECT 1 FROM "ea635699-133f-4844-ae77-f4090fffc7b0" WHERE ("ea635699-133f-4844-ae77-f4090fffc7b0"."_record_id" = ANY ("rl") AND "ea635699-133f-4844-ae77-f4090fffc7b0"."_title"::text ILIKE (\'%test%\'))))';
+      const expectSql = '(EXISTS (SELECT 1 FROM "ea635699-133f-4844-ae77-f4090fffc7b0" WHERE ("ea635699-133f-4844-ae77-f4090fffc7b0"."_record_id" = ANY ("rl") AND "ea635699-133f-4844-ae77-f4090fffc7b0"."_title" ILIKE (\'%test%\'))))';
       expect(sql).toEqual(expectSql);
     });
   });
