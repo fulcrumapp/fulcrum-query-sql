@@ -83,7 +83,7 @@ describe('WhereClause converter', () => {
       const boolExpr = new Converter().whereClause(query);
       const sql = new Deparse().deparse(boolExpr);
 
-      const expectSql = '(("records"."_record_series_id") = ("record_series"."record_series_id"))';
+      const expectSql = '(EXISTS (SELECT 1 FROM "ea635699-133f-4844-ae77-f4090fffc7b0" WHERE ("ea635699-133f-4844-ae77-f4090fffc7b0"."_record_id" = ANY ("rl") AND "ea635699-133f-4844-ae77-f4090fffc7b0"."_title"::text ILIKE (\'%test%\'))))';
       expect(sql).toEqual(expectSql);
     });
   });
