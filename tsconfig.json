@@ -11,9 +11,13 @@
     "noImplicitAny": true,
     "declaration": true,
     "target": "ES6",
-    "inlineSources": true
+    "inlineSources": true,
+    "skipLibCheck": true,
   },
   "include": [
     "src/"
+  ],
+  "exclude": [
+    "node_modules",
   ]
 }

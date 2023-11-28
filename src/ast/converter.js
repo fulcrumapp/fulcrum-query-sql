@@ -498,7 +498,20 @@ export default class Converter {
       }
 
       if (item.search) {
-        if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
+        if (item.column?.element?.isRecordLinkElement) {
+          systemParts.push(SubLink(
+            0,
+            SelectStmt({
+              targetList: [ResTarget(AConst(IntegerValue(1)))],
+              fromClause: [RangeVar(item.column.element.form.id)],
+              whereClause: BoolExpr(0, [
+                AExpr(1, '=', ColumnRef('_record_id', item.column.element.form.id), ColumnRef(item.column.element._dataName)),
+                // AExpr(8, '~~*', ColumnRef(item.column.element.form.id, '_title'), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
+                AExpr(8, '~~*', TypeCast(TypeName('text'), columnRef(item.column)), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
+              ]),
+            }),
+          ));
+        } else if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
           systemParts.push(AExpr(8, '~~*', TypeCast(TypeName('text'), columnRef(item.column)),
                                           AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
         } else {

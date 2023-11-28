@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const column_1 = __importDefault(require("./column"));
 const fulcrum_core_1 = require("fulcrum-core");
+const column_1 = __importDefault(require("./column"));
 class ElementColumn extends column_1.default {
     constructor({ element, rawColumn, type, id, part, index }) {
         super();
