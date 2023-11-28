@@ -91,8 +91,8 @@ describe('JoinClause converter', () => {
         joinColumn: 'record_series_id',
       };
 
-      const { joinExpr } = Converter.joinClause(baseQuery, join);
-      const { quals: ast } = joinExpr;
+      const { JoinExpr } = Converter.joinClause(baseQuery, join);
+      const { quals: ast } = JoinExpr;
       const sql = new Deparse().deparse(ast);
 
       const expectSql = '(("records"."_record_series_id") = ("record_series"."record_series_id"))';
