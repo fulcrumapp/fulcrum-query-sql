@@ -1,5 +1,5 @@
-import Column from './column';
 import { StatusValue, Record } from 'fulcrum-core';
+import Column from './column';
 
 export default class ElementColumn extends Column {
   constructor({element, rawColumn, type, id, part, index}) {

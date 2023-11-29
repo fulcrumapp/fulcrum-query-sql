@@ -574,6 +574,7 @@ class Converter {
         return [baseQuery];
     }
     whereClause(query, boundingBox, search, options = {}) {
+        var _a, _b;
         const systemParts = [];
         options = Object.assign(Object.assign({}, query.options || {}), options);
         const filterNode = this.nodeForCondition(query.filter, options);
@@ -596,7 +597,17 @@ class Converter {
                 }
             }
             if (item.search) {
-                if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
+                if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
+                    systemParts.push((0, helpers_1.SubLink)(0, (0, helpers_1.SelectStmt)({
+                        targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
+                        fromClause: [(0, helpers_1.RangeVar)(item.column.element.form.id)],
+                        whereClause: (0, helpers_1.BoolExpr)(0, [
+                            (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', item.column.element.form.id), columnRef(item.column)),
+                            (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_title', item.column.element.form.id), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),
+                        ]),
+                    })));
+                }
+                else if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
                     systemParts.push((0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), columnRef(item.column)), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
                 }
                 else {

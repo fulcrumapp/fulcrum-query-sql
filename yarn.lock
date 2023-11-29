@@ -957,6 +957,11 @@ arraybuffer.prototype.slice@^1.0.1:
     is-array-buffer "^3.0.2"
     is-shared-array-buffer "^1.0.2"
 
+async@^3.2.4:
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/async/-/async-3.2.5.tgz#ebd52a8fdaf7a2289a24df399f8d8485c8a46b66"
+  integrity sha512-baNZyqaaLhyLVKm/DlvdW051MSgO6b8eVfIezl9E5PqWxFgzLm/wQntEW4zOytVburDEr0JlALEpdOFwvErLsg==
+
 available-typed-arrays@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz#92f95616501069d07d10edb2fc37d3e1c65123b7"
@@ -1657,6 +1662,17 @@ fsevents@^2.3.2:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
+
+fulcrum-core@^1.0.1:
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/fulcrum-core/-/fulcrum-core-1.3.5.tgz#e6d97eff28af4487f637ef29f45dc843dc68ca9a"
+  integrity sha512-0xG8cBcC0XHktNlUK0YbnevhRYHcr+Hp/Gze5QBMjbOiMGC/l/qMaqcOiDppFDgmtf7AaRR5k+zqXwpNH/ThnQ==
+  dependencies:
+    async "^3.2.4"
+    lodash "^4.17.21"
+    mixmatch "^0.0.4"
+    relative-date "^1.1.3"
+    uuid "^9.0.0"
 
 function-bind@^1.1.1:
   version "1.1.1"
@@ -2567,7 +2583,7 @@ lodash.merge@^4.6.2:
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
-lodash@^4.13.1, lodash@^4.16.2:
+lodash@^4.13.1, lodash@^4.16.2, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -2639,6 +2655,11 @@ minimist@^1.2.0, minimist@^1.2.6:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
+
+mixmatch@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/mixmatch/-/mixmatch-0.0.4.tgz#cc889c6879ca3f607103b64802c729d39f9bcd78"
+  integrity sha512-obE48+qDU8rHL5CZ1sG4pGtebIhsbrw+8hS4bmSKzUFnb5B3uQx+5/8wXWUk1fdF528OaNkQx1G9HZKg40rsjA==
 
 moment-timezone@^0.5.11:
   version "0.5.43"
@@ -2925,6 +2946,11 @@ regexp.prototype.flags@^1.5.0:
     call-bind "^1.0.2"
     define-properties "^1.2.0"
     functions-have-names "^1.2.3"
+
+relative-date@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/relative-date/-/relative-date-1.1.3.tgz#120903040588ec7a4a399c6547fd01d0e3d2dc63"
+  integrity sha512-ith07IIjHojxuanrO+BNNxlpVCWyDzW3CELT+u4F/G7sdbifp5I+nXT8sVHLK3pl+ALhxhnr52/0XdEa+MrxEA==
 
 require-directory@^2.1.1:
   version "2.1.1"
@@ -3320,6 +3346,11 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+uuid@^9.0.0:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
+  integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
 
 v8-to-istanbul@^9.0.1:
   version "9.1.0"
