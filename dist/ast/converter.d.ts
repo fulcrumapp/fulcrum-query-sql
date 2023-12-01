@@ -1,3 +1,4 @@
+export const MAX_TILE_RECORDS: 1000;
 export default class Converter {
     static joinClause(baseQuery: any, { inner, tableName, alias, sourceColumn, joinColumn, sourceTableName, rarg, ast }: {
         inner: any;
@@ -55,7 +56,7 @@ export default class Converter {
     };
     toTileAST(query: any, { searchFilter }: {
         searchFilter: any;
-    }): {
+    }, maxTileRecords: any): {
         SelectStmt: {
             targetList: any;
             fromClause: any;

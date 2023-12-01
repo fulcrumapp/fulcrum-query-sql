@@ -32,7 +32,7 @@ import { AggregateType } from '../aggregate';
 import moment from 'moment-timezone';
 
 const MAX_DISTINCT_VALUES = 1000;
-const MAX_TILE_RECORDS = 1000;
+export const MAX_TILE_RECORDS = 1000;
 
 const columnRef = (column) => {
   return column.isSQL ? ColumnRef(column.id, column.source)
@@ -70,7 +70,7 @@ export default class Converter {
     return SelectStmt({targetList, fromClause, whereClause});
   }
 
-  toTileAST(query, {searchFilter}) {
+  toTileAST(query, { searchFilter }, maxTileRecords) {
     let targetList = null;
 
     if (query.ast) {
@@ -102,7 +102,13 @@ export default class Converter {
 
     const whereClause = this.whereClause(query, null, searchFilter);
 
-    const limitCount = this.limitCount(MAX_TILE_RECORDS);
+    const maxTileLimit = (maxTileRecords && maxTileRecords > MAX_TILE_RECORDS)
+      ? maxTileRecords
+      : MAX_TILE_RECORDS;
+
+    const limitCount = this.limitCount(maxTileLimit);
+
+    const response = SelectStmt({targetList, fromClause, whereClause, limitCount});
 
     return SelectStmt({targetList, fromClause, whereClause, limitCount});
   }
