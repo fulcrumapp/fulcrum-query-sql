@@ -32,7 +32,7 @@ import { AggregateType } from '../aggregate';
 import moment from 'moment-timezone';
 
 const MAX_DISTINCT_VALUES = 1000;
-export const MAX_TILE_RECORDS = 1000;
+const MAX_TILE_RECORDS = 1000;
 
 const columnRef = (column) => {
   return column.isSQL ? ColumnRef(column.id, column.source)

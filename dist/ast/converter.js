@@ -3,14 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MAX_TILE_RECORDS = void 0;
 const helpers_1 = require("./helpers");
 const condition_1 = require("../condition");
 const operator_1 = require("../operator");
 const aggregate_1 = require("../aggregate");
 const moment_timezone_1 = __importDefault(require("moment-timezone"));
 const MAX_DISTINCT_VALUES = 1000;
-exports.MAX_TILE_RECORDS = 1000;
+const MAX_TILE_RECORDS = 1000;
 const columnRef = (column) => {
     return column.isSQL ? (0, helpers_1.ColumnRef)(column.id, column.source)
         : (0, helpers_1.ColumnRef)(column.columnName, column.source);
@@ -308,9 +307,9 @@ class Converter {
         const joins = query.joinColumns.map(o => o.join);
         const fromClause = this.fromClause(query, joins);
         const whereClause = this.whereClause(query, null, searchFilter);
-        const maxTileLimit = (maxTileRecords && maxTileRecords > exports.MAX_TILE_RECORDS)
+        const maxTileLimit = (maxTileRecords && maxTileRecords > MAX_TILE_RECORDS)
             ? maxTileRecords
-            : exports.MAX_TILE_RECORDS;
+            : MAX_TILE_RECORDS;
         const limitCount = this.limitCount(maxTileLimit);
         const response = (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause, limitCount });
         return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause, limitCount });
