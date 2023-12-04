@@ -307,11 +307,8 @@ class Converter {
         const joins = query.joinColumns.map(o => o.join);
         const fromClause = this.fromClause(query, joins);
         const whereClause = this.whereClause(query, null, searchFilter);
-        const maxTileLimit = (maxTileRecords && maxTileRecords > MAX_TILE_RECORDS)
-            ? maxTileRecords
-            : MAX_TILE_RECORDS;
+        const maxTileLimit = (maxTileRecords > 0) ? maxTileRecords : MAX_TILE_RECORDS;
         const limitCount = this.limitCount(maxTileLimit);
-        const response = (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause, limitCount });
         return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause, limitCount });
     }
     toHistogramAST(query, { column, bucketSize, type, sort, pageSize, pageIndex, boundingBox, searchFilter }) {

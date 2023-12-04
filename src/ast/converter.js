@@ -102,13 +102,9 @@ export default class Converter {
 
     const whereClause = this.whereClause(query, null, searchFilter);
 
-    const maxTileLimit = (maxTileRecords && maxTileRecords > MAX_TILE_RECORDS)
-      ? maxTileRecords
-      : MAX_TILE_RECORDS;
+    const maxTileLimit = (maxTileRecords > 0) ? maxTileRecords : MAX_TILE_RECORDS;
 
     const limitCount = this.limitCount(maxTileLimit);
-
-    const response = SelectStmt({targetList, fromClause, whereClause, limitCount});
 
     return SelectStmt({targetList, fromClause, whereClause, limitCount});
   }
