@@ -241,8 +241,8 @@ export default class Query {
     return new Converter().toCountAST(this, options);
   }
 
-  toTileAST(options) {
-    return new Converter().toTileAST(this, options);
+  toTileAST(options, maxTileRecords) {
+    return new Converter().toTileAST(this, options, maxTileRecords);
   }
 
   toDistinctValuesAST(options) {
@@ -300,8 +300,14 @@ export default class Query {
     return this.deparse(this.toAST(options));
   }
 
-  toTileSQL() {
-    return this.deparse(this.toTileAST(this.runtimeFilters));
+  /**
+ * JSDoc notation to build required types into .d.ts query file.
+ *
+ * @param {any} [maxTileRecords] - The maximum number of tile records, can be null or undefined.
+ * @returns {any} The SQL string.
+ */
+  toTileSQL(maxTileRecords) {
+    return this.deparse(this.toTileAST(this.runtimeFilters, maxTileRecords));
   }
 
   toSummarySQL(columnSetting) {

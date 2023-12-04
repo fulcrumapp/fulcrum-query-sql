@@ -107,7 +107,7 @@ export default class Query {
             op: number;
         };
     };
-    toTileAST(options: any): {
+    toTileAST(options: any, maxTileRecords: any): {
         SelectStmt: {
             targetList: any;
             fromClause: any;
@@ -187,7 +187,13 @@ export default class Query {
         pageIndex: any;
         outerLimit: any;
     }): any;
-    toTileSQL(): any;
+    /**
+   * JSDoc notation to build required types into .d.ts query file.
+   *
+   * @param {any} [maxTileRecords] - The maximum number of tile records, can be null or undefined.
+   * @returns {any} The SQL string.
+   */
+    toTileSQL(maxTileRecords?: any): any;
     toSummarySQL(columnSetting: any): any;
     targetList(): any;
     fromClause({ applySort, pageSize, pageIndex, boundingBox, searchFilter }: {

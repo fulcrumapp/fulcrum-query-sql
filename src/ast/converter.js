@@ -70,7 +70,7 @@ export default class Converter {
     return SelectStmt({targetList, fromClause, whereClause});
   }
 
-  toTileAST(query, {searchFilter}) {
+  toTileAST(query, { searchFilter }, maxTileRecords) {
     let targetList = null;
 
     if (query.ast) {
@@ -102,7 +102,9 @@ export default class Converter {
 
     const whereClause = this.whereClause(query, null, searchFilter);
 
-    const limitCount = this.limitCount(MAX_TILE_RECORDS);
+    const maxTileLimit = (maxTileRecords > 0) ? maxTileRecords : MAX_TILE_RECORDS;
+
+    const limitCount = this.limitCount(maxTileLimit);
 
     return SelectStmt({targetList, fromClause, whereClause, limitCount});
   }
