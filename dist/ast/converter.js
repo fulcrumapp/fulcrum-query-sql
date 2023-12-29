@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const moment_timezone_1 = __importDefault(require("moment-timezone"));
+const lodash_1 = __importDefault(require("lodash"));
 const helpers_1 = require("./helpers");
 const condition_1 = require("../condition");
 const operator_1 = require("../operator");
 const aggregate_1 = require("../aggregate");
-const moment_timezone_1 = __importDefault(require("moment-timezone"));
 const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
 const columnRef = (column) => {
@@ -938,7 +939,7 @@ class Converter {
         if (!expression.isValid) {
             return null;
         }
-        const mergedOptions = Object.assign(Object.assign({}, options), expression.options);
+        const mergedOptions = Object.assign(Object.assign({}, options), lodash_1.default.omitBy(expression.options, lodash_1.default.isNull));
         return converter[expression.operator](expression, mergedOptions);
     }
 }
