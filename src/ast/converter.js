@@ -1,3 +1,6 @@
+import moment from 'moment-timezone';
+import _ from 'lodash';
+
 import { ColumnRef,
          ResTarget,
          AStar,
@@ -29,7 +32,6 @@ import { ColumnRef,
 import { ConditionType } from '../condition';
 import { OperatorType, calculateDateRange } from '../operator';
 import { AggregateType } from '../aggregate';
-import moment from 'moment-timezone';
 
 const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
@@ -906,7 +908,7 @@ export default class Converter {
       return null;
     }
 
-    const mergedOptions = { ...options, ...expression.options };
+    const mergedOptions = { ...options, ..._.omitBy(expression.options, _.isNull) };
 
     return converter[expression.operator](expression, mergedOptions);
   }
