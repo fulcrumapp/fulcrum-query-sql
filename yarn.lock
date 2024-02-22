@@ -1663,10 +1663,9 @@ fsevents@^2.3.2:
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
-fulcrum-core@^1.0.1:
+"fulcrum-core@github:fulcrumapp/fulcrum-core#update-setimmediate":
   version "1.3.5"
-  resolved "https://registry.yarnpkg.com/fulcrum-core/-/fulcrum-core-1.3.5.tgz#e6d97eff28af4487f637ef29f45dc843dc68ca9a"
-  integrity sha512-0xG8cBcC0XHktNlUK0YbnevhRYHcr+Hp/Gze5QBMjbOiMGC/l/qMaqcOiDppFDgmtf7AaRR5k+zqXwpNH/ThnQ==
+  resolved "https://codeload.github.com/fulcrumapp/fulcrum-core/tar.gz/5bc715e0fd046aafbb1a8893b38ea9832c785dc6"
   dependencies:
     async "^3.2.4"
     lodash "^4.17.21"
