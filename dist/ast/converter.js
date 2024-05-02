@@ -283,7 +283,9 @@ class Converter {
         const whereClause = this.whereClause(query, boundingBox, searchFilter);
         return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause });
     }
-    toTileAST(query, { searchFilter }, maxTileRecords) {
+    toTileAST(query, { searchFilter }, maxTileRecords, sorting = {}) {
+        // eslint-disable-next-line no-console
+        let sortClause = null;
         let targetList = null;
         if (query.ast) {
             const sort = [(0, helpers_1.SortBy)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)), 0, 0)];
@@ -305,12 +307,22 @@ class Converter {
                 targetList.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_parent_id'), 'parent_id'));
             }
         }
+        if (sorting && sorting.field && sorting.direction) {
+            if (sorting.field.startsWith('_')) {
+                targetList.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(sorting.field), 'sorting_field'));
+            }
+            else {
+                targetList.push((0, helpers_1.ResTarget)((0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), (0, helpers_1.AConst)((0, helpers_1.StringValue)(sorting.field))), 'sorting_field'));
+            }
+            sortClause = [((0, helpers_1.SortBy)((0, helpers_1.ColumnRef)('sorting_field'), sorting.direction, 0))];
+        }
         const joins = query.joinColumns.map(o => o.join);
         const fromClause = this.fromClause(query, joins);
         const whereClause = this.whereClause(query, null, searchFilter);
         const maxTileLimit = (maxTileRecords > 0) ? maxTileRecords : MAX_TILE_RECORDS;
         const limitCount = this.limitCount(maxTileLimit);
-        return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause, limitCount });
+        const selectst = (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause, sortClause, limitCount });
+        return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause, sortClause, limitCount });
     }
     toHistogramAST(query, { column, bucketSize, type, sort, pageSize, pageIndex, boundingBox, searchFilter }) {
         const subLinkColumn = (col, table) => {

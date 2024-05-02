@@ -241,8 +241,8 @@ export default class Query {
     return new Converter().toCountAST(this, options);
   }
 
-  toTileAST(options, maxTileRecords) {
-    return new Converter().toTileAST(this, options, maxTileRecords);
+  toTileAST(options, maxTileRecords, sorting = {}) {
+    return new Converter().toTileAST(this, options, maxTileRecords, sorting);
   }
 
   toDistinctValuesAST(options) {
@@ -301,13 +301,17 @@ export default class Query {
   }
 
   /**
- * JSDoc notation to build required types into .d.ts query file.
- *
- * @param {any} [maxTileRecords] - The maximum number of tile records, can be null or undefined.
- * @returns {any} The SQL string.
- */
-  toTileSQL(maxTileRecords) {
-    return this.deparse(this.toTileAST(this.runtimeFilters, maxTileRecords));
+   * JSDoc notation to build required types into .d.ts query file.
+   *
+   * @param {any} [maxTileRecords] - The maximum number of tile records, can be null or undefined.
+   * @param {Object} [sorting] - Optional.
+   * @param {string} [sorting.field] - The field name to sort by.
+   * @param {number} [sorting.direction] - The sorting direction.
+   * @returns {any} The SQL string.
+   */
+
+  toTileSQL(maxTileRecords, sorting) {
+    return this.deparse(this.toTileAST(this.runtimeFilters, maxTileRecords, sorting));
   }
 
   toSummarySQL(columnSetting) {

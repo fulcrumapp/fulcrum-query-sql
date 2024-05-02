@@ -72,7 +72,9 @@ export default class Converter {
     return SelectStmt({targetList, fromClause, whereClause});
   }
 
-  toTileAST(query, { searchFilter }, maxTileRecords) {
+  toTileAST(query, { searchFilter }, maxTileRecords, sorting = {}) {
+    // eslint-disable-next-line no-console
+    let sortClause = null;
     let targetList = null;
 
     if (query.ast) {
@@ -98,6 +100,15 @@ export default class Converter {
       }
     }
 
+    if (sorting && sorting.field && sorting.direction) {
+      if (sorting.field.startsWith('_')) {
+        targetList.push(ResTarget(ColumnRef(sorting.field), 'sorting_field'));
+      } else {
+        targetList.push(ResTarget(TypeCast(TypeName('text'), AConst(StringValue(sorting.field))), 'sorting_field'));
+      }
+      sortClause = [(SortBy(ColumnRef('sorting_field'), sorting.direction, 0))];
+    }
+
     const joins = query.joinColumns.map(o => o.join);
 
     const fromClause = this.fromClause(query, joins);
@@ -107,8 +118,9 @@ export default class Converter {
     const maxTileLimit = (maxTileRecords > 0) ? maxTileRecords : MAX_TILE_RECORDS;
 
     const limitCount = this.limitCount(maxTileLimit);
+    const selectst = SelectStmt({targetList, fromClause, whereClause, sortClause, limitCount});
 
-    return SelectStmt({targetList, fromClause, whereClause, limitCount});
+    return SelectStmt({targetList, fromClause, whereClause, sortClause, limitCount});
   }
 
   toHistogramAST(query, {column, bucketSize, type, sort, pageSize, pageIndex, boundingBox, searchFilter}) {

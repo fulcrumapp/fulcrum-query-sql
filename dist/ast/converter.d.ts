@@ -55,7 +55,7 @@ export default class Converter {
     };
     toTileAST(query: any, { searchFilter }: {
         searchFilter: any;
-    }, maxTileRecords: any): {
+    }, maxTileRecords: any, sorting?: {}): {
         SelectStmt: {
             targetList: any;
             fromClause: any;
