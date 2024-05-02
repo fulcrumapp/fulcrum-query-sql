@@ -72,10 +72,11 @@ export default class Converter {
     return SelectStmt({targetList, fromClause, whereClause});
   }
 
-  toTileAST(query, { searchFilter }, maxTileRecords) {
+  toTileAST(query, { searchFilter }, maxTileRecords, ) {
     let targetList = null;
 
     if (query.ast) {
+      console.log('@toTileAST | query.ast', query.ast);
       const sort = [ SortBy(AConst(IntegerValue(1)), 0, 0) ];
 
       targetList = [
@@ -83,6 +84,7 @@ export default class Converter {
         ResTarget(ColumnRef('__geometry'))
       ];
     } else {
+      console.log('@toTileAST | NO query.ast');
       const statusColumn = query.schema.repeatable ? '_record_status' : '_status';
 
       targetList = [
@@ -91,6 +93,7 @@ export default class Converter {
         ResTarget(ColumnRef(statusColumn), 'status'),
         ResTarget(TypeCast(TypeName('text'), AConst(StringValue(query.form.id))), 'form_id')
       ];
+      console.log('@toTileAST | targetList', targetList);
 
       if (query.schema.repeatable) {
         targetList.push(ResTarget(ColumnRef('_record_id'), 'record_id'));
@@ -107,6 +110,9 @@ export default class Converter {
     const maxTileLimit = (maxTileRecords > 0) ? maxTileRecords : MAX_TILE_RECORDS;
 
     const limitCount = this.limitCount(maxTileLimit);
+    console.log('@toTileAST | fromClause', fromClause);
+    console.log('@toTileAST | whereClause', whereClause);
+    console.log('@toTileAST | maxTileLimit', maxTileLimit);
 
     return SelectStmt({targetList, fromClause, whereClause, limitCount});
   }

@@ -286,6 +286,7 @@ class Converter {
     toTileAST(query, { searchFilter }, maxTileRecords) {
         let targetList = null;
         if (query.ast) {
+            console.log('@toTileAST | query.ast', query.ast);
             const sort = [(0, helpers_1.SortBy)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)), 0, 0)];
             targetList = [
                 (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('row_number', null, { over: (0, helpers_1.WindowDef)(sort, 530) }), '__id'),
@@ -293,6 +294,7 @@ class Converter {
             ];
         }
         else {
+            console.log('@toTileAST | NO query.ast');
             const statusColumn = query.schema.repeatable ? '_record_status' : '_status';
             targetList = [
                 (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(query.schema.repeatable ? '_child_record_id' : '_record_id'), 'id'),
@@ -300,6 +302,7 @@ class Converter {
                 (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(statusColumn), 'status'),
                 (0, helpers_1.ResTarget)((0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), (0, helpers_1.AConst)((0, helpers_1.StringValue)(query.form.id))), 'form_id')
             ];
+            console.log('@toTileAST | targetList', targetList);
             if (query.schema.repeatable) {
                 targetList.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_id'), 'record_id'));
                 targetList.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_parent_id'), 'parent_id'));
@@ -310,6 +313,9 @@ class Converter {
         const whereClause = this.whereClause(query, null, searchFilter);
         const maxTileLimit = (maxTileRecords > 0) ? maxTileRecords : MAX_TILE_RECORDS;
         const limitCount = this.limitCount(maxTileLimit);
+        console.log('@toTileAST | fromClause', fromClause);
+        console.log('@toTileAST | whereClause', whereClause);
+        console.log('@toTileAST | maxTileLimit', maxTileLimit);
         return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause, limitCount });
     }
     toHistogramAST(query, { column, bucketSize, type, sort, pageSize, pageIndex, boundingBox, searchFilter }) {
