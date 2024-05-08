@@ -73,7 +73,6 @@ export default class Converter {
   }
 
   toTileAST(query, { searchFilter }, maxTileRecords, sorting = {}) {
-    // eslint-disable-next-line no-console
     let sortClause = null;
     let targetList = null;
 
@@ -118,7 +117,6 @@ export default class Converter {
     const maxTileLimit = (maxTileRecords > 0) ? maxTileRecords : MAX_TILE_RECORDS;
 
     const limitCount = this.limitCount(maxTileLimit);
-    const selectst = SelectStmt({targetList, fromClause, whereClause, sortClause, limitCount});
 
     return SelectStmt({targetList, fromClause, whereClause, sortClause, limitCount});
   }
