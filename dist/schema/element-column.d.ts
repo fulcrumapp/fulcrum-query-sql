@@ -13,6 +13,7 @@ export default class ElementColumn extends Column {
     _id: any;
     _part: any;
     _index: any;
+    get alias(): any;
     get type(): any;
     get name(): any;
     get element(): any;

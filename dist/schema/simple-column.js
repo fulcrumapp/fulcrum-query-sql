@@ -22,6 +22,9 @@ class SimpleColumn extends column_1.default {
             this._join = new join_1.default(join);
         }
     }
+    get alias() {
+        return this._columnName.subtring(1);
+    }
     get type() {
         return this._type;
     }

@@ -195,7 +195,12 @@ export default class Query {
    */
     toTileSQL(maxTileRecords?: any): any;
     toSummarySQL(columnSetting: any): any;
-    targetList(): any;
+    targetList(): {
+        ResTarget: {
+            name: null;
+            val: any;
+        };
+    }[];
     fromClause({ applySort, pageSize, pageIndex, boundingBox, searchFilter }: {
         applySort: any;
         pageSize: any;

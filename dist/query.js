@@ -243,21 +243,21 @@ class Query {
         return this.deparse(ast);
     }
     targetList() {
-        if (this.ast) {
-            return [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)((0, helpers_1.AStar)()))];
-        }
-        if (!this.full) {
-            return lodash_1.default.compact(this.columnSettings.enabledColumns.map(column => {
-                if (column.element && !column.rawColumn) {
-                    return null;
-                }
-                let columnAlias = column.columnName;
-                if (column.join) {
-                    columnAlias = [column.join.alias, column.columnName].join('_');
-                }
-                return (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(column.columnName, column.source || 'records'), columnAlias);
-            }));
-        }
+        // if (this.ast) {
+        //   return [ ResTarget(ColumnRef(AStar())) ];
+        // }
+        // if (!this.full) {
+        //   return _.compact(this.columnSettings.enabledColumns.map(column => {
+        //     if (column.element && !column.rawColumn) {
+        //       return null;
+        //     }
+        //     let columnAlias = column.alias;
+        //     if (column.join) {
+        //       columnAlias = [column.join.alias, column.columnName].join('_');
+        //     }
+        //     return ResTarget(ColumnRef(column.columnName, column.source || 'records'), columnAlias);
+        //   }));
+        // }
         const timeZoneCast = (columnRef) => {
             return (0, helpers_1.FuncCall)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('timezone')], [(0, helpers_1.AConst)((0, helpers_1.StringValue)('UTC')), columnRef]);
         };

@@ -18,6 +18,9 @@ class ElementColumn extends column_1.default {
             this._id += '_' + part;
         }
     }
+    get alias() {
+        return this.columnName;
+    }
     get type() {
         return this._type;
     }

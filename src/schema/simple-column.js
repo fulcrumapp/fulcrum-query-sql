@@ -18,6 +18,10 @@ export default class SimpleColumn extends Column {
     }
   }
 
+  get alias() {
+    return this._columnName.subtring(1);
+  }
+
   get type() {
     return this._type;
   }

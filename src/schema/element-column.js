@@ -17,6 +17,10 @@ export default class ElementColumn extends Column {
     }
   }
 
+  get alias() {
+    return this.columnName;
+  }
+
   get type() {
     return this._type;
   }

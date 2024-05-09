@@ -17,6 +17,7 @@ export default class SimpleColumn extends Column {
     _sql: boolean;
     _index: any;
     _join: Join | undefined;
+    get alias(): any;
     get type(): string;
     get id(): any;
     get name(): any;
