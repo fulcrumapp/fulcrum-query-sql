@@ -326,7 +326,7 @@ export default class Query {
           return null;
         }
 
-        let columnAlias = column.columnName;
+        let columnAlias = column.alias;
 
         if (column.join) {
           columnAlias = [column.join.alias, column.columnName].join('_');

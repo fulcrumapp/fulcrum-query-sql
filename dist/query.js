@@ -251,7 +251,7 @@ class Query {
                 if (column.element && !column.rawColumn) {
                     return null;
                 }
-                let columnAlias = column.columnName;
+                let columnAlias = column.alias;
                 if (column.join) {
                     columnAlias = [column.join.alias, column.columnName].join('_');
                 }
