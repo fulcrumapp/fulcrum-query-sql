@@ -243,9 +243,9 @@ class Query {
         return this.deparse(ast);
     }
     targetList() {
-        if (this.ast) {
-            return [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)((0, helpers_1.AStar)()))];
-        }
+        // if (this.ast) {
+        //   return [ ResTarget(ColumnRef(AStar())) ];
+        // }
         if (!this.full) {
             return lodash_1.default.compact(this.columnSettings.enabledColumns.map(column => {
                 if (column.element && !column.rawColumn) {

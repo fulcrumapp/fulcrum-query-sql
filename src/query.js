@@ -316,9 +316,9 @@ export default class Query {
   }
 
   targetList() {
-    if (this.ast) {
-      return [ ResTarget(ColumnRef(AStar())) ];
-    }
+    // if (this.ast) {
+    //   return [ ResTarget(ColumnRef(AStar())) ];
+    // }
 
     if (!this.full) {
       return _.compact(this.columnSettings.enabledColumns.map(column => {
