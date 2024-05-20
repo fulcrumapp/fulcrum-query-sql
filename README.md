@@ -48,7 +48,7 @@ yarn remove fulcrum-query-sql
 - After that
 
 ```
-yarn add fulcrum-query-sql@github:fulcrumapp/fulcrum-query-sql##BRANCH-NAME
+yarn add fulcrum-query-sql@github:fulcrumapp/fulcrum-query-sql#BRANCH-NAME
 ```
 2. Clean Yarn Cache: Clear the yarn cache to remove any stored data from previous installs which might conflic
 
