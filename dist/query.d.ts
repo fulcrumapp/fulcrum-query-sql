@@ -107,7 +107,7 @@ export default class Query {
             op: number;
         };
     };
-    toTileAST(options: any, maxTileRecords: any): {
+    toTileAST(options: any, maxTileRecords: any, sorting?: {}): {
         SelectStmt: {
             targetList: any;
             fromClause: any;
@@ -188,12 +188,18 @@ export default class Query {
         outerLimit: any;
     }): any;
     /**
-   * JSDoc notation to build required types into .d.ts query file.
-   *
-   * @param {any} [maxTileRecords] - The maximum number of tile records, can be null or undefined.
-   * @returns {any} The SQL string.
-   */
-    toTileSQL(maxTileRecords?: any): any;
+     * JSDoc notation to build required types into .d.ts query file.
+     *
+     * @param {any} [maxTileRecords] - The maximum number of tile records, can be null or undefined.
+     * @param {Object} [sorting] - Optional.
+     * @param {string} [sorting.field] - The field name to sort by.
+     * @param {number} [sorting.direction] - The sorting direction.
+     * @returns {any} The SQL string.
+     */
+    toTileSQL(maxTileRecords?: any, sorting?: {
+        field?: string | undefined;
+        direction?: number | undefined;
+    } | undefined): any;
     toSummarySQL(columnSetting: any): any;
     targetList(): any;
     fromClause({ applySort, pageSize, pageIndex, boundingBox, searchFilter }: {

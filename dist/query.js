@@ -187,8 +187,8 @@ class Query {
     toCountAST(options) {
         return new converter_1.default().toCountAST(this, options);
     }
-    toTileAST(options, maxTileRecords) {
-        return new converter_1.default().toTileAST(this, options, maxTileRecords);
+    toTileAST(options, maxTileRecords, sorting = {}) {
+        return new converter_1.default().toTileAST(this, options, maxTileRecords, sorting);
     }
     toDistinctValuesAST(options) {
         return new converter_1.default().toDistinctValuesAST(this, options);
@@ -230,13 +230,16 @@ class Query {
         return this.deparse(this.toAST(options));
     }
     /**
-   * JSDoc notation to build required types into .d.ts query file.
-   *
-   * @param {any} [maxTileRecords] - The maximum number of tile records, can be null or undefined.
-   * @returns {any} The SQL string.
-   */
-    toTileSQL(maxTileRecords) {
-        return this.deparse(this.toTileAST(this.runtimeFilters, maxTileRecords));
+     * JSDoc notation to build required types into .d.ts query file.
+     *
+     * @param {any} [maxTileRecords] - The maximum number of tile records, can be null or undefined.
+     * @param {Object} [sorting] - Optional.
+     * @param {string} [sorting.field] - The field name to sort by.
+     * @param {number} [sorting.direction] - The sorting direction.
+     * @returns {any} The SQL string.
+     */
+    toTileSQL(maxTileRecords, sorting) {
+        return this.deparse(this.toTileAST(this.runtimeFilters, maxTileRecords, sorting));
     }
     toSummarySQL(columnSetting) {
         const ast = new converter_1.default().toSummaryAST(this, columnSetting, this.runtimeFilters);

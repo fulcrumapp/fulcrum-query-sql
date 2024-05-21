@@ -32,3 +32,45 @@ yarn build
 - Delete the existing `yarn.lock` file
 - Rebuild the lock file by running `./yarn`
 - Re-skaffold and the changes will now be visible for debugging
+
+### Debugging troubleshooting
+
+***Issue: Changes not visible in `fulcrum` after following the `Debugging` steps.***
+
+***Solution***: If changes are not reflecting even after following the debugging steps, you might need to ensure a completely clean environment for your dependencies. Here are some steps to ensure that the `fulcrum` repository is correctly picking up the changes from `fulcrum-query-sql`:
+
+1. Update Dependencies Safely:
+- Inside `fulcrum-components` run:
+
+```
+yarn remove fulcrum-query-sql
+```
+- After that
+
+```
+yarn add fulcrum-query-sql@github:fulcrumapp/fulcrum-query-sql#BRANCH-NAME
+```
+2. Clean Yarn Cache: Clear the yarn cache to remove any stored data from previous installs which might conflict
+
+```
+./yarn cache clean
+
+```
+
+3. Reinstall Dependencies: Reinstall your dependencies to ensure all links are correctly set up:
+
+```
+./yarn install
+```
+
+4. Restart Skaffold with your namespace  and No Cache:
+
+```
+skaffold dev --cache-artifacts=false
+```
+or
+
+```
+USER=<YOUR NAMESPACE> skaffold dev --cache-artifacts=false
+```
+
