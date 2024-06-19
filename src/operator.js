@@ -531,6 +531,8 @@ export function isDateOperator(operator) {
 }
 
 export function availableOperatorsForColumn(column) {
+  // this should be changed to an array operator
+  console.log('column: ', column)
   const operators = [];
 
   if (column == null) {
@@ -543,6 +545,7 @@ export function availableOperatorsForColumn(column) {
 
   const element = column && column.element;
 
+  console.log('element: ', element)
   if (element) {
     if (element.isTextElement) {
       if (element.isNumeric) {
