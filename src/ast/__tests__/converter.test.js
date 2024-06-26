@@ -9,6 +9,191 @@ import {
   BooleanTest,
 } from '../helpers';
 import Query from '../../query';
+import { Expression } from '../../expression';
+
+describe('NotEmpty converter', () => {
+  describe('given an non-array', () => {
+    it('creates a subquery with a not null test', () => {
+      const formJson = {
+        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+        name: 'TestForm',
+        status_field: {
+          type: 'StatusField',
+          label: 'Status',
+          data_name: 'status',
+        },
+        elements: [
+          {
+            type: 'TextField',
+            key: '3bd0',
+            label: 'Text',
+            data_name: 'text',
+          },
+        ],
+      };
+      const rawColumns = {
+        form: [
+          {
+            field: '3bd0',
+            name: 'text',
+            type: 'string',
+          },
+        ],
+        repeatables: {},
+      };
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+
+      const expression = new Expression({ field: '3bd0', operator: 'is_not_empty' }, schema);
+
+      const expr = new Converter().NotEmptyConverter(expression);
+
+      const sql = new Deparse().deparse(expr);
+
+      const expectSql = '"text" IS NOT NULL';
+      expect(sql).toEqual(expectSql);
+    });
+  });
+  describe('given an array', () => {
+    it('creates a subquery with array_to_string', () => {
+      const formJson = {
+        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+        name: 'TestForm',
+        status_field: {
+          type: 'StatusField',
+          label: 'Status',
+          data_name: 'status',
+        },
+        elements: [
+          {
+            type: 'PhotoField',
+            key: '3bd0',
+            label: 'Photos',
+            data_name: 'photos',
+          },
+        ],
+      };
+      const rawColumns = {
+        form: [
+          {
+            field: '3bd0',
+            name: 'photos',
+            type: 'array',
+          },
+          {
+            field: '3bd0',
+            name: 'photos_captions',
+            type: 'array',
+          },
+        ],
+        repeatables: {},
+      };
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+
+      const expression = new Expression({ field: '3bd0_captions', operator: 'is_not_empty' }, schema);
+
+      const expr = new Converter().NotEmptyConverter(expression);
+
+      const sql = new Deparse().deparse(expr);
+
+      const expectSql = '("photos_captions" IS NOT NULL AND ((length(array_to_string("photos_captions", \'\'))) > (0)))';
+      expect(sql).toEqual(expectSql);
+    });
+  });
+});
+
+describe('Empty converter', () => {
+  describe('given an non-array', () => {
+    it('creates a subquery with a null test', () => {
+      const formJson = {
+        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+        name: 'TestForm',
+        status_field: {
+          type: 'StatusField',
+          label: 'Status',
+          data_name: 'status',
+        },
+        elements: [
+          {
+            type: 'TextField',
+            key: '3bd0',
+            label: 'Text',
+            data_name: 'text',
+          },
+        ],
+      };
+      const rawColumns = {
+        form: [
+          {
+            field: '3bd0',
+            name: 'text',
+            type: 'string',
+          },
+        ],
+        repeatables: {},
+      };
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+
+      const expression = new Expression({ field: '3bd0', operator: 'is_empty' }, schema);
+
+      const expr = new Converter().EmptyConverter(expression);
+
+      const sql = new Deparse().deparse(expr);
+
+      const expectSql = '"text" IS NULL';
+      expect(sql).toEqual(expectSql);
+    });
+  });
+  describe('given an array', () => {
+    it('creates a subquery with array_position', () => {
+      const formJson = {
+        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+        name: 'TestForm',
+        status_field: {
+          type: 'StatusField',
+          label: 'Status',
+          data_name: 'status',
+        },
+        elements: [
+          {
+            type: 'PhotoField',
+            key: '3bd0',
+            label: 'Photos',
+            data_name: 'photos',
+          },
+        ],
+      };
+      const rawColumns = {
+        form: [
+          {
+            field: '3bd0',
+            name: 'photos',
+            type: 'array',
+          },
+          {
+            field: '3bd0',
+            name: 'photos_captions',
+            type: 'array',
+          },
+        ],
+        repeatables: {},
+      };
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+
+      const expression = new Expression({ field: '3bd0_captions', operator: 'is_empty' }, schema);
+
+      const expr = new Converter().EmptyConverter(expression);
+
+      const sql = new Deparse().deparse(expr);
+
+      const expectSql = '("photos_captions" IS NULL OR ((COALESCE(array_position("photos_captions", NULL), 0)) > (0)))';
+      expect(sql).toEqual(expectSql);
+    });
+  });
+});
 
 describe('WhereClause converter', () => {
   describe('given a record link column to search on', () => {
