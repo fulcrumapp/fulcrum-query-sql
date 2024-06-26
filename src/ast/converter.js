@@ -952,7 +952,6 @@ export default class Converter {
   NotEmptyConverter = (expression) => {
     if (expression.column.isArray) {
       const nullTest = NullTest(1, columnRef(expression.column));
-      // const arrayPos = NullTest(1, FuncCall('array_position', [columnRef(expression.column), StringValue('')]));
       const arrayLen = FuncCall('length', [FuncCall('array_to_string', [columnRef(expression.column), AConst(StringValue(''))])]);
       const lenTest = AExpr(0, '>', arrayLen, AConst(IntegerValue(0)));
       return BoolExpr(0, [nullTest, lenTest]);

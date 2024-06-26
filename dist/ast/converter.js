@@ -39,7 +39,6 @@ class Converter {
         this.NotEmptyConverter = (expression) => {
             if (expression.column.isArray) {
                 const nullTest = (0, helpers_1.NullTest)(1, columnRef(expression.column));
-                // const arrayPos = NullTest(1, FuncCall('array_position', [columnRef(expression.column), StringValue('')]));
                 const arrayLen = (0, helpers_1.FuncCall)('length', [(0, helpers_1.FuncCall)('array_to_string', [columnRef(expression.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)(''))])]);
                 const lenTest = (0, helpers_1.AExpr)(0, '>', arrayLen, (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0)));
                 return (0, helpers_1.BoolExpr)(0, [nullTest, lenTest]);
