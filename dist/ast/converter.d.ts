@@ -327,12 +327,22 @@ export default class Converter {
         };
     } | null;
     NotEmptyConverter: (expression: any) => {
+        BoolExpr: {
+            boolop: any;
+            args: any;
+        };
+    } | {
         NullTest: {
             arg: any;
             nulltesttype: any;
         };
     };
     EmptyConverter: (expression: any) => {
+        BoolExpr: {
+            boolop: any;
+            args: any;
+        };
+    } | {
         NullTest: {
             arg: any;
             nulltesttype: any;
