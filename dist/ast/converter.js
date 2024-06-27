@@ -37,9 +37,21 @@ class Converter {
             return this.BooleanConverter(2, condition, options);
         };
         this.NotEmptyConverter = (expression) => {
+            if (expression.column.isArray && expression.column.part === 'captions') {
+                const nullTest = (0, helpers_1.NullTest)(1, columnRef(expression.column));
+                const arrayLen = (0, helpers_1.FuncCall)('length', [(0, helpers_1.FuncCall)('array_to_string', [columnRef(expression.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)(''))])]);
+                const lenTest = (0, helpers_1.AExpr)(0, '>', arrayLen, (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0)));
+                return (0, helpers_1.BoolExpr)(0, [nullTest, lenTest]);
+            }
             return (0, helpers_1.NullTest)(1, columnRef(expression.column));
         };
         this.EmptyConverter = (expression) => {
+            if (expression.column.isArray && expression.column.part === 'captions') {
+                const nullTest = (0, helpers_1.NullTest)(0, columnRef(expression.column));
+                const arrayPos = (0, helpers_1.CoalesceExpr)([(0, helpers_1.FuncCall)('array_position', [columnRef(expression.column), (0, helpers_1.StringValue)('NULL')]), (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0))]);
+                const lenTest = (0, helpers_1.AExpr)(0, '>', arrayPos, (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0)));
+                return (0, helpers_1.BoolExpr)(1, [nullTest, lenTest]);
+            }
             return (0, helpers_1.NullTest)(0, columnRef(expression.column));
         };
         this.EqualConverter = (expression) => {
