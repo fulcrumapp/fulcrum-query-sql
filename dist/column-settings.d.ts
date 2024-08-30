@@ -13,4 +13,4 @@ export default class ColumnSettings {
     get columnsByID(): {};
     byColumn(column: any): any;
 }
-import ColumnSettingsItem from './column-settings-item';
+import ColumnSettingsItem from "./column-settings-item";

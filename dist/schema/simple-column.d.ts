@@ -3,21 +3,21 @@ export default class SimpleColumn extends Column {
         name: any;
         attributeName: any;
         columnName: any;
-        type?: null | undefined;
-        accessor?: null | undefined;
-        join?: null | undefined;
-        sql?: null | undefined;
+        type?: any;
+        accessor?: any;
+        join?: any;
+        sql?: any;
         index: any;
     });
-    _type: string;
+    _type: any;
     _name: any;
     _attributeName: any;
     _columnName: any;
-    _accessor: (object: any) => any;
+    _accessor: any;
     _sql: boolean;
     _index: any;
     _join: Join | undefined;
-    get type(): string;
+    get type(): any;
     get id(): any;
     get name(): any;
     get join(): Join | undefined;
@@ -30,5 +30,5 @@ export default class SimpleColumn extends Column {
     exportValue(object: any, options?: {}): any;
     get isSQL(): boolean;
 }
-import Column from './column';
-import Join from './join';
+import Column from "./column";
+import Join from "./join";

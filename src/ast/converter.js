@@ -37,7 +37,7 @@ const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
 
 const columnRef = (column) => {
-  return column.isSQL ? ColumnRef(column.id, column.source)
+  return column.isSQL ? ColumnRef(column?.id, column.source)
                       : ColumnRef(column.columnName, column.source);
 };
 
@@ -46,7 +46,7 @@ export default class Converter {
     const targetList = this.targetList(query, sort, boundingBox);
 
     const joins = query.joinColumnsWithSorting.map(o => o.join);
-    
+
     const fromClause = this.fromClause(query, joins);
 
     const whereClause = this.whereClause(query, boundingBox, searchFilter);
@@ -212,6 +212,9 @@ export default class Converter {
   }
 
   toDistinctValuesAST(query, options = {}) {
+    if (!options.column || !options.column.id) {
+      throw new Error("Invalid or missing column options");
+    }
     const valueColumn = query.ast ? ColumnRef(options.column.id) : columnRef(options.column);
 
     let targetList = null;

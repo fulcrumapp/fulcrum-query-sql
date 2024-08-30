@@ -12,15 +12,15 @@ const aggregate_1 = require("../aggregate");
 const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
 const columnRef = (column) => {
-    return column.isSQL ? (0, helpers_1.ColumnRef)(column.id, column.source)
-        : (0, helpers_1.ColumnRef)(column.columnName, column.source);
+    return column.isSQL ? helpers_1.ColumnRef(column === null || column === void 0 ? void 0 : column.id, column.source)
+        : helpers_1.ColumnRef(column.columnName, column.source);
 };
 class Converter {
     constructor() {
         this.BooleanConverter = (type, condition, options) => {
             const args = this.nodeForExpressions(condition.expressions, options);
             if (args && args.length) {
-                return (0, helpers_1.BoolExpr)(type, args);
+                return helpers_1.BoolExpr(type, args);
             }
             return null;
         };
@@ -32,27 +32,27 @@ class Converter {
         };
         this.NotConverter = (condition, options) => {
             if (condition.expressions.length > 1) {
-                return (0, helpers_1.BoolExpr)(2, [this.BooleanConverter(0, condition, options)]);
+                return helpers_1.BoolExpr(2, [this.BooleanConverter(0, condition, options)]);
             }
             return this.BooleanConverter(2, condition, options);
         };
         this.NotEmptyConverter = (expression) => {
             if (expression.column.isArray && expression.column.part === 'captions') {
-                const nullTest = (0, helpers_1.NullTest)(1, columnRef(expression.column));
-                const arrayLen = (0, helpers_1.FuncCall)('length', [(0, helpers_1.FuncCall)('array_to_string', [columnRef(expression.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)(''))])]);
-                const lenTest = (0, helpers_1.AExpr)(0, '>', arrayLen, (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0)));
-                return (0, helpers_1.BoolExpr)(0, [nullTest, lenTest]);
+                const nullTest = helpers_1.NullTest(1, columnRef(expression.column));
+                const arrayLen = helpers_1.FuncCall('length', [helpers_1.FuncCall('array_to_string', [columnRef(expression.column), helpers_1.AConst(helpers_1.StringValue(''))])]);
+                const lenTest = helpers_1.AExpr(0, '>', arrayLen, helpers_1.AConst(helpers_1.IntegerValue(0)));
+                return helpers_1.BoolExpr(0, [nullTest, lenTest]);
             }
-            return (0, helpers_1.NullTest)(1, columnRef(expression.column));
+            return helpers_1.NullTest(1, columnRef(expression.column));
         };
         this.EmptyConverter = (expression) => {
             if (expression.column.isArray && expression.column.part === 'captions') {
-                const nullTest = (0, helpers_1.NullTest)(0, columnRef(expression.column));
-                const arrayPos = (0, helpers_1.CoalesceExpr)([(0, helpers_1.FuncCall)('array_position', [columnRef(expression.column), (0, helpers_1.StringValue)('NULL')]), (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0))]);
-                const lenTest = (0, helpers_1.AExpr)(0, '>', arrayPos, (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0)));
-                return (0, helpers_1.BoolExpr)(1, [nullTest, lenTest]);
+                const nullTest = helpers_1.NullTest(0, columnRef(expression.column));
+                const arrayPos = helpers_1.CoalesceExpr([helpers_1.FuncCall('array_position', [columnRef(expression.column), helpers_1.StringValue('NULL')]), helpers_1.AConst(helpers_1.IntegerValue(0))]);
+                const lenTest = helpers_1.AExpr(0, '>', arrayPos, helpers_1.AConst(helpers_1.IntegerValue(0)));
+                return helpers_1.BoolExpr(1, [nullTest, lenTest]);
             }
-            return (0, helpers_1.NullTest)(0, columnRef(expression.column));
+            return helpers_1.NullTest(0, columnRef(expression.column));
         };
         this.EqualConverter = (expression) => {
             return this.BinaryConverter(0, '=', expression);
@@ -97,41 +97,41 @@ class Converter {
             return this.NotIn(expression.column, expression.arrayValue);
         };
         this.BinaryConverter = (kind, operator, expression) => {
-            return (0, helpers_1.AExpr)(kind, operator, columnRef(expression.column), this.ConstValue(expression.column, expression.scalarValue));
+            return helpers_1.AExpr(kind, operator, columnRef(expression.column), this.ConstValue(expression.column, expression.scalarValue));
         };
         this.FieldConverter = (expression) => {
-            return (0, helpers_1.ColumnRef)(expression.name);
+            return helpers_1.ColumnRef(expression.name);
         };
         this.ConstantConverter = (expression) => {
             return this.ConstValue(expression.column, expression.scalarValue);
         };
         this.TextEqualConverter = (expression) => {
-            return (0, helpers_1.AExpr)(8, '~~*', this.ConvertToText(expression.column), this.ConstValue(expression.column, expression.scalarValue));
+            return helpers_1.AExpr(8, '~~*', this.ConvertToText(expression.column), this.ConstValue(expression.column, expression.scalarValue));
         };
         this.TextNotEqualConverter = (expression) => {
-            return (0, helpers_1.AExpr)(8, '!~~*', this.ConvertToText(expression.column), this.ConstValue(expression.column, expression.scalarValue));
+            return helpers_1.AExpr(8, '!~~*', this.ConvertToText(expression.column), this.ConstValue(expression.column, expression.scalarValue));
         };
         this.TextContainConverter = (expression) => {
-            return (0, helpers_1.AExpr)(8, '~~*', this.ConvertToText(expression.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(expression.scalarValue) + '%')));
+            return helpers_1.AExpr(8, '~~*', this.ConvertToText(expression.column), helpers_1.AConst(helpers_1.StringValue('%' + this.escapeLikePercent(expression.scalarValue) + '%')));
         };
         this.TextNotContainConverter = (expression) => {
-            return (0, helpers_1.AExpr)(8, '!~~*', this.ConvertToText(expression.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(expression.scalarValue) + '%')));
+            return helpers_1.AExpr(8, '!~~*', this.ConvertToText(expression.column), helpers_1.AConst(helpers_1.StringValue('%' + this.escapeLikePercent(expression.scalarValue) + '%')));
         };
         this.TextStartsWithConverter = (expression) => {
-            return (0, helpers_1.AExpr)(8, '~~*', this.ConvertToText(expression.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)(this.escapeLikePercent(expression.scalarValue) + '%')));
+            return helpers_1.AExpr(8, '~~*', this.ConvertToText(expression.column), helpers_1.AConst(helpers_1.StringValue(this.escapeLikePercent(expression.scalarValue) + '%')));
         };
         this.TextEndsWithConverter = (expression) => {
-            return (0, helpers_1.AExpr)(8, '~~*', this.ConvertToText(expression.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(expression.scalarValue))));
+            return helpers_1.AExpr(8, '~~*', this.ConvertToText(expression.column), helpers_1.AConst(helpers_1.StringValue('%' + this.escapeLikePercent(expression.scalarValue))));
         };
         this.TextMatchConverter = (expression) => {
             if (this.IsValidRegExp(expression.scalarValue)) {
-                return (0, helpers_1.AExpr)(0, '~*', this.ConvertToText(expression.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)(expression.scalarValue)));
+                return helpers_1.AExpr(0, '~*', this.ConvertToText(expression.column), helpers_1.AConst(helpers_1.StringValue(expression.scalarValue)));
             }
             return null;
         };
         this.TextNotMatchConverter = (expression) => {
             if (this.IsValidRegExp(expression.scalarValue)) {
-                return (0, helpers_1.AExpr)(0, '!~*', this.ConvertToText(expression.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)(expression.scalarValue)));
+                return helpers_1.AExpr(0, '!~*', this.ConvertToText(expression.column), helpers_1.AConst(helpers_1.StringValue(expression.scalarValue)));
             }
             return null;
         };
@@ -139,22 +139,22 @@ class Converter {
             return this.AnyOf(expression.column, expression.arrayValue);
         };
         this.ArrayAllOfConverter = (expression) => {
-            const values = (0, helpers_1.AArrayExpr)(expression.arrayValue.map(v => this.ConstValue(expression.column, v)));
-            return (0, helpers_1.AExpr)(0, '@>', columnRef(expression.column), values);
+            const values = helpers_1.AArrayExpr(expression.arrayValue.map(v => this.ConstValue(expression.column, v)));
+            return helpers_1.AExpr(0, '@>', columnRef(expression.column), values);
         };
         this.ArrayIsContainedIn = (expression) => {
-            const values = (0, helpers_1.AArrayExpr)(expression.arrayValue.map(v => this.ConstValue(expression.column, v)));
-            return (0, helpers_1.AExpr)(0, '<@', columnRef(expression.column), values);
+            const values = helpers_1.AArrayExpr(expression.arrayValue.map(v => this.ConstValue(expression.column, v)));
+            return helpers_1.AExpr(0, '<@', columnRef(expression.column), values);
         };
         this.ArrayEqualConverter = (expression) => {
-            const values = (0, helpers_1.AArrayExpr)(expression.arrayValue.map(v => this.ConstValue(expression.column, v)));
-            const a = (0, helpers_1.AExpr)(0, '<@', columnRef(expression.column), values);
-            const b = (0, helpers_1.AExpr)(0, '@>', columnRef(expression.column), values);
-            return (0, helpers_1.BoolExpr)(0, [a, b]);
+            const values = helpers_1.AArrayExpr(expression.arrayValue.map(v => this.ConstValue(expression.column, v)));
+            const a = helpers_1.AExpr(0, '<@', columnRef(expression.column), values);
+            const b = helpers_1.AExpr(0, '@>', columnRef(expression.column), values);
+            return helpers_1.BoolExpr(0, [a, b]);
         };
         this.SearchConverter = (expression) => {
-            const rhs = (0, helpers_1.FuncCall)('to_tsquery', [this.ConstValue(expression.column, expression.scalarValue)]);
-            return (0, helpers_1.AExpr)(0, '@@', columnRef(expression.column), rhs);
+            const rhs = helpers_1.FuncCall('to_tsquery', [this.ConstValue(expression.column, expression.scalarValue)]);
+            return helpers_1.AExpr(0, '@@', columnRef(expression.column), rhs);
         };
         this.DynamicDateConverter = (expression, options) => {
             // Let the caller specify the timezone to be used for dynamic date calculations. This
@@ -162,26 +162,26 @@ class Converter {
             // the same range. So 'Today' is midnight to midnight in the user's local time. It would
             // be much less useful and confusing if we forced "Today" to always be London's today.
             const now = this.GetDate(null, options);
-            const range = (0, operator_1.calculateDateRange)(expression.column, expression.operator, expression.value, now);
+            const range = operator_1.calculateDateRange(expression.column, expression.operator, expression.value, now);
             const value1 = this.ConvertDateValue(expression, range[0]);
             const value2 = this.ConvertDateValue(expression, range[1]);
             return this.Between(expression.column, value1, value2);
         };
         this.NotBetween = (column, value1, value2) => {
             if (value1 != null && value2 != null) {
-                return (0, helpers_1.AExpr)(11, 'NOT BETWEEN', columnRef(column), [this.ConstValue(column, value1), this.ConstValue(column, value2)]);
+                return helpers_1.AExpr(11, 'NOT BETWEEN', columnRef(column), [this.ConstValue(column, value1), this.ConstValue(column, value2)]);
             }
             else if (value1 != null) {
-                return (0, helpers_1.AExpr)(0, '<', columnRef(column), this.ConstValue(column, value1));
+                return helpers_1.AExpr(0, '<', columnRef(column), this.ConstValue(column, value1));
             }
             else if (value2 != null) {
-                return (0, helpers_1.AExpr)(0, '>', columnRef(column), this.ConstValue(column, value2));
+                return helpers_1.AExpr(0, '>', columnRef(column), this.ConstValue(column, value2));
             }
             return null;
         };
         this.AnyOf = (column, values) => {
-            const arrayValues = (0, helpers_1.AArrayExpr)(values.map(v => this.ConstValue(column, v)));
-            return (0, helpers_1.AExpr)(0, '&&', columnRef(column), arrayValues);
+            const arrayValues = helpers_1.AArrayExpr(values.map(v => this.ConstValue(column, v)));
+            return helpers_1.AExpr(0, '&&', columnRef(column), arrayValues);
         };
         this.In = (column, values) => {
             let hasNull = false;
@@ -196,13 +196,13 @@ class Converter {
             });
             let expression = null;
             if (inValues.length) {
-                expression = (0, helpers_1.AExpr)(6, '=', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
+                expression = helpers_1.AExpr(6, '=', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
                 if (hasNull) {
-                    expression = (0, helpers_1.BoolExpr)(1, [(0, helpers_1.NullTest)(0, columnRef(column)), expression]);
+                    expression = helpers_1.BoolExpr(1, [helpers_1.NullTest(0, columnRef(column)), expression]);
                 }
             }
             else if (hasNull) {
-                expression = (0, helpers_1.NullTest)(0, columnRef(column));
+                expression = helpers_1.NullTest(0, columnRef(column));
             }
             return expression;
         };
@@ -219,25 +219,25 @@ class Converter {
             });
             let expression = null;
             if (inValues.length) {
-                expression = (0, helpers_1.AExpr)(6, '<>', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
+                expression = helpers_1.AExpr(6, '<>', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
                 if (hasNull) {
-                    expression = (0, helpers_1.BoolExpr)(1, [(0, helpers_1.NullTest)(1, columnRef(column)), expression]);
+                    expression = helpers_1.BoolExpr(1, [helpers_1.NullTest(1, columnRef(column)), expression]);
                 }
             }
             else if (hasNull) {
-                expression = (0, helpers_1.NullTest)(1, columnRef(column));
+                expression = helpers_1.NullTest(1, columnRef(column));
             }
             return expression;
         };
         this.Between = (column, value1, value2) => {
             if (value1 != null && value2 != null) {
-                return (0, helpers_1.AExpr)(10, 'BETWEEN', columnRef(column), [this.ConstValue(column, value1), this.ConstValue(column, value2)]);
+                return helpers_1.AExpr(10, 'BETWEEN', columnRef(column), [this.ConstValue(column, value1), this.ConstValue(column, value2)]);
             }
             else if (value1 != null) {
-                return (0, helpers_1.AExpr)(0, '>=', columnRef(column), this.ConstValue(column, value1));
+                return helpers_1.AExpr(0, '>=', columnRef(column), this.ConstValue(column, value1));
             }
             else if (value2 != null) {
-                return (0, helpers_1.AExpr)(0, '<=', columnRef(column), this.ConstValue(column, value2));
+                return helpers_1.AExpr(0, '<=', columnRef(column), this.ConstValue(column, value2));
             }
             return null;
         };
@@ -246,12 +246,12 @@ class Converter {
                 return null;
             }
             if (column.isInteger) {
-                return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(value));
+                return helpers_1.AConst(helpers_1.IntegerValue(value));
             }
             if (column.isNumber) {
-                return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));
+                return helpers_1.AConst(helpers_1.FloatValue(value));
             }
-            return (0, helpers_1.AConst)((0, helpers_1.StringValue)(value));
+            return helpers_1.AConst(helpers_1.StringValue(value));
         };
         this.GetDate = (dateString, options) => {
             const timeZone = (options && options.timeZone) || moment_timezone_1.default.tz.guess();
@@ -265,7 +265,7 @@ class Converter {
         };
         this.ConvertToText = (column) => {
             if (column.isDate || column.isTime || column.isArray) {
-                return (0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), columnRef(column));
+                return helpers_1.TypeCast(helpers_1.TypeName('text'), columnRef(column));
             }
             return columnRef(column);
         };
@@ -286,140 +286,143 @@ class Converter {
         const sortClause = sort;
         const limitOffset = this.limitOffset(pageSize, pageIndex);
         const limitCount = this.limitCount(pageSize);
-        return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause, sortClause, limitOffset, limitCount });
+        return helpers_1.SelectStmt({ targetList, fromClause, whereClause, sortClause, limitOffset, limitCount });
     }
     toCountAST(query, { boundingBox, searchFilter }) {
-        const targetList = [(0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('count', [(0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1))]), 'total_count')];
+        const targetList = [helpers_1.ResTarget(helpers_1.FuncCall('count', [helpers_1.AConst(helpers_1.IntegerValue(1))]), 'total_count')];
         const joins = query.joinColumns.map(o => o.join);
         const fromClause = this.fromClause(query, joins);
         const whereClause = this.whereClause(query, boundingBox, searchFilter);
-        return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause });
+        return helpers_1.SelectStmt({ targetList, fromClause, whereClause });
     }
     toTileAST(query, { searchFilter }, maxTileRecords, sorting = {}) {
         let sortClause = null;
         let targetList = null;
         if (query.ast) {
-            const sort = [(0, helpers_1.SortBy)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)), 0, 0)];
+            const sort = [helpers_1.SortBy(helpers_1.AConst(helpers_1.IntegerValue(1)), 0, 0)];
             targetList = [
-                (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('row_number', null, { over: (0, helpers_1.WindowDef)(sort, 530) }), '__id'),
-                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('__geometry'))
+                helpers_1.ResTarget(helpers_1.FuncCall('row_number', null, { over: helpers_1.WindowDef(sort, 530) }), '__id'),
+                helpers_1.ResTarget(helpers_1.ColumnRef('__geometry'))
             ];
         }
         else {
             const statusColumn = query.schema.repeatable ? '_record_status' : '_status';
             targetList = [
-                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(query.schema.repeatable ? '_child_record_id' : '_record_id'), 'id'),
-                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_geometry'), 'geometry'),
-                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(statusColumn), 'status'),
-                (0, helpers_1.ResTarget)((0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), (0, helpers_1.AConst)((0, helpers_1.StringValue)(query.form.id))), 'form_id')
+                helpers_1.ResTarget(helpers_1.ColumnRef(query.schema.repeatable ? '_child_record_id' : '_record_id'), 'id'),
+                helpers_1.ResTarget(helpers_1.ColumnRef('_geometry'), 'geometry'),
+                helpers_1.ResTarget(helpers_1.ColumnRef(statusColumn), 'status'),
+                helpers_1.ResTarget(helpers_1.TypeCast(helpers_1.TypeName('text'), helpers_1.AConst(helpers_1.StringValue(query.form.id))), 'form_id')
             ];
             if (query.schema.repeatable) {
-                targetList.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_id'), 'record_id'));
-                targetList.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_parent_id'), 'parent_id'));
+                targetList.push(helpers_1.ResTarget(helpers_1.ColumnRef('_record_id'), 'record_id'));
+                targetList.push(helpers_1.ResTarget(helpers_1.ColumnRef('_parent_id'), 'parent_id'));
             }
         }
         if (sorting && sorting.field && sorting.direction) {
             if (sorting.field.startsWith('_')) {
-                targetList.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(sorting.field), 'sorting_field'));
+                targetList.push(helpers_1.ResTarget(helpers_1.ColumnRef(sorting.field), 'sorting_field'));
             }
             else {
-                targetList.push((0, helpers_1.ResTarget)((0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), (0, helpers_1.AConst)((0, helpers_1.StringValue)(sorting.field))), 'sorting_field'));
+                targetList.push(helpers_1.ResTarget(helpers_1.TypeCast(helpers_1.TypeName('text'), helpers_1.AConst(helpers_1.StringValue(sorting.field))), 'sorting_field'));
             }
-            sortClause = [((0, helpers_1.SortBy)((0, helpers_1.ColumnRef)('sorting_field'), sorting.direction, 0))];
+            sortClause = [(helpers_1.SortBy(helpers_1.ColumnRef('sorting_field'), sorting.direction, 0))];
         }
         const joins = query.joinColumns.map(o => o.join);
         const fromClause = this.fromClause(query, joins);
         const whereClause = this.whereClause(query, null, searchFilter);
         const maxTileLimit = (maxTileRecords > 0) ? maxTileRecords : MAX_TILE_RECORDS;
         const limitCount = this.limitCount(maxTileLimit);
-        return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause, sortClause, limitCount });
+        return helpers_1.SelectStmt({ targetList, fromClause, whereClause, sortClause, limitCount });
     }
     toHistogramAST(query, { column, bucketSize, type, sort, pageSize, pageIndex, boundingBox, searchFilter }) {
         const subLinkColumn = (col, table) => {
-            return (0, helpers_1.SubLink)(4, (0, helpers_1.SelectStmt)({
-                targetList: [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(col))],
-                fromClause: [(0, helpers_1.RangeVar)(table)]
+            return helpers_1.SubLink(4, helpers_1.SelectStmt({
+                targetList: [helpers_1.ResTarget(helpers_1.ColumnRef(col))],
+                fromClause: [helpers_1.RangeVar(table)]
             }));
         };
         const expr = (lhs, op, rhs) => {
-            return (0, helpers_1.AExpr)(0, op, lhs, rhs);
+            return helpers_1.AExpr(0, op, lhs, rhs);
         };
         const targetList = [
-            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('series', 'series'), 'bucket'),
-            (0, helpers_1.ResTarget)((0, helpers_1.CoalesceExpr)([(0, helpers_1.ColumnRef)('count', 'sub'), (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0))]), 'count'),
-            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('min_value', 'sub'), 'min_value'),
-            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('max_value', 'sub'), 'max_value'),
-            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('avg_value', 'sub'), 'avg_value'),
-            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('sum_value', 'sub'), 'sum_value'),
-            (0, helpers_1.ResTarget)(expr(subLinkColumn('min_value', '__stats'), '+', expr(expr((0, helpers_1.ColumnRef)('series', 'series'), '-', (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1))), '*', subLinkColumn('bucket_width', '__stats'))), 'bucket_min'),
-            (0, helpers_1.ResTarget)(expr(subLinkColumn('min_value', '__stats'), '+', expr((0, helpers_1.ColumnRef)('series', 'series'), '*', subLinkColumn('bucket_width', '__stats'))), 'bucket_max'),
-            (0, helpers_1.ResTarget)(subLinkColumn('range', '__stats'), 'range'),
-            (0, helpers_1.ResTarget)(subLinkColumn('bucket_width', '__stats'), 'bucket_width')
+            helpers_1.ResTarget(helpers_1.ColumnRef('series', 'series'), 'bucket'),
+            helpers_1.ResTarget(helpers_1.CoalesceExpr([helpers_1.ColumnRef('count', 'sub'), helpers_1.AConst(helpers_1.IntegerValue(0))]), 'count'),
+            helpers_1.ResTarget(helpers_1.ColumnRef('min_value', 'sub'), 'min_value'),
+            helpers_1.ResTarget(helpers_1.ColumnRef('max_value', 'sub'), 'max_value'),
+            helpers_1.ResTarget(helpers_1.ColumnRef('avg_value', 'sub'), 'avg_value'),
+            helpers_1.ResTarget(helpers_1.ColumnRef('sum_value', 'sub'), 'sum_value'),
+            helpers_1.ResTarget(expr(subLinkColumn('min_value', '__stats'), '+', expr(expr(helpers_1.ColumnRef('series', 'series'), '-', helpers_1.AConst(helpers_1.IntegerValue(1))), '*', subLinkColumn('bucket_width', '__stats'))), 'bucket_min'),
+            helpers_1.ResTarget(expr(subLinkColumn('min_value', '__stats'), '+', expr(helpers_1.ColumnRef('series', 'series'), '*', subLinkColumn('bucket_width', '__stats'))), 'bucket_max'),
+            helpers_1.ResTarget(subLinkColumn('range', '__stats'), 'range'),
+            helpers_1.ResTarget(subLinkColumn('bucket_width', '__stats'), 'bucket_width')
         ];
         const withClause = this.histogramWithClause(column, bucketSize, type, query, boundingBox, searchFilter);
-        const seriesFunctionSublinkSelect = (0, helpers_1.SelectStmt)({
-            targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AExpr)(0, '+', (0, helpers_1.ColumnRef)('buckets'), (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1))))],
-            fromClause: [(0, helpers_1.RangeVar)('__stats')]
+        const seriesFunctionSublinkSelect = helpers_1.SelectStmt({
+            targetList: [helpers_1.ResTarget(helpers_1.AExpr(0, '+', helpers_1.ColumnRef('buckets'), helpers_1.AConst(helpers_1.IntegerValue(1))))],
+            fromClause: [helpers_1.RangeVar('__stats')]
         });
         const seriesFunctionArgs = [
-            (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)),
-            (0, helpers_1.SubLink)(4, seriesFunctionSublinkSelect)
+            helpers_1.AConst(helpers_1.IntegerValue(1)),
+            helpers_1.SubLink(4, seriesFunctionSublinkSelect)
         ];
-        const seriesFunctionCall = (0, helpers_1.FuncCall)('generate_series', seriesFunctionArgs);
-        const seriesFunction = (0, helpers_1.RangeFunction)([[seriesFunctionCall]], (0, helpers_1.Alias)('series'));
+        const seriesFunctionCall = helpers_1.FuncCall('generate_series', seriesFunctionArgs);
+        const seriesFunction = helpers_1.RangeFunction([[seriesFunctionCall]], helpers_1.Alias('series'));
         const bucketWidthFunctionCallArgs = [
-            (0, helpers_1.TypeCast)((0, helpers_1.TypeName)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('float8')]), (0, helpers_1.ColumnRef)('value')),
-            (0, helpers_1.SubLink)(4, (0, helpers_1.SelectStmt)({ targetList: [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('min_value'))], fromClause: [(0, helpers_1.RangeVar)('__stats')] })),
-            (0, helpers_1.SubLink)(4, (0, helpers_1.SelectStmt)({ targetList: [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('max_value'))], fromClause: [(0, helpers_1.RangeVar)('__stats')] })),
-            (0, helpers_1.SubLink)(4, (0, helpers_1.SelectStmt)({ targetList: [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('buckets'))], fromClause: [(0, helpers_1.RangeVar)('__stats')] }))
+            helpers_1.TypeCast(helpers_1.TypeName([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('float8')]), helpers_1.ColumnRef('value')),
+            helpers_1.SubLink(4, helpers_1.SelectStmt({ targetList: [helpers_1.ResTarget(helpers_1.ColumnRef('min_value'))], fromClause: [helpers_1.RangeVar('__stats')] })),
+            helpers_1.SubLink(4, helpers_1.SelectStmt({ targetList: [helpers_1.ResTarget(helpers_1.ColumnRef('max_value'))], fromClause: [helpers_1.RangeVar('__stats')] })),
+            helpers_1.SubLink(4, helpers_1.SelectStmt({ targetList: [helpers_1.ResTarget(helpers_1.ColumnRef('buckets'))], fromClause: [helpers_1.RangeVar('__stats')] }))
         ];
         const bucketsSubqueryTargetList = [
-            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('width_bucket', bucketWidthFunctionCallArgs), 'bucket'),
-            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('count', [(0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1))]), 'count'),
-            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('min', [(0, helpers_1.ColumnRef)('value')]), 'min_value'),
-            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('max', [(0, helpers_1.ColumnRef)('value')]), 'max_value'),
-            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('avg', [(0, helpers_1.ColumnRef)('value')]), 'avg_value'),
-            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('sum', [(0, helpers_1.ColumnRef)('value')]), 'sum_value')
+            helpers_1.ResTarget(helpers_1.FuncCall('width_bucket', bucketWidthFunctionCallArgs), 'bucket'),
+            helpers_1.ResTarget(helpers_1.FuncCall('count', [helpers_1.AConst(helpers_1.IntegerValue(1))]), 'count'),
+            helpers_1.ResTarget(helpers_1.FuncCall('min', [helpers_1.ColumnRef('value')]), 'min_value'),
+            helpers_1.ResTarget(helpers_1.FuncCall('max', [helpers_1.ColumnRef('value')]), 'max_value'),
+            helpers_1.ResTarget(helpers_1.FuncCall('avg', [helpers_1.ColumnRef('value')]), 'avg_value'),
+            helpers_1.ResTarget(helpers_1.FuncCall('sum', [helpers_1.ColumnRef('value')]), 'sum_value')
         ];
-        const bucketsSubqueryFromClause = [(0, helpers_1.RangeVar)('__records')];
-        const bucketsSubqueryGroupClause = [(0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1))];
-        const bucketsSubquerySortClause = [(0, helpers_1.SortBy)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)), 0, 0)];
-        const bucketsSubquery = (0, helpers_1.SelectStmt)({
+        const bucketsSubqueryFromClause = [helpers_1.RangeVar('__records')];
+        const bucketsSubqueryGroupClause = [helpers_1.AConst(helpers_1.IntegerValue(1))];
+        const bucketsSubquerySortClause = [helpers_1.SortBy(helpers_1.AConst(helpers_1.IntegerValue(1)), 0, 0)];
+        const bucketsSubquery = helpers_1.SelectStmt({
             targetList: bucketsSubqueryTargetList,
             fromClause: bucketsSubqueryFromClause,
             groupClause: bucketsSubqueryGroupClause,
             sortClause: bucketsSubquerySortClause
         });
-        const bucketsSubselect = (0, helpers_1.RangeSubselect)(bucketsSubquery, (0, helpers_1.Alias)('sub'));
-        const joinExpr = (0, helpers_1.JoinExpr)(1, seriesFunction, bucketsSubselect, (0, helpers_1.AExpr)(0, '=', (0, helpers_1.ColumnRef)('series', 'series'), (0, helpers_1.ColumnRef)('bucket', 'sub')));
-        return (0, helpers_1.SelectStmt)({ targetList, fromClause: [joinExpr], withClause });
+        const bucketsSubselect = helpers_1.RangeSubselect(bucketsSubquery, helpers_1.Alias('sub'));
+        const joinExpr = helpers_1.JoinExpr(1, seriesFunction, bucketsSubselect, helpers_1.AExpr(0, '=', helpers_1.ColumnRef('series', 'series'), helpers_1.ColumnRef('bucket', 'sub')));
+        return helpers_1.SelectStmt({ targetList, fromClause: [joinExpr], withClause });
     }
     toDistinctValuesAST(query, options = {}) {
-        const valueColumn = query.ast ? (0, helpers_1.ColumnRef)(options.column.id) : columnRef(options.column);
+        if (!options.column || !options.column.id) {
+            throw new Error("Invalid or missing column options");
+        }
+        const valueColumn = query.ast ? helpers_1.ColumnRef(options.column.id) : columnRef(options.column);
         let targetList = null;
         const isLinkedRecord = options.column.element && options.column.element.isRecordLinkElement;
         if (isLinkedRecord) {
-            targetList = [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('linked_record_id', '__linked_join'), 'value')];
+            targetList = [helpers_1.ResTarget(helpers_1.ColumnRef('linked_record_id', '__linked_join'), 'value')];
         }
         else if (options.column.isArray && options.unnestArrays !== false) {
-            targetList = [(0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('unnest', [valueColumn]), 'value')];
+            targetList = [helpers_1.ResTarget(helpers_1.FuncCall('unnest', [valueColumn]), 'value')];
         }
         else if (options.column.element && options.column.element.isCalculatedElement && options.column.element.display.isDate) {
             // SELECT pg_catalog.timezone('UTC', to_timestamp(column_name))::date
             const timeZoneCast = (param) => {
-                return (0, helpers_1.FuncCall)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('timezone')], [(0, helpers_1.AConst)((0, helpers_1.StringValue)('UTC')), param]);
+                return helpers_1.FuncCall([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('timezone')], [helpers_1.AConst(helpers_1.StringValue('UTC')), param]);
             };
             const toTimestamp = (param) => {
-                return (0, helpers_1.FuncCall)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('to_timestamp')], [param]);
+                return helpers_1.FuncCall([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('to_timestamp')], [param]);
             };
-            targetList = [(0, helpers_1.ResTarget)((0, helpers_1.TypeCast)((0, helpers_1.TypeName)('date'), timeZoneCast(toTimestamp(valueColumn))), 'value')];
+            targetList = [helpers_1.ResTarget(helpers_1.TypeCast(helpers_1.TypeName('date'), timeZoneCast(toTimestamp(valueColumn))), 'value')];
         }
         else {
-            targetList = [(0, helpers_1.ResTarget)(valueColumn, 'value')];
+            targetList = [helpers_1.ResTarget(valueColumn, 'value')];
         }
-        targetList.push((0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('count', [(0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1))]), 'count'));
+        targetList.push(helpers_1.ResTarget(helpers_1.FuncCall('count', [helpers_1.AConst(helpers_1.IntegerValue(1))]), 'count'));
         if (isLinkedRecord) {
-            targetList.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('__title', '__linked'), 'label'));
+            targetList.push(helpers_1.ResTarget(helpers_1.ColumnRef('__title', '__linked'), 'label'));
         }
         const joins = query.joinColumns.map(o => o.join);
         if (options.column.join) {
@@ -431,12 +434,12 @@ class Converter {
                 alias: '__linked_join',
                 sourceColumn: '_record_id',
                 joinColumn: 'source_record_id' });
-            const subQuery = (0, helpers_1.SelectStmt)({
-                targetList: [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_title'), '__title'),
-                    (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_id'), '__record_id')],
-                fromClause: [(0, helpers_1.RangeVar)(`${options.column.element.form.id}`)]
+            const subQuery = helpers_1.SelectStmt({
+                targetList: [helpers_1.ResTarget(helpers_1.ColumnRef('_title'), '__title'),
+                    helpers_1.ResTarget(helpers_1.ColumnRef('_record_id'), '__record_id')],
+                fromClause: [helpers_1.RangeVar(`${options.column.element.form.id}`)]
             });
-            const linkedSubselect = (0, helpers_1.RangeSubselect)(subQuery, (0, helpers_1.Alias)('__linked'));
+            const linkedSubselect = helpers_1.RangeSubselect(subQuery, helpers_1.Alias('__linked'));
             joins.push({ inner: false,
                 rarg: linkedSubselect,
                 alias: '__linked',
@@ -448,20 +451,20 @@ class Converter {
         // const whereClause = null; // options.all ? null : this.whereClause(query);
         // TODO(zhm) need to pass the bbox and search here?
         const whereClause = this.whereClause(query, null, null, options);
-        const groupClause = [(0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1))];
+        const groupClause = [helpers_1.AConst(helpers_1.IntegerValue(1))];
         if (isLinkedRecord) {
-            groupClause.push((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(3)));
+            groupClause.push(helpers_1.AConst(helpers_1.IntegerValue(3)));
         }
         const sortClause = [];
         if (options.by === 'frequency') {
-            sortClause.push((0, helpers_1.SortBy)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(2)), 2, 0));
+            sortClause.push(helpers_1.SortBy(helpers_1.AConst(helpers_1.IntegerValue(2)), 2, 0));
         }
         if (isLinkedRecord) {
-            sortClause.push((0, helpers_1.SortBy)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(3)), 1, 0));
+            sortClause.push(helpers_1.SortBy(helpers_1.AConst(helpers_1.IntegerValue(3)), 1, 0));
         }
-        sortClause.push((0, helpers_1.SortBy)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)), 1, 0));
+        sortClause.push(helpers_1.SortBy(helpers_1.AConst(helpers_1.IntegerValue(1)), 1, 0));
         const limitCount = this.limitCount(MAX_DISTINCT_VALUES);
-        return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause, groupClause, sortClause, limitCount });
+        return helpers_1.SelectStmt({ targetList, fromClause, whereClause, groupClause, sortClause, limitCount });
     }
     toSummaryAST(query, columnSetting, { boundingBox, searchFilter }) {
         if (columnSetting.summary.aggregate === aggregate_1.AggregateType.Histogram.name) {
@@ -482,80 +485,80 @@ class Converter {
         }
         const fromClause = this.fromClause(query, joins, [columnSetting.column]);
         const whereClause = this.summaryWhereClause(query, columnSetting, { boundingBox, searchFilter });
-        return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause });
+        return helpers_1.SelectStmt({ targetList, fromClause, whereClause });
     }
     histogramWithClause(column, bucketSize, type, query, boundingBox, searchFilter) {
         let recordsTargetList = null;
         if (type === 'date') {
             const datePartArgs = [
-                (0, helpers_1.AConst)((0, helpers_1.StringValue)('epoch')),
-                (0, helpers_1.TypeCast)((0, helpers_1.TypeName)('date'), columnRef(column))
+                helpers_1.AConst(helpers_1.StringValue('epoch')),
+                helpers_1.TypeCast(helpers_1.TypeName('date'), columnRef(column))
             ];
-            recordsTargetList = [(0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('date_part', datePartArgs), 'value')];
+            recordsTargetList = [helpers_1.ResTarget(helpers_1.FuncCall('date_part', datePartArgs), 'value')];
         }
         else {
-            recordsTargetList = [(0, helpers_1.ResTarget)((0, helpers_1.TypeCast)((0, helpers_1.TypeName)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('float8')]), columnRef(column)), 'value')];
+            recordsTargetList = [helpers_1.ResTarget(helpers_1.TypeCast(helpers_1.TypeName([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('float8')]), columnRef(column)), 'value')];
         }
         const joins = query.joinColumnsWithSorting.map(o => o.join);
         const recordsFromClause = this.fromClause(query, joins, [column]);
         const recordsWhere = this.whereClause(query, boundingBox, searchFilter);
-        const recordsSelect = (0, helpers_1.SelectStmt)({ targetList: recordsTargetList, fromClause: recordsFromClause, whereClause: recordsWhere });
-        const recordsExpr = (0, helpers_1.CommonTableExpr)('__records', recordsSelect);
+        const recordsSelect = helpers_1.SelectStmt({ targetList: recordsTargetList, fromClause: recordsFromClause, whereClause: recordsWhere });
+        const recordsExpr = helpers_1.CommonTableExpr('__records', recordsSelect);
         const statsTargetList = [
-            (0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(bucketSize)), 'buckets'),
-            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('count', [(0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1))]), 'count'),
-            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('min', [(0, helpers_1.ColumnRef)('value')]), 'min_value'),
-            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('max', [(0, helpers_1.ColumnRef)('value')]), 'max_value'),
-            (0, helpers_1.ResTarget)((0, helpers_1.AExpr)(0, '-', (0, helpers_1.FuncCall)('max', [(0, helpers_1.ColumnRef)('value')]), (0, helpers_1.FuncCall)('min', [(0, helpers_1.ColumnRef)('value')])), 'range'),
-            (0, helpers_1.ResTarget)((0, helpers_1.AExpr)(0, '/', (0, helpers_1.AExpr)(0, '-', (0, helpers_1.TypeCast)((0, helpers_1.TypeName)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('float8')]), (0, helpers_1.FuncCall)('max', [(0, helpers_1.ColumnRef)('value')])), (0, helpers_1.TypeCast)((0, helpers_1.TypeName)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('float8')]), (0, helpers_1.FuncCall)('min', [(0, helpers_1.ColumnRef)('value')]))), (0, helpers_1.AConst)((0, helpers_1.FloatValue)(bucketSize))), 'bucket_width')
+            helpers_1.ResTarget(helpers_1.AConst(helpers_1.IntegerValue(bucketSize)), 'buckets'),
+            helpers_1.ResTarget(helpers_1.FuncCall('count', [helpers_1.AConst(helpers_1.IntegerValue(1))]), 'count'),
+            helpers_1.ResTarget(helpers_1.FuncCall('min', [helpers_1.ColumnRef('value')]), 'min_value'),
+            helpers_1.ResTarget(helpers_1.FuncCall('max', [helpers_1.ColumnRef('value')]), 'max_value'),
+            helpers_1.ResTarget(helpers_1.AExpr(0, '-', helpers_1.FuncCall('max', [helpers_1.ColumnRef('value')]), helpers_1.FuncCall('min', [helpers_1.ColumnRef('value')])), 'range'),
+            helpers_1.ResTarget(helpers_1.AExpr(0, '/', helpers_1.AExpr(0, '-', helpers_1.TypeCast(helpers_1.TypeName([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('float8')]), helpers_1.FuncCall('max', [helpers_1.ColumnRef('value')])), helpers_1.TypeCast(helpers_1.TypeName([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('float8')]), helpers_1.FuncCall('min', [helpers_1.ColumnRef('value')]))), helpers_1.AConst(helpers_1.FloatValue(bucketSize))), 'bucket_width')
         ];
-        const statsFromClause = [(0, helpers_1.RangeVar)('__records')];
-        const statsSelect = (0, helpers_1.SelectStmt)({ targetList: statsTargetList, fromClause: statsFromClause });
-        const statsExpr = (0, helpers_1.CommonTableExpr)('__stats', statsSelect);
-        return (0, helpers_1.WithClause)([recordsExpr, statsExpr]);
+        const statsFromClause = [helpers_1.RangeVar('__records')];
+        const statsSelect = helpers_1.SelectStmt({ targetList: statsTargetList, fromClause: statsFromClause });
+        const statsExpr = helpers_1.CommonTableExpr('__stats', statsSelect);
+        return helpers_1.WithClause([recordsExpr, statsExpr]);
     }
     toSchemaAST(query, { schemaOnly } = {}) {
         // wrap the query in a subquery with 1=0
-        const targetList = [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)((0, helpers_1.AStar)()))];
-        const fromClause = [(0, helpers_1.RangeSubselect)(query, (0, helpers_1.Alias)('wrapped'))];
-        const whereClause = schemaOnly ? (0, helpers_1.AExpr)(0, '=', (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0)), (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))
+        const targetList = [helpers_1.ResTarget(helpers_1.ColumnRef(helpers_1.AStar()))];
+        const fromClause = [helpers_1.RangeSubselect(query, helpers_1.Alias('wrapped'))];
+        const whereClause = schemaOnly ? helpers_1.AExpr(0, '=', helpers_1.AConst(helpers_1.IntegerValue(0)), helpers_1.AConst(helpers_1.IntegerValue(1)))
             : null;
-        return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause });
+        return helpers_1.SelectStmt({ targetList, fromClause, whereClause });
     }
     limitOffset(pageSize, pageIndex) {
         if (pageSize != null && pageIndex != null) {
-            return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(+pageIndex * +pageSize));
+            return helpers_1.AConst(helpers_1.IntegerValue(+pageIndex * +pageSize));
         }
         return null;
     }
     limitCount(pageSize) {
         if (pageSize != null) {
-            return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(+pageSize));
+            return helpers_1.AConst(helpers_1.IntegerValue(+pageSize));
         }
         return null;
     }
     targetList(query, sort, boundingBox) {
         const list = [
-            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)((0, helpers_1.AStar)(), 'records'))
+            helpers_1.ResTarget(helpers_1.ColumnRef(helpers_1.AStar(), 'records'))
         ];
         const subJoinColumns = query.joinColumnsWithSorting;
         if (subJoinColumns.indexOf(query.schema.createdByColumn) !== -1) {
-            list.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('name', query.schema.createdByColumn.join.alias), query.schema.createdByColumn.id));
+            list.push(helpers_1.ResTarget(helpers_1.ColumnRef('name', query.schema.createdByColumn.join.alias), query.schema.createdByColumn.id));
         }
         if (subJoinColumns.indexOf(query.schema.updatedByColumn) !== -1) {
-            list.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('name', query.schema.updatedByColumn.join.alias), query.schema.updatedByColumn.id));
+            list.push(helpers_1.ResTarget(helpers_1.ColumnRef('name', query.schema.updatedByColumn.join.alias), query.schema.updatedByColumn.id));
         }
         if (subJoinColumns.indexOf(query.schema.assignedToColumn) !== -1) {
-            list.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('name', query.schema.assignedToColumn.join.alias), query.schema.assignedToColumn.id));
+            list.push(helpers_1.ResTarget(helpers_1.ColumnRef('name', query.schema.assignedToColumn.join.alias), query.schema.assignedToColumn.id));
         }
         if (subJoinColumns.indexOf(query.schema.projectColumn) !== -1) {
-            list.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('name', query.schema.projectColumn.join.alias), query.schema.projectColumn.id));
+            list.push(helpers_1.ResTarget(helpers_1.ColumnRef('name', query.schema.projectColumn.join.alias), query.schema.projectColumn.id));
         }
         if (subJoinColumns.indexOf(query.schema.recordSeriesColumn) !== -1) {
-            list.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('rrule', query.schema.recordSeriesColumn.join.alias), query.schema.recordSeriesColumn.id));
-            list.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('enabled', query.schema.recordSeriesColumn.join.alias), query.schema.recordSeriesColumn.id));
+            list.push(helpers_1.ResTarget(helpers_1.ColumnRef('rrule', query.schema.recordSeriesColumn.join.alias), query.schema.recordSeriesColumn.id));
+            list.push(helpers_1.ResTarget(helpers_1.ColumnRef('enabled', query.schema.recordSeriesColumn.join.alias), query.schema.recordSeriesColumn.id));
         }
-        list.push((0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('row_number', null, { over: (0, helpers_1.WindowDef)(sort, 530) }), '__row_number'));
+        list.push(helpers_1.ResTarget(helpers_1.FuncCall('row_number', null, { over: helpers_1.WindowDef(sort, 530) }), '__row_number'));
         return list;
     }
     fromClause(query, leftJoins = [], exactColumns) {
@@ -583,7 +586,7 @@ class Converter {
                     Converter.duplicateResTargetWithExactName(query, queryAST.SelectStmt.targetList, column, column.id);
                 }
             }
-            return [(0, helpers_1.RangeSubselect)(queryAST, (0, helpers_1.Alias)('records'))];
+            return [helpers_1.RangeSubselect(queryAST, helpers_1.Alias('records'))];
         }
         baseQuery = this.formQueryRangeVar(query);
         const visitedTables = {};
@@ -622,20 +625,20 @@ class Converter {
             }
             if (item.search) {
                 if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
-                    systemParts.push((0, helpers_1.SubLink)(0, (0, helpers_1.SelectStmt)({
-                        targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
-                        fromClause: [(0, helpers_1.RangeVar)(item.column.element.form.id)],
-                        whereClause: (0, helpers_1.BoolExpr)(0, [
-                            (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', item.column.element.form.id), columnRef(item.column)),
-                            (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_title', item.column.element.form.id), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),
+                    systemParts.push(helpers_1.SubLink(0, helpers_1.SelectStmt({
+                        targetList: [helpers_1.ResTarget(helpers_1.AConst(helpers_1.IntegerValue(1)))],
+                        fromClause: [helpers_1.RangeVar(item.column.element.form.id)],
+                        whereClause: helpers_1.BoolExpr(0, [
+                            helpers_1.AExpr(1, '=', helpers_1.ColumnRef('_record_id', item.column.element.form.id), columnRef(item.column)),
+                            helpers_1.AExpr(8, '~~*', helpers_1.ColumnRef('_title', item.column.element.form.id), helpers_1.AConst(helpers_1.StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
                         ]),
                     })));
                 }
                 else if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
-                    systemParts.push((0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), columnRef(item.column)), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
+                    systemParts.push(helpers_1.AExpr(8, '~~*', helpers_1.TypeCast(helpers_1.TypeName('text'), columnRef(item.column)), helpers_1.AConst(helpers_1.StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
                 }
                 else {
-                    systemParts.push((0, helpers_1.AExpr)(8, '~~*', columnRef(item.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
+                    systemParts.push(helpers_1.AExpr(8, '~~*', columnRef(item.column), helpers_1.AConst(helpers_1.StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
                 }
             }
             if (item.expression.isValid) {
@@ -650,15 +653,15 @@ class Converter {
         }
         const expressions = systemParts.filter(o => o != null);
         if (filterNode && expressions.length) {
-            return (0, helpers_1.BoolExpr)(0, [filterNode, ...expressions]);
+            return helpers_1.BoolExpr(0, [filterNode, ...expressions]);
         }
         else if (expressions.length) {
-            return (0, helpers_1.BoolExpr)(0, [...expressions]);
+            return helpers_1.BoolExpr(0, [...expressions]);
         }
         return filterNode;
     }
     static joinClause(baseQuery, { inner, tableName, alias, sourceColumn, joinColumn, sourceTableName, rarg, ast }) {
-        return (0, helpers_1.JoinExpr)(inner ? 0 : 1, baseQuery, rarg || (0, helpers_1.RangeVar)(tableName, (0, helpers_1.Alias)(alias)), ast ? ast : (0, helpers_1.AExpr)(0, '=', (0, helpers_1.ColumnRef)(sourceColumn, sourceTableName || 'records'), (0, helpers_1.ColumnRef)(joinColumn, alias)));
+        return helpers_1.JoinExpr(inner ? 0 : 1, baseQuery, rarg || helpers_1.RangeVar(tableName, helpers_1.Alias(alias)), ast ? ast : helpers_1.AExpr(0, '=', helpers_1.ColumnRef(sourceColumn, sourceTableName || 'records'), helpers_1.ColumnRef(joinColumn, alias)));
     }
     static duplicateResTargetWithExactName(query, targetList, column, exactName) {
         let resTarget = Converter.findResTarget(query, column);
@@ -674,7 +677,7 @@ class Converter {
             resTarget.ResTarget.name = exactName;
         }
         else {
-            resTarget = (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(column.columnName, column.source), exactName);
+            resTarget = helpers_1.ResTarget(helpers_1.ColumnRef(column.columnName, column.source), exactName);
         }
         targetList.push(resTarget);
     }
@@ -707,9 +710,9 @@ class Converter {
     formQueryRangeVar(query) {
         const full = query.full ? '/_full' : '';
         if (query.repeatableKey) {
-            return (0, helpers_1.RangeVar)(query.form.id + '/' + query.repeatableKey + full, (0, helpers_1.Alias)('records'));
+            return helpers_1.RangeVar(query.form.id + '/' + query.repeatableKey + full, helpers_1.Alias('records'));
         }
-        return (0, helpers_1.RangeVar)(query.form.id + full, (0, helpers_1.Alias)('records'));
+        return helpers_1.RangeVar(query.form.id + full, helpers_1.Alias('records'));
     }
     createExpressionForColumnFilter(filter, options) {
         let expression = null;
@@ -740,16 +743,16 @@ class Converter {
                     expression = this.In(filter.column, values);
                 }
                 if (hasNull) {
-                    expression = (0, helpers_1.BoolExpr)(1, [(0, helpers_1.NullTest)(0, columnRef(filter.column)), expression]);
+                    expression = helpers_1.BoolExpr(1, [helpers_1.NullTest(0, columnRef(filter.column)), expression]);
                 }
             }
             else if (hasNull) {
-                expression = (0, helpers_1.NullTest)(0, columnRef(filter.column));
+                expression = helpers_1.NullTest(0, columnRef(filter.column));
             }
         }
         else if (filter.isEmptySet) {
             // add 1 = 0 clause to return 0 rows
-            expression = (0, helpers_1.AExpr)(0, '=', (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)), (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0)));
+            expression = helpers_1.AExpr(0, '=', helpers_1.AConst(helpers_1.IntegerValue(1)), helpers_1.AConst(helpers_1.IntegerValue(0)));
         }
         return expression;
     }
@@ -765,20 +768,20 @@ class Converter {
             const box2 = [-180, ymin, xmax, ymax];
             const boxes = [this.geometryQuery(columnName, box1),
                 this.geometryQuery(columnName, box2)];
-            return (0, helpers_1.BoolExpr)(1, boxes);
+            return helpers_1.BoolExpr(1, boxes);
         }
         return this.geometryQuery(columnName, boundingBox);
     }
     geometryQuery(columnName, boundingBox) {
         const args = [
-            (0, helpers_1.AConst)((0, helpers_1.FloatValue)(boundingBox[0])),
-            (0, helpers_1.AConst)((0, helpers_1.FloatValue)(boundingBox[1])),
-            (0, helpers_1.AConst)((0, helpers_1.FloatValue)(boundingBox[2])),
-            (0, helpers_1.AConst)((0, helpers_1.FloatValue)(boundingBox[3])),
-            (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(4326))
+            helpers_1.AConst(helpers_1.FloatValue(boundingBox[0])),
+            helpers_1.AConst(helpers_1.FloatValue(boundingBox[1])),
+            helpers_1.AConst(helpers_1.FloatValue(boundingBox[2])),
+            helpers_1.AConst(helpers_1.FloatValue(boundingBox[3])),
+            helpers_1.AConst(helpers_1.IntegerValue(4326))
         ];
-        const rhs = (0, helpers_1.FuncCall)('st_makeenvelope', args);
-        return (0, helpers_1.AExpr)(0, '&&', (0, helpers_1.ColumnRef)(columnName), rhs);
+        const rhs = helpers_1.FuncCall('st_makeenvelope', args);
+        return helpers_1.AExpr(0, '&&', helpers_1.ColumnRef(columnName), rhs);
     }
     escapeLikePercent(value) {
         return value.replace(/\%/g, '\\%').replace(/_/g, '\\_%');
@@ -806,11 +809,11 @@ class Converter {
         search = search.trim();
         // if it's a fully custom SQL statement, use a simpler form with no index
         if (query.ast) {
-            return (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), (0, helpers_1.ColumnRef)('records')), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(search) + '%')));
+            return helpers_1.AExpr(8, '~~*', helpers_1.TypeCast(helpers_1.TypeName('text'), helpers_1.ColumnRef('records')), helpers_1.AConst(helpers_1.StringValue('%' + this.escapeLikePercent(search) + '%')));
         }
         const toTsQuery = (dictionary, term) => {
-            const args = [(0, helpers_1.AConst)((0, helpers_1.StringValue)(dictionary)), (0, helpers_1.AConst)((0, helpers_1.StringValue)("'" + term + "':*"))];
-            return (0, helpers_1.FuncCall)('to_tsquery', args);
+            const args = [helpers_1.AConst(helpers_1.StringValue(dictionary)), helpers_1.AConst(helpers_1.StringValue("'" + term + "':*"))];
+            return helpers_1.FuncCall('to_tsquery', args);
         };
         const makeTsQueryCall = (term) => {
             return toTsQuery('english', term.toLowerCase().replace(/'/g, "''"));
@@ -820,30 +823,30 @@ class Converter {
         let tsQueries = makeTsQueryCall(term);
         while (terms.length) {
             term = terms.shift();
-            tsQueries = (0, helpers_1.AExpr)(0, '&&', tsQueries, makeTsQueryCall(term));
+            tsQueries = helpers_1.AExpr(0, '&&', tsQueries, makeTsQueryCall(term));
         }
-        const ftsExpression = (0, helpers_1.AExpr)(0, '@@', (0, helpers_1.ColumnRef)('_record_index'), tsQueries);
-        const ilikeExpression = (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_record_index_text'), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(search) + '%')));
+        const ftsExpression = helpers_1.AExpr(0, '@@', helpers_1.ColumnRef('_record_index'), tsQueries);
+        const ilikeExpression = helpers_1.AExpr(8, '~~*', helpers_1.ColumnRef('_record_index_text'), helpers_1.AConst(helpers_1.StringValue('%' + this.escapeLikePercent(search) + '%')));
         const andArgs = [
             ftsExpression,
             ilikeExpression
         ];
-        return (0, helpers_1.BoolExpr)(0, andArgs);
+        return helpers_1.BoolExpr(0, andArgs);
     }
     summaryWhereClause(query, columnSetting, { boundingBox, searchFilter }) {
         const expressions = [];
         const converters = {
             [aggregate_1.AggregateType.Empty.name]: () => {
-                return (0, helpers_1.NullTest)(0, columnRef(columnSetting.column));
+                return helpers_1.NullTest(0, columnRef(columnSetting.column));
             },
             [aggregate_1.AggregateType.NotEmpty.name]: () => {
-                return (0, helpers_1.NullTest)(1, columnRef(columnSetting.column));
+                return helpers_1.NullTest(1, columnRef(columnSetting.column));
             },
             [aggregate_1.AggregateType.PercentEmpty.name]: () => {
-                return (0, helpers_1.NullTest)(0, columnRef(columnSetting.column));
+                return helpers_1.NullTest(0, columnRef(columnSetting.column));
             },
             [aggregate_1.AggregateType.PercentNotEmpty.name]: () => {
-                return (0, helpers_1.NullTest)(1, columnRef(columnSetting.column));
+                return helpers_1.NullTest(1, columnRef(columnSetting.column));
             }
         };
         const expressionConverter = converters[columnSetting.summary.aggregate];
@@ -855,7 +858,7 @@ class Converter {
     summaryTargetList(query, columnSetting) {
         const simpleFunctionResTarget = (funcName, param) => {
             return () => {
-                return [(0, helpers_1.ResTarget)((0, helpers_1.FuncCall)(funcName, [param || columnRef(columnSetting.column)]), 'value')];
+                return [helpers_1.ResTarget(helpers_1.FuncCall(funcName, [param || columnRef(columnSetting.column)]), 'value')];
             };
         };
         const converter = {
@@ -865,10 +868,10 @@ class Converter {
             [aggregate_1.AggregateType.Max.name]: simpleFunctionResTarget('max'),
             [aggregate_1.AggregateType.StdDev.name]: simpleFunctionResTarget('stddev'),
             [aggregate_1.AggregateType.Histogram.name]: simpleFunctionResTarget('count'),
-            [aggregate_1.AggregateType.Empty.name]: simpleFunctionResTarget('count', (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1))),
-            [aggregate_1.AggregateType.NotEmpty.name]: simpleFunctionResTarget('count', (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1))),
+            [aggregate_1.AggregateType.Empty.name]: simpleFunctionResTarget('count', helpers_1.AConst(helpers_1.IntegerValue(1))),
+            [aggregate_1.AggregateType.NotEmpty.name]: simpleFunctionResTarget('count', helpers_1.AConst(helpers_1.IntegerValue(1))),
             [aggregate_1.AggregateType.Unique.name]: () => {
-                return [(0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('count', [columnRef(columnSetting.column)], { agg_distinct: true }), 'value')];
+                return [helpers_1.ResTarget(helpers_1.FuncCall('count', [columnRef(columnSetting.column)], { agg_distinct: true }), 'value')];
             },
             [aggregate_1.AggregateType.PercentEmpty.name]: simpleFunctionResTarget('count'),
             [aggregate_1.AggregateType.PercentNotEmpty.name]: simpleFunctionResTarget('count'),

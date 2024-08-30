@@ -16,5 +16,5 @@ export default class FormFieldSchema {
     get elementsForColumns(): any[];
     _elementsForColumns: any[] | undefined;
 }
-import SimpleColumn from './schema/simple-column';
-import ElementColumn from './schema/element-column';
+import SimpleColumn from "./schema/simple-column";
+import ElementColumn from "./schema/element-column";

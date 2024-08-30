@@ -151,7 +151,7 @@ export default class Converter {
     } | null;
     targetList(query: any, sort: any, boundingBox: any): {
         ResTarget: {
-            name: null;
+            name: any;
             val: any;
         };
     }[];
@@ -269,7 +269,7 @@ export default class Converter {
     } | null;
     summaryTargetList(query: any, columnSetting: any): {
         ResTarget: {
-            name: null;
+            name: any;
             val: any;
         };
     }[];
@@ -757,7 +757,7 @@ export default class Converter {
             val: any;
         };
     } | null;
-    GetDate: (dateString: any, options: any) => moment.Moment;
+    GetDate: (dateString: any, options: any) => any;
     ConvertDateValue: (expression: any, date: any) => any;
     ConvertToText: (column: any) => {
         ColumnRef: {
@@ -771,4 +771,3 @@ export default class Converter {
     };
     IsValidRegExp: (string: any) => boolean;
 }
-import moment from 'moment-timezone';

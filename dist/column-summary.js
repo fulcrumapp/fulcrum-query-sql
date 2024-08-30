@@ -26,7 +26,7 @@ class ColumnSummary {
         return this._aggregate;
     }
     availableAggregates() {
-        return (0, aggregate_1.availableAggregatesForColumn)(this.column);
+        return aggregate_1.availableAggregatesForColumn(this.column);
     }
 }
 exports.default = ColumnSummary;

@@ -18,4 +18,4 @@ export default class RepeatableSchema extends FormFieldSchema {
     get tableName(): string;
     get tableNameWithoutPrefix(): any;
 }
-import FormFieldSchema from './form-field-schema';
+import FormFieldSchema from "./form-field-schema";
