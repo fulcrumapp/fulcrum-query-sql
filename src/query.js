@@ -40,7 +40,7 @@ export default class Query {
     this._assignmentFilter = new ColumnFilter({...attrs.assignment_filter, field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name'}, this._schema);
     this._changesetFilter = new ColumnFilter({...attrs.changeset_filter, field: '_changeset_id'}, this._schema);
     this._full = attrs.full != null ? !!attrs.full : true;
-
+    console.log("hello hello testing testing, is this thing on?")
     this.setup();
   }
 
@@ -130,7 +130,7 @@ export default class Query {
     joins.push.apply(joins, this.filter.allExpressions.filter((o) => {
       return o.isValid && o.column.join;
     }).map(o => o.column));
-    
+
     return joins;
   }
 
