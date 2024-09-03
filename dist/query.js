@@ -31,6 +31,7 @@ class Query {
         this._assignmentFilter = new column_filter_1.default(Object.assign(Object.assign({}, attrs.assignment_filter), { field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name' }), this._schema);
         this._changesetFilter = new column_filter_1.default(Object.assign(Object.assign({}, attrs.changeset_filter), { field: '_changeset_id' }), this._schema);
         this._full = attrs.full != null ? !!attrs.full : true;
+        console.log("hello hello testing testing, is this thing on?");
         this.setup();
     }
     get ast() {
