@@ -395,6 +395,9 @@ class Converter {
         return helpers_1.SelectStmt({ targetList, fromClause: [joinExpr], withClause });
     }
     toDistinctValuesAST(query, options = {}) {
+        console.log("in the toDistinctValuesAST function");
+        console.log(queries);
+        console.log(options);
         if (!options.column || !options.column.id) {
             throw new Error("Invalid or missing column options");
         }
