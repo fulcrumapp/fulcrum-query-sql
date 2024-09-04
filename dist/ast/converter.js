@@ -395,56 +395,77 @@ class Converter {
         return helpers_1.SelectStmt({ targetList, fromClause: [joinExpr], withClause });
     }
     toDistinctValuesAST(query, options = {}) {
-        console.log("Entering toDistinctValuesAST function");
-        console.log("Query object:", query);
-        console.log("Options:", options);
-        // Validate that options.column is defined and has necessary properties
-        if (!options.column || typeof options.column.id === 'undefined') {
-            console.error("Invalid or missing 'column' option; 'column' must have an 'id' property.");
-            throw new Error("Invalid or missing column options; ensure that 'column' and 'column.id' are provided.");
+        console.log("in the toDistinctValuesAST function");
+        console.log(queries);
+        console.log(options);
+        if (!options.column || !options.column.id) {
+            throw new Error("Invalid or missing column options");
         }
         const valueColumn = query.ast ? helpers_1.ColumnRef(options.column.id) : columnRef(options.column);
-        let targetList = [];
-        // Handling different types of columns based on their properties
-        if (options.column.element && options.column.element.isRecordLinkElement) {
+        let targetList = null;
+        const isLinkedRecord = options.column.element && options.column.element.isRecordLinkElement;
+        if (isLinkedRecord) {
             targetList = [helpers_1.ResTarget(helpers_1.ColumnRef('linked_record_id', '__linked_join'), 'value')];
         }
         else if (options.column.isArray && options.unnestArrays !== false) {
             targetList = [helpers_1.ResTarget(helpers_1.FuncCall('unnest', [valueColumn]), 'value')];
         }
         else if (options.column.element && options.column.element.isCalculatedElement && options.column.element.display.isDate) {
-            // Processing date columns
-            const timeZoneCast = param => helpers_1.FuncCall(['pg_catalog', 'timezone'], [helpers_1.StringValue('UTC'), param]);
-            const toTimestamp = param => helpers_1.FuncCall(['pg_catalog', 'to_timestamp'], [param]);
+            // SELECT pg_catalog.timezone('UTC', to_timestamp(column_name))::date
+            const timeZoneCast = (param) => {
+                return helpers_1.FuncCall([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('timezone')], [helpers_1.AConst(helpers_1.StringValue('UTC')), param]);
+            };
+            const toTimestamp = (param) => {
+                return helpers_1.FuncCall([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('to_timestamp')], [param]);
+            };
             targetList = [helpers_1.ResTarget(helpers_1.TypeCast(helpers_1.TypeName('date'), timeZoneCast(toTimestamp(valueColumn))), 'value')];
         }
         else {
             targetList = [helpers_1.ResTarget(valueColumn, 'value')];
         }
         targetList.push(helpers_1.ResTarget(helpers_1.FuncCall('count', [helpers_1.AConst(helpers_1.IntegerValue(1))]), 'count'));
-        if (options.column.element && options.column.element.isRecordLinkElement) {
+        if (isLinkedRecord) {
             targetList.push(helpers_1.ResTarget(helpers_1.ColumnRef('__title', '__linked'), 'label'));
         }
-        // Join logic based on options
         const joins = query.joinColumns.map(o => o.join);
         if (options.column.join) {
             joins.push(options.column.join);
         }
-        if (options.column.element && options.column.element.isRecordLinkElement) {
-            const tableName = `${query.form.id}/${options.column.element.key}`;
-            const alias = '__linked_join';
+        if (isLinkedRecord) {
+            joins.push({ inner: false,
+                tableName: `${query.form.id}/${options.column.element.key}`,
+                alias: '__linked_join',
+                sourceColumn: '_record_id',
+                joinColumn: 'source_record_id' });
             const subQuery = helpers_1.SelectStmt({
-                targetList: [helpers_1.ResTarget(helpers_1.ColumnRef('_title'), '__title'), helpers_1.ResTarget(helpers_1.ColumnRef('_record_id'), '__record_id')],
+                targetList: [helpers_1.ResTarget(helpers_1.ColumnRef('_title'), '__title'),
+                    helpers_1.ResTarget(helpers_1.ColumnRef('_record_id'), '__record_id')],
                 fromClause: [helpers_1.RangeVar(`${options.column.element.form.id}`)]
             });
             const linkedSubselect = helpers_1.RangeSubselect(subQuery, helpers_1.Alias('__linked'));
-            joins.push({ inner: false, tableName, alias, sourceColumn: '_record_id', joinColumn: 'source_record_id', rarg: linkedSubselect });
+            joins.push({ inner: false,
+                rarg: linkedSubselect,
+                alias: '__linked',
+                sourceTableName: '__linked_join',
+                sourceColumn: 'linked_record_id',
+                joinColumn: '__record_id' });
         }
-        // Constructing the SQL query
         const fromClause = this.fromClause(query, joins, [options.column]);
+        // const whereClause = null; // options.all ? null : this.whereClause(query);
+        // TODO(zhm) need to pass the bbox and search here?
         const whereClause = this.whereClause(query, null, null, options);
         const groupClause = [helpers_1.AConst(helpers_1.IntegerValue(1))];
+        if (isLinkedRecord) {
+            groupClause.push(helpers_1.AConst(helpers_1.IntegerValue(3)));
+        }
         const sortClause = [];
+        if (options.by === 'frequency') {
+            sortClause.push(helpers_1.SortBy(helpers_1.AConst(helpers_1.IntegerValue(2)), 2, 0));
+        }
+        if (isLinkedRecord) {
+            sortClause.push(helpers_1.SortBy(helpers_1.AConst(helpers_1.IntegerValue(3)), 1, 0));
+        }
+        sortClause.push(helpers_1.SortBy(helpers_1.AConst(helpers_1.IntegerValue(1)), 1, 0));
         const limitCount = this.limitCount(MAX_DISTINCT_VALUES);
         return helpers_1.SelectStmt({ targetList, fromClause, whereClause, groupClause, sortClause, limitCount });
     }
@@ -584,6 +605,10 @@ class Converter {
     }
     whereClause(query, boundingBox, search, options = {}) {
         var _a, _b;
+        if (!options.column || typeof options.column.id === 'undefined') {
+            console.error('Critical: Missing column id in options', options);
+            throw new Error('Missing required column id in options');
+        }
         const systemParts = [];
         options = Object.assign(Object.assign({}, query.options || {}), options);
         const filterNode = this.nodeForCondition(query.filter, options);
