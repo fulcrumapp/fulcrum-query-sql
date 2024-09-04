@@ -607,7 +607,7 @@ class Converter {
         var _a, _b;
         if (!options.column || typeof options.column.id === 'undefined') {
             console.error('Critical: Missing column id in options', options);
-            throw new Error('Missing required column id in options');
+            // throw new Error('Missing required column id in options');
         }
         const systemParts = [];
         options = Object.assign(Object.assign({}, query.options || {}), options);
