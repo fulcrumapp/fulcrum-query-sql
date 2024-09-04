@@ -605,6 +605,7 @@ class Converter {
         return [baseQuery];
     }
     whereClause(query, boundingBox, search, options = {}) {
+        var _a, _b;
         const systemParts = [];
         options = Object.assign(Object.assign({}, (query.options || {})), options);
         const filterNode = this.nodeForCondition(query.filter, options);
@@ -627,7 +628,7 @@ class Converter {
                 }
             }
             if (item.search) {
-                if (item.column.element.isRecordLinkElement) {
+                if ((_b = (_a = item === null || item === void 0 ? void 0 : item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
                     const formId = item.column.element.form.id;
                     console.log("formId:", formId);
                     console.log("is it undefined????", formId === undefined);

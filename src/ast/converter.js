@@ -519,7 +519,7 @@ export default class Converter {
       }
 
       if (item.search) {
-        if (item.column.element.isRecordLinkElement) {
+        if (item?.column?.element?.isRecordLinkElement) {
           const formId = item.column.element.form.id;
           console.log("formId:",formId);
           console.log("is it undefined????", formId === undefined)
