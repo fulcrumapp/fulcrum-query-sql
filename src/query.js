@@ -234,6 +234,7 @@ export default class Query {
   }
 
   toRawAST(options) {
+    console.log("options in toRawAST", options)
     return new Converter().toAST(this, options);
   }
 
@@ -246,6 +247,7 @@ export default class Query {
   }
 
   toDistinctValuesAST(options) {
+    console.log("options in toDistinceValuesAST");
     return new Converter().toDistinctValuesAST(this, options);
   }
 

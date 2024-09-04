@@ -279,10 +279,12 @@ class Converter {
         };
     }
     toAST(query, { sort, pageSize, pageIndex, boundingBox, searchFilter }) {
+        console.log(searchFilter);
         const targetList = this.targetList(query, sort, boundingBox);
         const joins = query.joinColumnsWithSorting.map(o => o.join);
         const fromClause = this.fromClause(query, joins);
         const whereClause = this.whereClause(query, boundingBox, searchFilter);
+        console.log(whereClause);
         const sortClause = sort;
         const limitOffset = this.limitOffset(pageSize, pageIndex);
         const limitCount = this.limitCount(pageSize);

@@ -43,6 +43,7 @@ const columnRef = (column) => {
 
 export default class Converter {
   toAST(query, {sort, pageSize, pageIndex, boundingBox, searchFilter}) {
+    console.log(searchFilter)
     const targetList = this.targetList(query, sort, boundingBox);
 
     const joins = query.joinColumnsWithSorting.map(o => o.join);
@@ -50,6 +51,7 @@ export default class Converter {
     const fromClause = this.fromClause(query, joins);
 
     const whereClause = this.whereClause(query, boundingBox, searchFilter);
+    console.log(whereClause)
 
     const sortClause = sort;
 
@@ -518,7 +520,6 @@ export default class Converter {
       }
 
       if (item.search) {
-
         if (item.column.element.isRecordLinkElement) {
           const formId = item.column.element.form.id;
           console.log(formId);

@@ -183,6 +183,7 @@ class Query {
         };
     }
     toRawAST(options) {
+        console.log("options in toRawAST", options);
         return new converter_1.default().toAST(this, options);
     }
     toCountAST(options) {
@@ -192,6 +193,7 @@ class Query {
         return new converter_1.default().toTileAST(this, options, maxTileRecords, sorting);
     }
     toDistinctValuesAST(options) {
+        console.log("options in toDistinceValuesAST");
         return new converter_1.default().toDistinctValuesAST(this, options);
     }
     toHistogramAST(options) {
