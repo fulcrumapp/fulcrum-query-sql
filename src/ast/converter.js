@@ -510,11 +510,6 @@ export default class Converter {
     systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
 
     for (const item of query.columnSettings.columns) {
-      if (!item.column || !item.column.element) {
-        console.log("Skipping item due to missing column or element properties:", item);
-        continue;
-      }
-
       if (item.hasFilter) {
         const expression = this.createExpressionForColumnFilter(item.filter, options);
         if (expression) {
@@ -523,18 +518,24 @@ export default class Converter {
       }
 
       if (item.search) {
+
         if (item.column.element.isRecordLinkElement) {
-          systemParts.push(SubLink(
-            0,
-            SelectStmt({
-              targetList: [ResTarget(AConst(IntegerValue(1)))],
-              fromClause: [RangeVar(item.column.element.form.id)],
-              whereClause: BoolExpr(0, [
-                AExpr(1, '=', ColumnRef('_record_id', item?.column?.element?.form?.id), columnRef(item.column)),
-                AExpr(8, '~~*', ColumnRef('_title', item?.column?.element?.form?.id), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
-              ]),
-            }),
-          ));
+          const formId = item.column.element.form.id;
+          console.log(formId);
+          console.log("is it undefined????", formId === undefined)
+          if (formId) {
+            systemParts.push(SubLink(
+              0,
+              SelectStmt({
+                targetList: [ResTarget(AConst(IntegerValue(1)))],
+                fromClause: [RangeVar(item.column.element.form.id)],
+                whereClause: BoolExpr(0, [
+                  AExpr(1, '=', ColumnRef('_record_id', formId), columnRef(item.column)),
+                  AExpr(8, '~~*', ColumnRef('_title', formId), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
+                ]),
+              }),
+            ));
+          }
         } else if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
           systemParts.push(AExpr(8, '~~*', TypeCast(TypeName('text'), columnRef(item.column)),
             AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));

@@ -604,7 +604,6 @@ class Converter {
         return [baseQuery];
     }
     whereClause(query, boundingBox, search, options = {}) {
-        var _a, _b, _c, _d, _e, _f;
         const systemParts = [];
         options = Object.assign(Object.assign({}, (query.options || {})), options);
         const filterNode = this.nodeForCondition(query.filter, options);
@@ -620,10 +619,6 @@ class Converter {
         systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
         systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
         for (const item of query.columnSettings.columns) {
-            if (!item.column || !item.column.element) {
-                console.log("Skipping item due to missing column or element properties:", item);
-                continue;
-            }
             if (item.hasFilter) {
                 const expression = this.createExpressionForColumnFilter(item.filter, options);
                 if (expression) {
@@ -632,14 +627,19 @@ class Converter {
             }
             if (item.search) {
                 if (item.column.element.isRecordLinkElement) {
-                    systemParts.push(helpers_1.SubLink(0, helpers_1.SelectStmt({
-                        targetList: [helpers_1.ResTarget(helpers_1.AConst(helpers_1.IntegerValue(1)))],
-                        fromClause: [helpers_1.RangeVar(item.column.element.form.id)],
-                        whereClause: helpers_1.BoolExpr(0, [
-                            helpers_1.AExpr(1, '=', helpers_1.ColumnRef('_record_id', (_c = (_b = (_a = item === null || item === void 0 ? void 0 : item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.form) === null || _c === void 0 ? void 0 : _c.id), columnRef(item.column)),
-                            helpers_1.AExpr(8, '~~*', helpers_1.ColumnRef('_title', (_f = (_e = (_d = item === null || item === void 0 ? void 0 : item.column) === null || _d === void 0 ? void 0 : _d.element) === null || _e === void 0 ? void 0 : _e.form) === null || _f === void 0 ? void 0 : _f.id), helpers_1.AConst(helpers_1.StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
-                        ]),
-                    })));
+                    const formId = item.column.element.form.id;
+                    console.log(formId);
+                    console.log("is it undefined????", formId === undefined);
+                    if (formId) {
+                        systemParts.push(helpers_1.SubLink(0, helpers_1.SelectStmt({
+                            targetList: [helpers_1.ResTarget(helpers_1.AConst(helpers_1.IntegerValue(1)))],
+                            fromClause: [helpers_1.RangeVar(item.column.element.form.id)],
+                            whereClause: helpers_1.BoolExpr(0, [
+                                helpers_1.AExpr(1, '=', helpers_1.ColumnRef('_record_id', formId), columnRef(item.column)),
+                                helpers_1.AExpr(8, '~~*', helpers_1.ColumnRef('_title', formId), helpers_1.AConst(helpers_1.StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
+                            ]),
+                        })));
+                    }
                 }
                 else if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
                     systemParts.push(helpers_1.AExpr(8, '~~*', helpers_1.TypeCast(helpers_1.TypeName('text'), columnRef(item.column)), helpers_1.AConst(helpers_1.StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
