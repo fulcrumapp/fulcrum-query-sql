@@ -400,10 +400,9 @@ class Converter {
         console.log("in the toDistinctValuesAST function");
         console.log(queries);
         console.log(options);
-        if (!options.column || !options.column.id) {
-            throw new Error("Invalid or missing column options");
+        if (options.column.id) {
+            const valueColumn = query.ast ? helpers_1.ColumnRef(options.column.id) : columnRef(options.column);
         }
-        const valueColumn = query.ast ? helpers_1.ColumnRef(options.column.id) : columnRef(options.column);
         let targetList = null;
         const isLinkedRecord = options.column.element && options.column.element.isRecordLinkElement;
         if (isLinkedRecord) {
