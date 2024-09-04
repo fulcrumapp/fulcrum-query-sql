@@ -28,9 +28,8 @@ yarn build
 - Build the package, commit and push the changes
 - In your other repo (most likely `fulcrum-components`)
   - In `package.json`, point your `fulcrum-query-sql` npm package to that branch in this format
-  - `fulcrum-query-sql: github:fulcrumapp/fulcrum-query-sql#BRANCH-NAME`
-- Delete the existing `yarn.lock` file
-- Rebuild the lock file by running `./yarn`
+  - `"fulcrum-query-sql": "github:fulcrumapp/fulcrum-query-sql#BRANCH-NAME"`
+- Rebuild the lock file by running `yarn install` (DO NOT DELETE THE EXISTING `yarn.lock` FILE)
 - Re-skaffold and the changes will now be visible for debugging
 
 ### Debugging troubleshooting
