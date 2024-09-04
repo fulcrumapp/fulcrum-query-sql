@@ -604,13 +604,8 @@ class Converter {
         return [baseQuery];
     }
     whereClause(query, boundingBox, search, options = {}) {
-        var _a, _b;
-        if (!options.column || typeof options.column.id === 'undefined') {
-            console.error('Critical: Missing column id in options', options);
-            // throw new Error('Missing required column id in options');
-        }
         const systemParts = [];
-        options = Object.assign(Object.assign({}, query.options || {}), options);
+        options = Object.assign(Object.assign({}, (query.options || {})), options);
         const filterNode = this.nodeForCondition(query.filter, options);
         if (boundingBox) {
             systemParts.push(this.boundingBoxFilter(query, boundingBox));
@@ -624,6 +619,10 @@ class Converter {
         systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
         systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
         for (const item of query.columnSettings.columns) {
+            if (!item.column || !item.column.element) {
+                console.log("Skipping item due to missing column or element properties:", item);
+                continue;
+            }
             if (item.hasFilter) {
                 const expression = this.createExpressionForColumnFilter(item.filter, options);
                 if (expression) {
@@ -631,7 +630,7 @@ class Converter {
                 }
             }
             if (item.search) {
-                if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
+                if (item.column.element.isRecordLinkElement) {
                     systemParts.push(helpers_1.SubLink(0, helpers_1.SelectStmt({
                         targetList: [helpers_1.ResTarget(helpers_1.AConst(helpers_1.IntegerValue(1)))],
                         fromClause: [helpers_1.RangeVar(item.column.element.form.id)],

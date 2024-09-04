@@ -490,14 +490,8 @@ export default class Converter {
   }
 
   whereClause(query, boundingBox, search, options = {}) {
-
-    if (!options.column || typeof options.column.id === 'undefined') {
-      console.error('Critical: Missing column id in options', options);
-      // throw new Error('Missing required column id in options');
-    }
-
     const systemParts = [];
-    options = {...query.options || {}, ...options};
+    options = { ...(query.options || {}), ...options };
 
     const filterNode = this.nodeForCondition(query.filter, options);
 
@@ -516,16 +510,20 @@ export default class Converter {
     systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
 
     for (const item of query.columnSettings.columns) {
+      if (!item.column || !item.column.element) {
+        console.log("Skipping item due to missing column or element properties:", item);
+        continue;
+      }
+
       if (item.hasFilter) {
         const expression = this.createExpressionForColumnFilter(item.filter, options);
-
         if (expression) {
           systemParts.push(expression);
         }
       }
 
       if (item.search) {
-        if (item.column?.element?.isRecordLinkElement) {
+        if (item.column.element.isRecordLinkElement) {
           systemParts.push(SubLink(
             0,
             SelectStmt({
@@ -539,10 +537,10 @@ export default class Converter {
           ));
         } else if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
           systemParts.push(AExpr(8, '~~*', TypeCast(TypeName('text'), columnRef(item.column)),
-                                          AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
+            AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
         } else {
           systemParts.push(AExpr(8, '~~*', columnRef(item.column),
-                                          AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
+            AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))));
         }
       }
 
@@ -562,9 +560,9 @@ export default class Converter {
     const expressions = systemParts.filter(o => o != null);
 
     if (filterNode && expressions.length) {
-      return BoolExpr(0, [ filterNode, ...expressions ]);
+      return BoolExpr(0, [filterNode, ...expressions]);
     } else if (expressions.length) {
-      return BoolExpr(0, [ ...expressions ]);
+      return BoolExpr(0, [...expressions]);
     }
 
     return filterNode;
