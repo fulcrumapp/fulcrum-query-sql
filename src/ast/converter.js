@@ -43,7 +43,7 @@ const columnRef = (column) => {
 
 export default class Converter {
   toAST(query, {sort, pageSize, pageIndex, boundingBox, searchFilter}) {
-    console.log(searchFilter)
+    console.log("search filter", searchFilter)
     const targetList = this.targetList(query, sort, boundingBox);
 
     const joins = query.joinColumnsWithSorting.map(o => o.join);
@@ -51,7 +51,7 @@ export default class Converter {
     const fromClause = this.fromClause(query, joins);
 
     const whereClause = this.whereClause(query, boundingBox, searchFilter);
-    console.log(whereClause)
+    console.log("whereclause",whereClause)
 
     const sortClause = sort;
 
@@ -215,8 +215,8 @@ export default class Converter {
 
   toDistinctValuesAST(query, options = {}) {
     console.log("in the toDistinctValuesAST function");
-    console.log(queries);
-    console.log(options);
+    console.log("queries",queries);
+    console.log("options", options);
 
     if (options.column.id) {
       const valueColumn = query.ast ? ColumnRef(options.column.id) : columnRef(options.column);
@@ -521,7 +521,7 @@ export default class Converter {
       if (item.search) {
         if (item.column.element.isRecordLinkElement) {
           const formId = item.column.element.form.id;
-          console.log(formId);
+          console.log("formId:",formId);
           console.log("is it undefined????", formId === undefined)
           if (formId) {
             systemParts.push(SubLink(

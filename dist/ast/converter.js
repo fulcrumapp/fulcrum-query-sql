@@ -279,12 +279,12 @@ class Converter {
         };
     }
     toAST(query, { sort, pageSize, pageIndex, boundingBox, searchFilter }) {
-        console.log(searchFilter);
+        console.log("search filter", searchFilter);
         const targetList = this.targetList(query, sort, boundingBox);
         const joins = query.joinColumnsWithSorting.map(o => o.join);
         const fromClause = this.fromClause(query, joins);
         const whereClause = this.whereClause(query, boundingBox, searchFilter);
-        console.log(whereClause);
+        console.log("whereclause", whereClause);
         const sortClause = sort;
         const limitOffset = this.limitOffset(pageSize, pageIndex);
         const limitCount = this.limitCount(pageSize);
@@ -398,8 +398,8 @@ class Converter {
     }
     toDistinctValuesAST(query, options = {}) {
         console.log("in the toDistinctValuesAST function");
-        console.log(queries);
-        console.log(options);
+        console.log("queries", queries);
+        console.log("options", options);
         if (options.column.id) {
             const valueColumn = query.ast ? helpers_1.ColumnRef(options.column.id) : columnRef(options.column);
         }
@@ -629,7 +629,7 @@ class Converter {
             if (item.search) {
                 if (item.column.element.isRecordLinkElement) {
                     const formId = item.column.element.form.id;
-                    console.log(formId);
+                    console.log("formId:", formId);
                     console.log("is it undefined????", formId === undefined);
                     if (formId) {
                         systemParts.push(helpers_1.SubLink(0, helpers_1.SelectStmt({
