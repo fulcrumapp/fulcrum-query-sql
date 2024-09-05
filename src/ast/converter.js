@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 import _ from 'lodash';
-import { logger } from "@fulcrumapp/common-node/logger";
+import { logger } from '@fulcrumapp/common-node/logger';
 
 import { ColumnRef,
          ResTarget,

@@ -50,7 +50,7 @@ class ColumnSettings {
         return this.columns.map(o => o.toJSON());
     }
     move(from, to) {
-        this._columns = array_move_1.default(this._columns, from, to);
+        this._columns = (0, array_move_1.default)(this._columns, from, to);
     }
     get enabledColumns() {
         return this.enabledColumnSettings.map(c => c.column);

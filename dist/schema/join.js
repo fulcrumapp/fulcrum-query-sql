@@ -13,7 +13,7 @@ class Join {
         this._inner = !!inner;
         this._sourceTableName = sourceTableName || null;
         this._ast = ast;
-        assert_1.default(alias && tableName && ((sourceColumn && joinColumn) || ast), 'invalid join');
+        (0, assert_1.default)(alias && tableName && ((sourceColumn && joinColumn) || ast), 'invalid join');
     }
     get inner() {
         return this._inner;

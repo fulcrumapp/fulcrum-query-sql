@@ -544,7 +544,7 @@ function availableOperatorsForColumn(column) {
 }
 exports.availableOperatorsForColumn = availableOperatorsForColumn;
 function calculateDateRange(column, operator, value, now) {
-    now = moment_1.default(now || new Date()).clone().startOf('day');
+    now = (0, moment_1.default)(now || new Date()).clone().startOf('day');
     const date1 = now.clone();
     const date2 = now.clone();
     const range = (start, end) => {
@@ -611,7 +611,7 @@ function calculateDateRange(column, operator, value, now) {
         case exports.OperatorType.DateYearsAgo.name:
             return value && range(date1.subtract(+value, 'years'), date2);
         case exports.OperatorType.DateBetween.name:
-            return value && range(value[0] && moment_1.default(value[0]), value[1] && moment_1.default(value[1]));
+            return value && range(value[0] && (0, moment_1.default)(value[0]), value[1] && (0, moment_1.default)(value[1]));
         default:
             return null;
     }

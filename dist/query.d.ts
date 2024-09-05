@@ -232,9 +232,9 @@ export default class Query {
     toHumanDescription(): string;
     setup(): void;
 }
-import { Condition } from "./condition";
-import SortExpressions from "./sort-expressions";
-import { Expression } from "./expression";
-import QueryOptions from "./query-options";
-import ColumnSettings from "./column-settings";
-import ColumnFilter from "./column-filter";
+import { Condition } from './condition';
+import SortExpressions from './sort-expressions';
+import { Expression } from './expression';
+import QueryOptions from './query-options';
+import ColumnSettings from './column-settings';
+import ColumnFilter from './column-filter';

@@ -197,10 +197,10 @@ class Query {
         return new converter_1.default().toHistogramAST(this, options);
     }
     toAST({ applySort, pageSize, pageIndex, outerLimit }) {
-        const finalLimit = outerLimit ? helpers_1.AConst(helpers_1.IntegerValue(+outerLimit)) : null;
+        const finalLimit = outerLimit ? (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(+outerLimit)) : null;
         const sortClause = applySort ? this.outerSortClause : null;
         const fromClause = this.fromClause(Object.assign({ applySort, pageSize, pageIndex }, this.runtimeFilters));
-        return helpers_1.SelectStmt({
+        return (0, helpers_1.SelectStmt)({
             targetList: this.targetList(),
             fromClause: fromClause,
             sortClause: sortClause,
@@ -247,7 +247,7 @@ class Query {
     }
     targetList() {
         if (this.ast) {
-            return [helpers_1.ResTarget(helpers_1.ColumnRef(helpers_1.AStar()))];
+            return [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)((0, helpers_1.AStar)()))];
         }
         if (!this.full) {
             return lodash_1.default.compact(this.columnSettings.enabledColumns.map(column => {
@@ -258,13 +258,13 @@ class Query {
                 if (column.join) {
                     columnAlias = [column.join.alias, column.columnName].join('_');
                 }
-                return helpers_1.ResTarget(helpers_1.ColumnRef(column.columnName, column.source || 'records'), columnAlias);
+                return (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(column.columnName, column.source || 'records'), columnAlias);
             }));
         }
         const timeZoneCast = (columnRef) => {
-            return helpers_1.FuncCall([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('timezone')], [helpers_1.AConst(helpers_1.StringValue('UTC')), columnRef]);
+            return (0, helpers_1.FuncCall)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('timezone')], [(0, helpers_1.AConst)((0, helpers_1.StringValue)('UTC')), columnRef]);
         };
-        const timeZoneFormat = helpers_1.AConst(helpers_1.StringValue('YYYY-MM-DD"T"HH24:MI:SS"Z"'));
+        const timeZoneFormat = (0, helpers_1.AConst)((0, helpers_1.StringValue)('YYYY-MM-DD"T"HH24:MI:SS"Z"'));
         const recordKeyColumns = [];
         const joinedColumns = [];
         // The "subJoinColumns" are joins that need to happen in the inner sub-select from Converter.
@@ -272,134 +272,134 @@ class Query {
         const subJoinColumns = this.joinColumnsWithSorting;
         for (const column of this.schema._rawColumns) {
             if (column.name === '_record_key') {
-                recordKeyColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef('_record_key'), 'record_key'));
-                recordKeyColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef('_record_sequence'), 'record_sequence'));
+                recordKeyColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_key'), 'record_key'));
+                recordKeyColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_sequence'), 'record_sequence'));
                 break;
             }
         }
         if (this.schema.createdByColumn) {
             if (subJoinColumns.indexOf(this.schema.createdByColumn) === -1) {
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef('name', 'created_by'), 'created_by'));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('name', 'created_by'), 'created_by'));
             }
             else {
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef('created_by.name'), 'created_by'));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('created_by.name'), 'created_by'));
             }
         }
         if (this.schema.updatedByColumn) {
             if (subJoinColumns.indexOf(this.schema.updatedByColumn) === -1) {
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef('name', 'updated_by'), 'updated_by'));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('name', 'updated_by'), 'updated_by'));
             }
             else {
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef('updated_by.name'), 'updated_by'));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('updated_by.name'), 'updated_by'));
             }
         }
         if (this.schema.assignedToColumn) {
             const alias = this.schema.assignedToColumn.join.alias;
             if (subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef('name', alias), alias));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('name', alias), alias));
             }
             else {
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef(alias + '.name'), alias));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(alias + '.name'), alias));
             }
         }
         if (this.schema.projectColumn) {
             const alias = this.schema.projectColumn.join.alias;
             if (subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef('name', alias), alias));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('name', alias), alias));
             }
             else {
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef(alias + '.name'), alias));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(alias + '.name'), alias));
             }
         }
         if (this.schema.recordSeriesColumn) {
             const alias = this.schema.recordSeriesColumn.join.alias;
             if (subJoinColumns.indexOf(this.schema.recordSeriesColumn) === -1) {
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef('record_series_id', alias), 'record_series_id'));
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef('rrule', alias), 'rrule'));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('record_series_id', alias), 'record_series_id'));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('rrule', alias), 'rrule'));
             }
             else {
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef(alias + '.record_series_id'), 'record_series_id'));
-                joinedColumns.push(helpers_1.ResTarget(helpers_1.ColumnRef(alias + '.rrule'), 'rrule'));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(alias + '.record_series_id'), 'record_series_id'));
+                joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(alias + '.rrule'), 'rrule'));
             }
         }
         if (this.repeatableKey) {
             return [
-                helpers_1.ResTarget(helpers_1.ColumnRef('_record_status'), 'record_status'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_version'), 'version'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_child_record_id'), 'id'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_record_id'), 'record_id'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_parent_id'), 'parent_id'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_index'), 'index'),
-                helpers_1.ResTarget(helpers_1.FuncCall([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('date_part')], [helpers_1.AConst(helpers_1.StringValue('epoch')), timeZoneCast(helpers_1.ColumnRef('_server_created_at'))]), 'created_at'),
-                helpers_1.ResTarget(helpers_1.FuncCall([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('date_part')], [helpers_1.AConst(helpers_1.StringValue('epoch')), timeZoneCast(helpers_1.ColumnRef('_server_updated_at'))]), 'updated_at'),
-                helpers_1.ResTarget(helpers_1.FuncCall([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('date_part')], [helpers_1.AConst(helpers_1.StringValue('epoch')), timeZoneCast(helpers_1.ColumnRef('_created_at'))]), 'client_created_at'),
-                helpers_1.ResTarget(helpers_1.FuncCall([helpers_1.StringValue('pg_catalog'), helpers_1.StringValue('date_part')], [helpers_1.AConst(helpers_1.StringValue('epoch')), timeZoneCast(helpers_1.ColumnRef('_updated_at'))]), 'client_updated_at'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_created_by_id'), 'created_by_id'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_updated_by_id'), 'updated_by_id'),
-                helpers_1.ResTarget(helpers_1.TypeCast(helpers_1.TypeName('text'), helpers_1.AConst(helpers_1.StringValue(this.form.id))), 'form_id'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_record_project_id'), 'record_project_id'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_record_assigned_to_id'), 'record_assigned_to_id'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_form_values'), 'form_values'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_geometry'), 'geometry'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_latitude'), 'latitude'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_longitude'), 'longitude'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_edited_duration'), 'edited_duration'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_updated_duration'), 'updated_duration'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_created_duration'), 'created_duration'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_changeset_id'), 'changeset_id'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_created_geometry'), 'created_geometry'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_created_latitude'), 'created_latitude'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_created_longitude'), 'created_longitude'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_created_altitude'), 'created_altitude'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_created_horizontal_accuracy'), 'created_horizontal_accuracy'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_updated_geometry'), 'updated_geometry'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_updated_latitude'), 'updated_latitude'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_updated_longitude'), 'updated_longitude'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_updated_altitude'), 'updated_altitude'),
-                helpers_1.ResTarget(helpers_1.ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_status'), 'record_status'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_version'), 'version'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_child_record_id'), 'id'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_id'), 'record_id'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_parent_id'), 'parent_id'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_index'), 'index'),
+                (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('date_part')], [(0, helpers_1.AConst)((0, helpers_1.StringValue)('epoch')), timeZoneCast((0, helpers_1.ColumnRef)('_server_created_at'))]), 'created_at'),
+                (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('date_part')], [(0, helpers_1.AConst)((0, helpers_1.StringValue)('epoch')), timeZoneCast((0, helpers_1.ColumnRef)('_server_updated_at'))]), 'updated_at'),
+                (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('date_part')], [(0, helpers_1.AConst)((0, helpers_1.StringValue)('epoch')), timeZoneCast((0, helpers_1.ColumnRef)('_created_at'))]), 'client_created_at'),
+                (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)([(0, helpers_1.StringValue)('pg_catalog'), (0, helpers_1.StringValue)('date_part')], [(0, helpers_1.AConst)((0, helpers_1.StringValue)('epoch')), timeZoneCast((0, helpers_1.ColumnRef)('_updated_at'))]), 'client_updated_at'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_by_id'), 'created_by_id'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_by_id'), 'updated_by_id'),
+                (0, helpers_1.ResTarget)((0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), (0, helpers_1.AConst)((0, helpers_1.StringValue)(this.form.id))), 'form_id'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_project_id'), 'record_project_id'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_assigned_to_id'), 'record_assigned_to_id'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_form_values'), 'form_values'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_geometry'), 'geometry'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_latitude'), 'latitude'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_longitude'), 'longitude'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_edited_duration'), 'edited_duration'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_duration'), 'updated_duration'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_duration'), 'created_duration'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_changeset_id'), 'changeset_id'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_geometry'), 'created_geometry'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_latitude'), 'created_latitude'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_longitude'), 'created_longitude'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_altitude'), 'created_altitude'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_horizontal_accuracy'), 'created_horizontal_accuracy'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_geometry'), 'updated_geometry'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_latitude'), 'updated_latitude'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_longitude'), 'updated_longitude'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_altitude'), 'updated_altitude'),
+                (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
                 ...joinedColumns
             ];
         }
         return [
-            helpers_1.ResTarget(helpers_1.ColumnRef('_status'), 'status'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_version'), 'version'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_record_id'), 'id'),
-            helpers_1.ResTarget(helpers_1.FuncCall('to_char', [timeZoneCast(helpers_1.ColumnRef('_server_created_at')),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_status'), 'status'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_version'), 'version'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_id'), 'id'),
+            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('to_char', [timeZoneCast((0, helpers_1.ColumnRef)('_server_created_at')),
                 timeZoneFormat]), 'created_at'),
-            helpers_1.ResTarget(helpers_1.FuncCall('to_char', [timeZoneCast(helpers_1.ColumnRef('_server_updated_at')),
+            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('to_char', [timeZoneCast((0, helpers_1.ColumnRef)('_server_updated_at')),
                 timeZoneFormat]), 'updated_at'),
-            helpers_1.ResTarget(helpers_1.FuncCall('to_char', [timeZoneCast(helpers_1.ColumnRef('_created_at')),
+            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('to_char', [timeZoneCast((0, helpers_1.ColumnRef)('_created_at')),
                 timeZoneFormat]), 'client_created_at'),
-            helpers_1.ResTarget(helpers_1.FuncCall('to_char', [timeZoneCast(helpers_1.ColumnRef('_updated_at')),
+            (0, helpers_1.ResTarget)((0, helpers_1.FuncCall)('to_char', [timeZoneCast((0, helpers_1.ColumnRef)('_updated_at')),
                 timeZoneFormat]), 'client_updated_at'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_created_by_id'), 'created_by_id'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_updated_by_id'), 'updated_by_id'),
-            helpers_1.ResTarget(helpers_1.TypeCast(helpers_1.TypeName('text'), helpers_1.AConst(helpers_1.StringValue(this.form.id))), 'form_id'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_project_id'), 'project_id'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_assigned_to_id'), 'assigned_to_id'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_form_values'), 'form_values'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_geometry'), 'geometry'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_latitude'), 'latitude'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_longitude'), 'longitude'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_altitude'), 'altitude'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_speed'), 'speed'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_course'), 'course'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_horizontal_accuracy'), 'horizontal_accuracy'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_vertical_accuracy'), 'vertical_accuracy'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_edited_duration'), 'edited_duration'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_updated_duration'), 'updated_duration'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_created_duration'), 'created_duration'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_changeset_id'), 'changeset_id'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_created_geometry'), 'created_geometry'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_created_latitude'), 'created_latitude'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_created_longitude'), 'created_longitude'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_created_altitude'), 'created_altitude'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_created_horizontal_accuracy'), 'created_horizontal_accuracy'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_updated_geometry'), 'updated_geometry'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_updated_latitude'), 'updated_latitude'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_updated_longitude'), 'updated_longitude'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_updated_altitude'), 'updated_altitude'),
-            helpers_1.ResTarget(helpers_1.ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_by_id'), 'created_by_id'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_by_id'), 'updated_by_id'),
+            (0, helpers_1.ResTarget)((0, helpers_1.TypeCast)((0, helpers_1.TypeName)('text'), (0, helpers_1.AConst)((0, helpers_1.StringValue)(this.form.id))), 'form_id'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_project_id'), 'project_id'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_assigned_to_id'), 'assigned_to_id'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_form_values'), 'form_values'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_geometry'), 'geometry'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_latitude'), 'latitude'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_longitude'), 'longitude'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_altitude'), 'altitude'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_speed'), 'speed'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_course'), 'course'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_horizontal_accuracy'), 'horizontal_accuracy'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_vertical_accuracy'), 'vertical_accuracy'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_edited_duration'), 'edited_duration'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_duration'), 'updated_duration'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_duration'), 'created_duration'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_changeset_id'), 'changeset_id'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_geometry'), 'created_geometry'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_latitude'), 'created_latitude'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_longitude'), 'created_longitude'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_altitude'), 'created_altitude'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_horizontal_accuracy'), 'created_horizontal_accuracy'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_geometry'), 'updated_geometry'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_latitude'), 'updated_latitude'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_longitude'), 'updated_longitude'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_altitude'), 'updated_altitude'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
             ...recordKeyColumns,
             ...joinedColumns
         ];
@@ -407,7 +407,7 @@ class Query {
     fromClause({ applySort, pageSize, pageIndex, boundingBox, searchFilter }) {
         const ast = applySort ? this.toRawAST({ sort: this.sortClause, pageSize, pageIndex, boundingBox, searchFilter })
             : this.toRawAST({ boundingBox, searchFilter });
-        let baseQuery = helpers_1.RangeSubselect(ast, helpers_1.Alias('records'));
+        let baseQuery = (0, helpers_1.RangeSubselect)(ast, (0, helpers_1.Alias)('records'));
         if (this.ast) {
             return [baseQuery];
         }
@@ -439,27 +439,27 @@ class Query {
             const direction = sort.direction === 'desc' ? 2 : 1;
             if (this.ast) {
                 return [
-                    helpers_1.SortBy(helpers_1.ColumnRef(sort.column.id, sort.column.source), direction, 0)
+                    (0, helpers_1.SortBy)((0, helpers_1.ColumnRef)(sort.column.id, sort.column.source), direction, 0)
                 ];
             }
             return [
-                helpers_1.SortBy(helpers_1.ColumnRef(sort.column.columnName, sort.column.source || 'records'), direction, 0),
-                helpers_1.SortBy(helpers_1.ColumnRef('_record_id', 'records'), direction, 0)
+                (0, helpers_1.SortBy)((0, helpers_1.ColumnRef)(sort.column.columnName, sort.column.source || 'records'), direction, 0),
+                (0, helpers_1.SortBy)((0, helpers_1.ColumnRef)('_record_id', 'records'), direction, 0)
             ];
         });
         return lodash_1.default.flatten(sorts);
     }
     get systemSortClause() {
         if (this.ast) {
-            return [helpers_1.SortBy(helpers_1.AConst(helpers_1.IntegerValue(1)), 2, 0)];
+            return [(0, helpers_1.SortBy)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)), 2, 0)];
         }
         if (this.repeatableKey) {
-            return [helpers_1.SortBy(helpers_1.ColumnRef('_updated_at'), 2, 0)];
+            return [(0, helpers_1.SortBy)((0, helpers_1.ColumnRef)('_updated_at'), 2, 0)];
         }
-        return [helpers_1.SortBy(helpers_1.ColumnRef('_server_updated_at'), 2, 0)];
+        return [(0, helpers_1.SortBy)((0, helpers_1.ColumnRef)('_server_updated_at'), 2, 0)];
     }
     get outerSortClause() {
-        return [helpers_1.SortBy(helpers_1.ColumnRef('__row_number'), 1, 0)];
+        return [(0, helpers_1.SortBy)((0, helpers_1.ColumnRef)('__row_number'), 1, 0)];
     }
     toHumanDescription() {
         const parts = [];
