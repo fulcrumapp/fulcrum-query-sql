@@ -1,5 +1,6 @@
 import moment from 'moment-timezone';
 import _ from 'lodash';
+import { logger } from "@fulcrumapp/common-node/logger";
 
 import { ColumnRef,
          ResTarget,
@@ -46,7 +47,7 @@ export default class Converter {
     const targetList = this.targetList(query, sort, boundingBox);
 
     const joins = query.joinColumnsWithSorting.map(o => o.join);
-    
+
     const fromClause = this.fromClause(query, joins);
 
     const whereClause = this.whereClause(query, boundingBox, searchFilter);
@@ -502,8 +503,11 @@ export default class Converter {
     systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
     systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
 
+    logger.info("got this far")
+
     for (const item of query.columnSettings.columns) {
       if (item.hasFilter) {
+        logger.info("You (probably) shouldn't see me")
         const expression = this.createExpressionForColumnFilter(item.filter, options);
 
         if (expression) {
@@ -512,7 +516,9 @@ export default class Converter {
       }
 
       if (item.search) {
+        logger.info("yep yep, we are here")
         if (item.column?.element?.isRecordLinkElement) {
+          logger.info("inside the recordLink if statement");
           systemParts.push(SubLink(
             0,
             SelectStmt({

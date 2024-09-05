@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Expression = void 0;
-const lodash_1 = __importDefault(require("lodash"));
 const operator_1 = require("./operator");
 const query_options_1 = __importDefault(require("./query-options"));
 class Expression {
@@ -17,13 +16,13 @@ class Expression {
         this._schema = schema;
     }
     get isValid() {
-        if (!(0, operator_1.isValueRequired)(this.operator)) {
+        if (!operator_1.isValueRequired(this.operator)) {
             return this.column != null && this.operator != null;
         }
         return this.column != null && this.operator != null && this.hasValue;
     }
     get supportsValue() {
-        return (0, operator_1.isValueRequired)(this.operator);
+        return operator_1.isValueRequired(this.operator);
     }
     get hasValue() {
         return this.value !== null && this.value.length !== 0;
@@ -67,7 +66,7 @@ class Expression {
         this.clearRangeValuesIfNull();
     }
     get isDateOperator() {
-        return (0, operator_1.isDateOperator)(this.operator);
+        return operator_1.isDateOperator(this.operator);
     }
     get operator() {
         return this._operator;
@@ -139,7 +138,7 @@ class Expression {
             JSON.stringify(this.value) === JSON.stringify(other.value);
     }
     availableOperators() {
-        return (0, operator_1.availableOperatorsForColumn)(this.column);
+        return operator_1.availableOperatorsForColumn(this.column);
     }
     get startDate() {
         return this._value && this._value[0];

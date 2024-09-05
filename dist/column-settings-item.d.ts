@@ -25,6 +25,6 @@ export default class ColumnSettingsItem {
     get expression(): Expression;
     get range(): Expression;
 }
-import ColumnFilter from './column-filter';
-import { Expression } from './expression';
-import ColumnSummary from './column-summary';
+import ColumnFilter from "./column-filter";
+import { Expression } from "./expression";
+import ColumnSummary from "./column-summary";

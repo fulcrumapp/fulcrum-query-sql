@@ -48,9 +48,9 @@ export function RangeVar(name: any, alias: any): {
         alias: any;
     };
 };
-export function ResTarget(node: any, name?: null): {
+export function ResTarget(node: any, name?: any): {
     ResTarget: {
-        name: null;
+        name: any;
         val: any;
     };
 };

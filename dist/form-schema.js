@@ -111,11 +111,11 @@ class FormSchema extends form_field_schema_1.default {
             sourceColumn: '_updated_by_id',
             joinColumn: 'user_id' });
         if (this.hasRecordSeriesID) {
-            const expr1 = (0, helpers_1.AExpr)(0, '=', (0, helpers_1.ColumnRef)('_record_series_id', 'records'), (0, helpers_1.ColumnRef)('record_series_id', 'record_series'));
-            const expr2 = (0, helpers_1.BooleanTest)((0, helpers_1.ColumnRef)('enabled', 'record_series'), 0);
+            const expr1 = helpers_1.AExpr(0, '=', helpers_1.ColumnRef('_record_series_id', 'records'), helpers_1.ColumnRef('record_series_id', 'record_series'));
+            const expr2 = helpers_1.BooleanTest(helpers_1.ColumnRef('enabled', 'record_series'), 0);
             this.recordSeriesColumn = this.addSystemColumn('Record Series', 'recordSeries', 'record_series.rrule', 'string', null, { tableName: 'record_series',
                 alias: 'record_series',
-                ast: (0, helpers_1.BoolExpr)(0, [expr1, expr2,]) });
+                ast: helpers_1.BoolExpr(0, [expr1, expr2,]) });
         }
         ;
         if (this.fullSchema) {
