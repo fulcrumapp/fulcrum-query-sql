@@ -13,6 +13,7 @@ const aggregate_1 = require("../aggregate");
 const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
 const columnRef = (column) => {
+    logger_1.logger.info(column);
     return column.isSQL ? helpers_1.ColumnRef(column.id, column.source)
         : helpers_1.ColumnRef(column.columnName, column.source);
 };

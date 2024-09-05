@@ -38,6 +38,7 @@ const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
 
 const columnRef = (column) => {
+  logger.info(column);
   return column.isSQL ? ColumnRef(column.id, column.source)
                       : ColumnRef(column.columnName, column.source);
 };
