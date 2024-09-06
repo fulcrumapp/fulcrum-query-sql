@@ -635,7 +635,7 @@ class Converter {
                     console.log('item column', item.column);
                     systemParts.push((0, helpers_1.SubLink)(0, (0, helpers_1.SelectStmt)({
                         targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
-                        fromClause: [(0, helpers_1.RangeVar)(item.column.element.form.id)],
+                        fromClause: [(0, helpers_1.RangeVar)(item.element.attributes.form_id)],
                         whereClause: (0, helpers_1.BoolExpr)(0, [
                             (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', item.element.attributes.form_id), columnRef(item.column)),
                             (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_title', item.element.attributes.form_id), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),

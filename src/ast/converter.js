@@ -529,7 +529,7 @@ export default class Converter {
             0,
             SelectStmt({
               targetList: [ResTarget(AConst(IntegerValue(1)))],
-              fromClause: [RangeVar(item.column.element.form.id)],
+              fromClause: [RangeVar(item.element.attributes.form_id)],
               whereClause: BoolExpr(0, [
                 AExpr(1, '=', ColumnRef('_record_id', item.element.attributes.form_id), columnRef(item.column)),
                 AExpr(8, '~~*', ColumnRef('_title', item.element.attributes.form_id), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
