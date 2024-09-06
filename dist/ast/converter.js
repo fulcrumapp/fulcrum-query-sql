@@ -599,7 +599,7 @@ class Converter {
         return [baseQuery];
     }
     whereClause(query, boundingBox, search, options = {}) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+        var _a, _b, _c, _d, _e;
         const systemParts = [];
         options = Object.assign(Object.assign({}, query.options || {}), options);
         const filterNode = this.nodeForCondition(query.filter, options);
@@ -637,8 +637,8 @@ class Converter {
                         targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
                         fromClause: [(0, helpers_1.RangeVar)(item.column.element.form.id)],
                         whereClause: (0, helpers_1.BoolExpr)(0, [
-                            (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', (_h = (_g = (_f = item === null || item === void 0 ? void 0 : item.column) === null || _f === void 0 ? void 0 : _f.element) === null || _g === void 0 ? void 0 : _g.form) === null || _h === void 0 ? void 0 : _h.id), columnRef(item.column)),
-                            (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_title', (_l = (_k = (_j = item === null || item === void 0 ? void 0 : item.column) === null || _j === void 0 ? void 0 : _j.element) === null || _k === void 0 ? void 0 : _k.form) === null || _l === void 0 ? void 0 : _l.id), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),
+                            (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', item.element.attributes.form_id), columnRef(item.column)),
+                            (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_title', item.element.attributes.form_id), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),
                         ]),
                     })));
                 }
