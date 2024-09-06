@@ -519,7 +519,8 @@ export default class Converter {
         console.log('yep yep, we are here')
         if (item.column?.element?.isRecordLinkElement) {
           console.log('inside the recordLink if statement');
-          console.log(item.column.element.form.id);
+          console.log('next line is the one that is blowing up maybe?');
+          console.log(item?.column?.element?.form?.id);
           systemParts.push(SubLink(
             0,
             SelectStmt({
