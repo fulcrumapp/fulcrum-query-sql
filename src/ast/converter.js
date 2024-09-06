@@ -516,17 +516,18 @@ export default class Converter {
       }
 
       if (item.search) {
-        console.log("yep yep, we are here")
+        console.log('yep yep, we are here')
         if (item.column?.element?.isRecordLinkElement) {
-          console.log("inside the recordLink if statement");
+          console.log('inside the recordLink if statement');
+          console.log(item.column.element.form.id);
           systemParts.push(SubLink(
             0,
             SelectStmt({
               targetList: [ResTarget(AConst(IntegerValue(1)))],
               fromClause: [RangeVar(item.column.element.form.id)],
               whereClause: BoolExpr(0, [
-                AExpr(1, '=', ColumnRef('_record_id', item.column.element.form.id), columnRef(item.column)),
-                AExpr(8, '~~*', ColumnRef('_title', item.column.element.form.id), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
+                AExpr(1, '=', ColumnRef('_record_id', item?.column?.element?.form?.id), columnRef(item.column)),
+                AExpr(8, '~~*', ColumnRef('_title', item?.column?.element?.form?.id), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
               ]),
             }),
           ));

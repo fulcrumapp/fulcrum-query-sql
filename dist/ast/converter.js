@@ -599,7 +599,7 @@ class Converter {
         return [baseQuery];
     }
     whereClause(query, boundingBox, search, options = {}) {
-        var _a, _b;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         const systemParts = [];
         options = Object.assign(Object.assign({}, query.options || {}), options);
         const filterNode = this.nodeForCondition(query.filter, options);
@@ -624,15 +624,16 @@ class Converter {
                 }
             }
             if (item.search) {
-                console.log("yep yep, we are here");
+                console.log('yep yep, we are here');
                 if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
-                    console.log("inside the recordLink if statement");
+                    console.log('inside the recordLink if statement');
+                    console.log(item.column.element.form.id);
                     systemParts.push((0, helpers_1.SubLink)(0, (0, helpers_1.SelectStmt)({
                         targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
                         fromClause: [(0, helpers_1.RangeVar)(item.column.element.form.id)],
                         whereClause: (0, helpers_1.BoolExpr)(0, [
-                            (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', item.column.element.form.id), columnRef(item.column)),
-                            (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_title', item.column.element.form.id), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),
+                            (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', (_e = (_d = (_c = item === null || item === void 0 ? void 0 : item.column) === null || _c === void 0 ? void 0 : _c.element) === null || _d === void 0 ? void 0 : _d.form) === null || _e === void 0 ? void 0 : _e.id), columnRef(item.column)),
+                            (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_title', (_h = (_g = (_f = item === null || item === void 0 ? void 0 : item.column) === null || _f === void 0 ? void 0 : _f.element) === null || _g === void 0 ? void 0 : _g.form) === null || _h === void 0 ? void 0 : _h.id), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),
                         ]),
                     })));
                 }
