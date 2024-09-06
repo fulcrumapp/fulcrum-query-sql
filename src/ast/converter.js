@@ -1,6 +1,5 @@
 import moment from 'moment-timezone';
 import _ from 'lodash';
-import { logger } from '@fulcrumapp/common-node/logger';
 
 import { ColumnRef,
          ResTarget,
@@ -38,7 +37,7 @@ const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
 
 const columnRef = (column) => {
-  logger.info(column);
+  console.log(column);
   return column.isSQL ? ColumnRef(column.id, column.source)
                       : ColumnRef(column.columnName, column.source);
 };
@@ -504,11 +503,11 @@ export default class Converter {
     systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
     systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
 
-    logger.info("got this far")
+    console.log("got this far")
 
     for (const item of query.columnSettings.columns) {
       if (item.hasFilter) {
-        logger.info("You (probably) shouldn't see me")
+        console.log("You (probably) shouldn't see me")
         const expression = this.createExpressionForColumnFilter(item.filter, options);
 
         if (expression) {
@@ -517,9 +516,9 @@ export default class Converter {
       }
 
       if (item.search) {
-        logger.info("yep yep, we are here")
+        console.log("yep yep, we are here")
         if (item.column?.element?.isRecordLinkElement) {
-          logger.info("inside the recordLink if statement");
+          console.log("inside the recordLink if statement");
           systemParts.push(SubLink(
             0,
             SelectStmt({

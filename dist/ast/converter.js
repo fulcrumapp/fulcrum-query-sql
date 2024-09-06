@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const moment_timezone_1 = __importDefault(require("moment-timezone"));
 const lodash_1 = __importDefault(require("lodash"));
-const logger_1 = require("@fulcrumapp/common-node/logger");
 const helpers_1 = require("./helpers");
 const condition_1 = require("../condition");
 const operator_1 = require("../operator");
@@ -13,7 +12,7 @@ const aggregate_1 = require("../aggregate");
 const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
 const columnRef = (column) => {
-    logger_1.logger.info(column);
+    console.log(column);
     return column.isSQL ? (0, helpers_1.ColumnRef)(column.id, column.source)
         : (0, helpers_1.ColumnRef)(column.columnName, column.source);
 };
@@ -615,19 +614,19 @@ class Converter {
         systemParts.push(this.createExpressionForColumnFilter(query.projectFilter, options));
         systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
         systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
-        logger_1.logger.info("got this far");
+        console.log("got this far");
         for (const item of query.columnSettings.columns) {
             if (item.hasFilter) {
-                logger_1.logger.info("You (probably) shouldn't see me");
+                console.log("You (probably) shouldn't see me");
                 const expression = this.createExpressionForColumnFilter(item.filter, options);
                 if (expression) {
                     systemParts.push(expression);
                 }
             }
             if (item.search) {
-                logger_1.logger.info("yep yep, we are here");
+                console.log("yep yep, we are here");
                 if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
-                    logger_1.logger.info("inside the recordLink if statement");
+                    console.log("inside the recordLink if statement");
                     systemParts.push((0, helpers_1.SubLink)(0, (0, helpers_1.SelectStmt)({
                         targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
                         fromClause: [(0, helpers_1.RangeVar)(item.column.element.form.id)],
