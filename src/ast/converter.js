@@ -37,7 +37,7 @@ const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
 
 const columnRef = (column) => {
-  console.log(column);
+  console.log("inside columnRef",column);
   return column.isSQL ? ColumnRef(column.id, column.source)
                       : ColumnRef(column.columnName, column.source);
 };
@@ -520,10 +520,11 @@ export default class Converter {
         if (item.column?.element?.isRecordLinkElement) {
           console.log('inside the recordLink if statement');
           console.log('next line is the one that is blowing up maybe?');
-          console.log(item?.column?.element?.form?.id);
+          console.log('form_id', item?.column?.element?.form?.id);
           console.log('wow');
-          console.log(item);
-          console.log(JSON.stringify(item));
+          console.log('item', item);
+          console.log('JSON.stringify item', JSON.stringify(item));
+          console.log('item column', item.column);
           systemParts.push(SubLink(
             0,
             SelectStmt({

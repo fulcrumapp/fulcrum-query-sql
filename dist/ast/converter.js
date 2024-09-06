@@ -12,7 +12,7 @@ const aggregate_1 = require("../aggregate");
 const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
 const columnRef = (column) => {
-    console.log(column);
+    console.log("inside columnRef", column);
     return column.isSQL ? (0, helpers_1.ColumnRef)(column.id, column.source)
         : (0, helpers_1.ColumnRef)(column.columnName, column.source);
 };
@@ -628,10 +628,11 @@ class Converter {
                 if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
                     console.log('inside the recordLink if statement');
                     console.log('next line is the one that is blowing up maybe?');
-                    console.log((_e = (_d = (_c = item === null || item === void 0 ? void 0 : item.column) === null || _c === void 0 ? void 0 : _c.element) === null || _d === void 0 ? void 0 : _d.form) === null || _e === void 0 ? void 0 : _e.id);
+                    console.log('form_id', (_e = (_d = (_c = item === null || item === void 0 ? void 0 : item.column) === null || _c === void 0 ? void 0 : _c.element) === null || _d === void 0 ? void 0 : _d.form) === null || _e === void 0 ? void 0 : _e.id);
                     console.log('wow');
-                    console.log(item);
-                    console.log(JSON.stringify(item));
+                    console.log('item', item);
+                    console.log('JSON.stringify item', JSON.stringify(item));
+                    console.log('item column', item.column);
                     systemParts.push((0, helpers_1.SubLink)(0, (0, helpers_1.SelectStmt)({
                         targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
                         fromClause: [(0, helpers_1.RangeVar)(item.column.element.form.id)],
