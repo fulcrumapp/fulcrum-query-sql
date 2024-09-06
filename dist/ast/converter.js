@@ -630,9 +630,11 @@ class Converter {
                     console.log('next line is the one that is blowing up maybe?');
                     console.log('form_id', (_e = (_d = (_c = item === null || item === void 0 ? void 0 : item.column) === null || _c === void 0 ? void 0 : _c.element) === null || _d === void 0 ? void 0 : _d.form) === null || _e === void 0 ? void 0 : _e.id);
                     console.log('wow');
-                    console.log('item', item);
-                    console.log('JSON.stringify item', JSON.stringify(item));
-                    console.log('item column', item.column);
+                    // console.log('item', item);
+                    // console.log('JSON.stringify item', JSON.stringify(item));
+                    // console.log('item column', item.column);
+                    console.log('almost there (hopefully)');
+                    console.log('item element', item.element);
                     systemParts.push((0, helpers_1.SubLink)(0, (0, helpers_1.SelectStmt)({
                         targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
                         fromClause: [(0, helpers_1.RangeVar)(item.element.attributes.form_id)],

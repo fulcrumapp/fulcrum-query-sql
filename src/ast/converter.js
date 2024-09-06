@@ -522,9 +522,11 @@ export default class Converter {
           console.log('next line is the one that is blowing up maybe?');
           console.log('form_id', item?.column?.element?.form?.id);
           console.log('wow');
-          console.log('item', item);
-          console.log('JSON.stringify item', JSON.stringify(item));
-          console.log('item column', item.column);
+          // console.log('item', item);
+          // console.log('JSON.stringify item', JSON.stringify(item));
+          // console.log('item column', item.column);
+          console.log('almost there (hopefully)');
+          console.log('item element', item.element);
           systemParts.push(SubLink(
             0,
             SelectStmt({
