@@ -368,18 +368,17 @@ export default class Converter {
     const statsSelect = SelectStmt({targetList: statsTargetList, fromClause: statsFromClause});
     const statsExpr = CommonTableExpr('__stats', statsSelect);
 
-    return WithClause([ recordsExpr, statsExpr ]);
+    return WithClause([recordsExpr, statsExpr]);
   }
 
-  toSchemaAST(query, {schemaOnly} = {}) {
+  toSchemaAST(query, { schemaOnly } = {}) {
     // wrap the query in a subquery with 1=0
 
-    const targetList = [ ResTarget(ColumnRef(AStar())) ];
-    const fromClause = [ RangeSubselect(query, Alias('wrapped')) ];
-    const whereClause = schemaOnly ? AExpr(0, '=', AConst(IntegerValue(0)), AConst(IntegerValue(1)))
-                                   : null;
+    const targetList = [ResTarget(ColumnRef(AStar()))];
+    const fromClause = [RangeSubselect(query, Alias('wrapped'))];
+    const whereClause = schemaOnly ? AExpr(0, '=', AConst(IntegerValue(0)), AConst(IntegerValue(1))) : null;
 
-    return SelectStmt({targetList, fromClause, whereClause});
+    return SelectStmt({ targetList, fromClause, whereClause });
   }
 
   limitOffset(pageSize, pageIndex) {
@@ -513,7 +512,8 @@ export default class Converter {
 
       if (item.search) {
         if (item.column?.element?.isRecordLinkElement) {
-          const formId = item?.column?._element?._attributes?.form_id;
+          const { attributes } = item.column.element;
+          const formId = attributes.form?.id || attributes.form_id;
 
           systemParts.push(SubLink(
             0,

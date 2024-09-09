@@ -518,8 +518,7 @@ class Converter {
         // wrap the query in a subquery with 1=0
         const targetList = [(0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)((0, helpers_1.AStar)()))];
         const fromClause = [(0, helpers_1.RangeSubselect)(query, (0, helpers_1.Alias)('wrapped'))];
-        const whereClause = schemaOnly ? (0, helpers_1.AExpr)(0, '=', (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0)), (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))
-            : null;
+        const whereClause = schemaOnly ? (0, helpers_1.AExpr)(0, '=', (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(0)), (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1))) : null;
         return (0, helpers_1.SelectStmt)({ targetList, fromClause, whereClause });
     }
     limitOffset(pageSize, pageIndex) {
@@ -598,7 +597,7 @@ class Converter {
         return [baseQuery];
     }
     whereClause(query, boundingBox, search, options = {}) {
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c;
         const systemParts = [];
         options = Object.assign(Object.assign({}, query.options || {}), options);
         const filterNode = this.nodeForCondition(query.filter, options);
@@ -622,7 +621,8 @@ class Converter {
             }
             if (item.search) {
                 if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
-                    const formId = (_e = (_d = (_c = item === null || item === void 0 ? void 0 : item.column) === null || _c === void 0 ? void 0 : _c._element) === null || _d === void 0 ? void 0 : _d._attributes) === null || _e === void 0 ? void 0 : _e.form_id;
+                    const { attributes } = item.column.element;
+                    const formId = ((_c = attributes.form) === null || _c === void 0 ? void 0 : _c.id) || attributes.form_id;
                     systemParts.push((0, helpers_1.SubLink)(0, (0, helpers_1.SelectStmt)({
                         targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
                         fromClause: [(0, helpers_1.RangeVar)(formId)],
