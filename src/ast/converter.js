@@ -514,8 +514,6 @@ export default class Converter {
         if (item.column?.element?.isRecordLinkElement) {
           const { element } = item.column;
           const { _attributes } = element;
-          console.log('element', element);
-          console.log('attributes', _attributes);
           const formId = element?.form?.id || _attributes.form_id;
 
           systemParts.push(SubLink(

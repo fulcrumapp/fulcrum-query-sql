@@ -623,8 +623,6 @@ class Converter {
                 if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
                     const { element } = item.column;
                     const { _attributes } = element;
-                    console.log('element', element);
-                    console.log('attributes', _attributes);
                     const formId = ((_c = element === null || element === void 0 ? void 0 : element.form) === null || _c === void 0 ? void 0 : _c.id) || _attributes.form_id;
                     systemParts.push((0, helpers_1.SubLink)(0, (0, helpers_1.SelectStmt)({
                         targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
