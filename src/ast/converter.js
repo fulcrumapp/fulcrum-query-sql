@@ -520,21 +520,20 @@ export default class Converter {
         if (item.column?.element?.isRecordLinkElement) {
           console.log('inside the recordLink if statement');
           console.log('next line is the one that is blowing up maybe?');
-          console.log('form_id', item?.column?.element?.form?.id);
-          console.log('wow');
+          // console.log('form_id', item?.column?.element?.form?.id);
+          // console.log('wow');
           // console.log('item', item);
           // console.log('JSON.stringify item', JSON.stringify(item));
-          // console.log('item column', item.column);
-          console.log('almost there (hopefully)');
-          console.log('item element', item.element);
+          console.log('item column', item.column);
+          console.log('this sucks');
           systemParts.push(SubLink(
             0,
             SelectStmt({
               targetList: [ResTarget(AConst(IntegerValue(1)))],
-              fromClause: [RangeVar(item.element.attributes.form_id)],
+              fromClause: [RangeVar(item.column.element.form.id)],
               whereClause: BoolExpr(0, [
-                AExpr(1, '=', ColumnRef('_record_id', item.element.attributes.form_id), columnRef(item.column)),
-                AExpr(8, '~~*', ColumnRef('_title', item.element.attributes.form_id), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
+                AExpr(1, '=', ColumnRef('_record_id', item?.column?.element?.form?.id), columnRef(item.column)),
+                AExpr(8, '~~*', ColumnRef('_title', item?.column?.element?.form?.id), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
               ]),
             }),
           ));
