@@ -512,8 +512,9 @@ export default class Converter {
 
       if (item.search) {
         if (item.column?.element?.isRecordLinkElement) {
-          const { attributes } = item.column.element;
-          const formId = attributes.form?.id || attributes.form_id;
+          const { element } = item.column;
+          const { attributes } = element;
+          const formId = element?.form?.id || attributes.form_id;
 
           systemParts.push(SubLink(
             0,
