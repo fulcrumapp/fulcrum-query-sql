@@ -632,7 +632,7 @@ class Converter {
                     // console.log('wow');
                     // console.log('item', item);
                     // console.log('JSON.stringify item', JSON.stringify(item));
-                    console.log('item column', item.column._attributes.form_id);
+                    console.log('item column', item.column._element._attributes.form_id);
                     console.log('this suckssssss');
                     systemParts.push((0, helpers_1.SubLink)(0, (0, helpers_1.SelectStmt)({
                         targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
