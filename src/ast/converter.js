@@ -524,8 +524,8 @@ export default class Converter {
           // console.log('wow');
           // console.log('item', item);
           // console.log('JSON.stringify item', JSON.stringify(item));
-          console.log('item column', item.column);
-          console.log('this sucks');
+          console.log('item column', item.column.attributes.form_id);
+          console.log('this suckssssss');
           systemParts.push(SubLink(
             0,
             SelectStmt({
