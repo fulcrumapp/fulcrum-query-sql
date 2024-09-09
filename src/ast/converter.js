@@ -37,7 +37,6 @@ const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
 
 const columnRef = (column) => {
-  console.log("inside columnRef",column);
   return column.isSQL ? ColumnRef(column.id, column.source)
                       : ColumnRef(column.columnName, column.source);
 };
@@ -503,11 +502,8 @@ export default class Converter {
     systemParts.push(this.createExpressionForColumnFilter(query.assignmentFilter, options));
     systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
 
-    console.log("got this far")
-
     for (const item of query.columnSettings.columns) {
       if (item.hasFilter) {
-        console.log("You (probably) shouldn't see me")
         const expression = this.createExpressionForColumnFilter(item.filter, options);
 
         if (expression) {
@@ -516,17 +512,7 @@ export default class Converter {
       }
 
       if (item.search) {
-        console.log('yep yep, we are here');
         if (item.column?.element?.isRecordLinkElement) {
-          console.log('inside the recordLink if statement');
-          console.log('next line is the one that is blowing up maybe?');
-          // console.log('form_id', item?.column?.element?.form?.id);
-          // console.log('wow');
-          // console.log('item', item);
-          // console.log('JSON.stringify item', JSON.stringify(item));
-          console.log('item column', item.column._element._attributes.form_id);
-          console.log('this suckssssss');
-
           const formId = item?.column?._element?._attributes?.form_id;
 
           systemParts.push(SubLink(
