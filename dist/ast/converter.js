@@ -599,7 +599,7 @@ class Converter {
         return [baseQuery];
     }
     whereClause(query, boundingBox, search, options = {}) {
-        var _a, _b, _c, _d, _e, _f, _g, _h;
+        var _a, _b, _c, _d, _e;
         const systemParts = [];
         options = Object.assign(Object.assign({}, query.options || {}), options);
         const filterNode = this.nodeForCondition(query.filter, options);
@@ -634,12 +634,13 @@ class Converter {
                     // console.log('JSON.stringify item', JSON.stringify(item));
                     console.log('item column', item.column._element._attributes.form_id);
                     console.log('this suckssssss');
+                    const formId = (_e = (_d = (_c = item === null || item === void 0 ? void 0 : item.column) === null || _c === void 0 ? void 0 : _c._element) === null || _d === void 0 ? void 0 : _d._attributes) === null || _e === void 0 ? void 0 : _e.form_id;
                     systemParts.push((0, helpers_1.SubLink)(0, (0, helpers_1.SelectStmt)({
                         targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
-                        fromClause: [(0, helpers_1.RangeVar)(item.column.element.form.id)],
+                        fromClause: [(0, helpers_1.RangeVar)(formId)],
                         whereClause: (0, helpers_1.BoolExpr)(0, [
-                            (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', (_e = (_d = (_c = item === null || item === void 0 ? void 0 : item.column) === null || _c === void 0 ? void 0 : _c.element) === null || _d === void 0 ? void 0 : _d.form) === null || _e === void 0 ? void 0 : _e.id), columnRef(item.column)),
-                            (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_title', (_h = (_g = (_f = item === null || item === void 0 ? void 0 : item.column) === null || _f === void 0 ? void 0 : _f.element) === null || _g === void 0 ? void 0 : _g.form) === null || _h === void 0 ? void 0 : _h.id), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),
+                            (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', formId), columnRef(item.column)),
+                            (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_title', formId), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),
                         ]),
                     })));
                 }

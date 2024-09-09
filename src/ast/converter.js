@@ -526,14 +526,17 @@ export default class Converter {
           // console.log('JSON.stringify item', JSON.stringify(item));
           console.log('item column', item.column._element._attributes.form_id);
           console.log('this suckssssss');
+
+          const formId = item?.column?._element?._attributes?.form_id;
+
           systemParts.push(SubLink(
             0,
             SelectStmt({
               targetList: [ResTarget(AConst(IntegerValue(1)))],
-              fromClause: [RangeVar(item.column.element.form.id)],
+              fromClause: [RangeVar(formId)],
               whereClause: BoolExpr(0, [
-                AExpr(1, '=', ColumnRef('_record_id', item?.column?.element?.form?.id), columnRef(item.column)),
-                AExpr(8, '~~*', ColumnRef('_title', item?.column?.element?.form?.id), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
+                AExpr(1, '=', ColumnRef('_record_id', formId), columnRef(item.column)),
+                AExpr(8, '~~*', ColumnRef('_title', formId), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
               ]),
             }),
           ));
