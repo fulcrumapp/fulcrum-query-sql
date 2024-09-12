@@ -46,7 +46,7 @@ export default class Converter {
     const targetList = this.targetList(query, sort, boundingBox);
 
     const joins = query.joinColumnsWithSorting.map(o => o.join);
-    
+
     const fromClause = this.fromClause(query, joins);
 
     const whereClause = this.whereClause(query, boundingBox, searchFilter);
@@ -368,18 +368,17 @@ export default class Converter {
     const statsSelect = SelectStmt({targetList: statsTargetList, fromClause: statsFromClause});
     const statsExpr = CommonTableExpr('__stats', statsSelect);
 
-    return WithClause([ recordsExpr, statsExpr ]);
+    return WithClause([recordsExpr, statsExpr]);
   }
 
-  toSchemaAST(query, {schemaOnly} = {}) {
+  toSchemaAST(query, { schemaOnly } = {}) {
     // wrap the query in a subquery with 1=0
 
-    const targetList = [ ResTarget(ColumnRef(AStar())) ];
-    const fromClause = [ RangeSubselect(query, Alias('wrapped')) ];
-    const whereClause = schemaOnly ? AExpr(0, '=', AConst(IntegerValue(0)), AConst(IntegerValue(1)))
-                                   : null;
+    const targetList = [ResTarget(ColumnRef(AStar()))];
+    const fromClause = [RangeSubselect(query, Alias('wrapped'))];
+    const whereClause = schemaOnly ? AExpr(0, '=', AConst(IntegerValue(0)), AConst(IntegerValue(1))) : null;
 
-    return SelectStmt({targetList, fromClause, whereClause});
+    return SelectStmt({ targetList, fromClause, whereClause });
   }
 
   limitOffset(pageSize, pageIndex) {
@@ -513,14 +512,18 @@ export default class Converter {
 
       if (item.search) {
         if (item.column?.element?.isRecordLinkElement) {
+          const { element } = item.column;
+          const { _attributes } = element;
+          const formId = element?.form?.id || _attributes.form_id;
+
           systemParts.push(SubLink(
             0,
             SelectStmt({
               targetList: [ResTarget(AConst(IntegerValue(1)))],
-              fromClause: [RangeVar(item.column.element.form.id)],
+              fromClause: [RangeVar(formId)],
               whereClause: BoolExpr(0, [
-                AExpr(1, '=', ColumnRef('_record_id', item.column.element.form.id), columnRef(item.column)),
-                AExpr(8, '~~*', ColumnRef('_title', item.column.element.form.id), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
+                AExpr(1, '=', ColumnRef('_record_id', formId), columnRef(item.column)),
+                AExpr(8, '~~*', ColumnRef('_title', formId), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
               ]),
             }),
           ));
