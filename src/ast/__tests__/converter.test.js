@@ -1,5 +1,5 @@
 import { Form } from 'fulcrum-core';
-import Deparse from 'pg-query-deparser';
+import Deparse from '@fulcrumapp/pg-query-deparser';
 import Converter from '../converter';
 import FormSchema from '../../form-schema';
 import {
@@ -460,9 +460,9 @@ describe('toTilesAST converter', () => {
         "_geometry" AS "geometry",
         "_status" AS "status",
         '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS "form_id",
-        "_name" AS "sorting_field" 
-        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records" 
-        ORDER BY "sorting_field" DESC 
+        "_name" AS "sorting_field"
+        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records"
+        ORDER BY "sorting_field" DESC
         LIMIT 10000
       `.replace(/\s+/g, ' ').trim();
 
@@ -478,9 +478,9 @@ describe('toTilesAST converter', () => {
         "_geometry" AS "geometry",
         "_status" AS "status",
         '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS "form_id",
-        "_name" AS "sorting_field" 
-        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records" 
-        ORDER BY "sorting_field" ASC 
+        "_name" AS "sorting_field"
+        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records"
+        ORDER BY "sorting_field" ASC
         LIMIT 10000
       `.replace(/\s+/g, ' ').trim();
 
@@ -496,9 +496,9 @@ describe('toTilesAST converter', () => {
         "_geometry" AS "geometry",
         "_status" AS "status",
         '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS "form_id",
-        '7a6f-4eb8-480c-8f0c-34ee'::text AS "sorting_field" 
-        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records" 
-        ORDER BY "sorting_field" DESC 
+        '7a6f-4eb8-480c-8f0c-34ee'::text AS "sorting_field"
+        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records"
+        ORDER BY "sorting_field" DESC
         LIMIT 10000
       `.replace(/\s+/g, ' ').trim();
 
@@ -514,9 +514,9 @@ describe('toTilesAST converter', () => {
         "_geometry" AS "geometry",
         "_status" AS "status",
         '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS "form_id",
-        '7a6f-4eb8-480c-8f0c-34ee'::text AS "sorting_field" 
-        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records" 
-        ORDER BY "sorting_field" ASC 
+        '7a6f-4eb8-480c-8f0c-34ee'::text AS "sorting_field"
+        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records"
+        ORDER BY "sorting_field" ASC
         LIMIT 10000
       `.replace(/\s+/g, ' ').trim();
 
