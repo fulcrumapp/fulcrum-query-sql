@@ -3,7 +3,7 @@ import { Expression } from './expression';
 import SortExpressions from './sort-expressions';
 import Converter from './ast/converter';
 import ColumnFilter from './column-filter';
-import Deparse from 'pg-query-deparser';
+import Deparse from '@fulcrumapp/pg-query-deparser';
 import QueryOptions from './query-options';
 import _ from 'lodash';
 import ColumnSettings from './column-settings';
@@ -130,7 +130,7 @@ export default class Query {
     joins.push.apply(joins, this.filter.allExpressions.filter((o) => {
       return o.isValid && o.column.join;
     }).map(o => o.column));
-    
+
     return joins;
   }
 

@@ -377,6 +377,13 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.48.0.tgz#642633964e217905436033a2bd08bf322849b7fb"
   integrity sha512-ZSjtmelB7IJfWD2Fvb7+Z+ChTIKWq6kjda95fLcQKNS5aheVHn4IkfgRQE3sIIzTcSLwLcLZUD9UBt+V7+h+Pw==
 
+"@fulcrumapp/pg-query-deparser@0.0.1":
+  version "0.0.1"
+  resolved "https://npm.pkg.github.com/download/@fulcrumapp/pg-query-deparser/0.0.1/79a2480f4db872480ce68f183f556e011494f101#79a2480f4db872480ce68f183f556e011494f101"
+  integrity sha512-zosUzYvzxCvfoPyza53aUKITc3WRygr5a6ssp64NF4l+Ku5usa6XTz3Wremr0oSDu41/QWxd+Zyh71wvroz07Q==
+  dependencies:
+    lodash "^4.17.21"
+
 "@humanwhocodes/config-array@^0.11.10":
   version "0.11.11"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.11.tgz#88a04c570dbbc7dd943e4712429c3df09bc32844"
@@ -2657,7 +2664,7 @@ lodash.trim@^4.5.1:
   resolved "https://registry.yarnpkg.com/lodash.trim/-/lodash.trim-4.5.1.tgz#36425e7ee90be4aa5e27bcebb85b7d11ea47aa57"
   integrity sha512-nJAlRl/K+eiOehWKDzoBVrSMhK0K3A3YQsUNXHQa5yIrKBAhsZgSu3KoAFoFT+mEgiyBHddZ0pRk1ITpIp90Wg==
 
-lodash@^4.13.1, lodash@^4.16.2, lodash@^4.17.14:
+lodash@^4.16.2, lodash@^4.17.14, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -2941,12 +2948,6 @@ path-type@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-4.0.0.tgz#84ed01c0a7ba380afe09d90a8c180dcd9d03043b"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
-
-"pg-query-deparser@github:zhm/pg-query-deparser#master":
-  version "0.0.1"
-  resolved "https://codeload.github.com/zhm/pg-query-deparser/tar.gz/7d44b27f8fd3c77f5394fe9e5c59198cfaf58809"
-  dependencies:
-    lodash "^4.13.1"
 
 picocolors@^1.0.0:
   version "1.0.0"
