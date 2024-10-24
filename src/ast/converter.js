@@ -511,6 +511,7 @@ export default class Converter {
       }
 
       if (item.search) {
+        console.log('item: ', item);
         if (item.column?.element?.isRecordLinkElement) {
           const { element } = item.column;
           const { _attributes } = element;

@@ -620,6 +620,7 @@ class Converter {
                 }
             }
             if (item.search) {
+                console.log('item: ', item);
                 if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
                     const { element } = item.column;
                     const { _attributes } = element;
