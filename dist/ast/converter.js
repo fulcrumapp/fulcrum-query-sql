@@ -629,7 +629,7 @@ class Converter {
                         targetList: [(0, helpers_1.ResTarget)((0, helpers_1.AConst)((0, helpers_1.IntegerValue)(1)))],
                         fromClause: [(0, helpers_1.RangeVar)(formId)],
                         whereClause: (0, helpers_1.BoolExpr)(0, [
-                            (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', formId), columnRef(item.column)),
+                            (0, helpers_1.AExpr)(1, '=', (0, helpers_1.ColumnRef)('_record_id', formId), (0, helpers_1.AArrayExpr)([(0, helpers_1.ColumnRef)('shelter_number', 'records')])),
                             (0, helpers_1.AExpr)(8, '~~*', (0, helpers_1.ColumnRef)('_title', formId), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))),
                         ]),
                     })));
