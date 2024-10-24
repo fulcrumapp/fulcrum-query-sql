@@ -536,6 +536,7 @@ export default class Converter {
         }
       }
 
+      console.log('systemParts: ', systemParts);
       if (item.expression.isValid) {
         systemParts.push(this.nodeForExpression(item.expression, options));
       }

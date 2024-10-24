@@ -640,6 +640,7 @@ class Converter {
                     systemParts.push((0, helpers_1.AExpr)(8, '~~*', columnRef(item.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
                 }
             }
+            console.log('systemParts: ', systemParts);
             if (item.expression.isValid) {
                 systemParts.push(this.nodeForExpression(item.expression, options));
             }
