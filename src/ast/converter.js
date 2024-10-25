@@ -511,7 +511,6 @@ export default class Converter {
       }
 
       if (item.search) {
-        console.log('item: ', item);
         if (item.column?.element?.isRecordLinkElement) {
           const { element } = item.column;
           const { _attributes } = element;
@@ -537,7 +536,6 @@ export default class Converter {
         }
       }
 
-      console.log('systemParts: ', systemParts);
       if (item.expression.isValid) {
         systemParts.push(this.nodeForExpression(item.expression, options));
       }

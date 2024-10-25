@@ -620,7 +620,6 @@ class Converter {
                 }
             }
             if (item.search) {
-                console.log('item: ', item);
                 if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
                     const { element } = item.column;
                     const { _attributes } = element;
@@ -641,7 +640,6 @@ class Converter {
                     systemParts.push((0, helpers_1.AExpr)(8, '~~*', columnRef(item.column), (0, helpers_1.AConst)((0, helpers_1.StringValue)('%' + this.escapeLikePercent(item.search) + '%'))));
                 }
             }
-            console.log('systemParts: ', systemParts);
             if (item.expression.isValid) {
                 systemParts.push(this.nodeForExpression(item.expression, options));
             }

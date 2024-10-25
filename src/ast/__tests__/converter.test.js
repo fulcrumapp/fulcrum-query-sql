@@ -291,7 +291,7 @@ describe('Empty converter', () => {
 
 describe('WhereClause converter', () => {
   describe('given a record link column to search on', () => {
-    it.only('generates an exists subquery', () => {
+    it('generates an exists subquery', () => {
       const linkedFormJson = {
         id: 'ea635699-133f-4844-ae77-f4090fffc7b0',
         name: 'LinkedForm',
