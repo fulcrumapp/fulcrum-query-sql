@@ -522,7 +522,7 @@ export default class Converter {
               targetList: [ResTarget(AConst(IntegerValue(1)))],
               fromClause: [RangeVar(formId)],
               whereClause: BoolExpr(0, [
-                AExpr(1, '=', ColumnRef('_record_id', formId), columnRef(item.column)),
+                AExpr(1, '=', ColumnRef('_record_id', formId), AArrayExpr([ColumnRef(columnRef(item.column), 'records')])),
                 AExpr(8, '~~*', ColumnRef('_title', formId), AConst(StringValue('%' + this.escapeLikePercent(item.search) + '%'))),
               ]),
             }),
