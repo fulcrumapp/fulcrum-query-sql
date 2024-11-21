@@ -218,6 +218,8 @@ export default class Query {
   }
 
   toJSON({boundingBox = false} = {}) {
+    console.log('toJSON ran!')
+    debugger;
     return {
       filter: this.filter.toJSON(),
       sorting: this.sorting.toJSON(),
