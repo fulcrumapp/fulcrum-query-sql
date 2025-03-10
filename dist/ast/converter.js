@@ -783,7 +783,7 @@ class Converter {
         return (0, helpers_1.AExpr)(0, '&&', (0, helpers_1.ColumnRef)(columnName), rhs);
     }
     escapeLikePercent(value) {
-        return value.replace(/\%/g, '\\%').replace(/_/g, '\\_%');
+        return value.replace(/\\/g, '\\\\').replace(/\%/g, '\\%').replace(/_/g, '\\_%');
     }
     searchFilter(query, search) {
         /*
