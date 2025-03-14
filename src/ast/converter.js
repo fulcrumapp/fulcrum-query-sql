@@ -709,7 +709,7 @@ export default class Converter {
   }
 
   escapeLikePercent(value) {
-    return value.replace(/\%/g, '\\%').replace(/_/g, '\\_%');
+    return value.replace(/\\/g, '\\\\').replace(/\%/g, '\\%').replace(/_/g, '\\_%');
   }
 
   searchFilter(query, search) {
