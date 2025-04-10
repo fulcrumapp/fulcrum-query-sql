@@ -35,7 +35,7 @@
     "lodash": "^4.16.2",
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.11",
-    "@fulcrumapp/pg-query-deparser": "fulcrumapp/pg-query-deparser#FLCRM-17641-update-babel"
+    "@fulcrumapp/pg-query-deparser": "^0.0.3"
   },
   "keywords": [
     "fulcrum"

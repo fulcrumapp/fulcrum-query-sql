@@ -377,9 +377,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.48.0.tgz#642633964e217905436033a2bd08bf322849b7fb"
   integrity sha512-ZSjtmelB7IJfWD2Fvb7+Z+ChTIKWq6kjda95fLcQKNS5aheVHn4IkfgRQE3sIIzTcSLwLcLZUD9UBt+V7+h+Pw==
 
-"@fulcrumapp/pg-query-deparser@fulcrumapp/pg-query-deparser#FLCRM-17641-update-babel":
+"@fulcrumapp/pg-query-deparser@^0.0.3":
   version "0.0.3"
-  resolved "https://codeload.github.com/fulcrumapp/pg-query-deparser/tar.gz/95e4ce9e27dbfc2bac3c08295a883ff44ac65c43"
+  resolved "https://npm.pkg.github.com/download/@fulcrumapp/pg-query-deparser/0.0.3/edd5059c78e0dbdd93f0e089f7e54c13069e1b60#edd5059c78e0dbdd93f0e089f7e54c13069e1b60"
+  integrity sha512-DhzZ5jP5uijGPAoYzOkdiioxmQbpqiB4c8pJuGzdVmdwmMVErm1bQ7DJTfETvXIb7PI3buW1d+R/8oZZ1C2BDA==
   dependencies:
     lodash "^4.17.21"
 
