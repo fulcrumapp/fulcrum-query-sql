@@ -377,10 +377,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.48.0.tgz#642633964e217905436033a2bd08bf322849b7fb"
   integrity sha512-ZSjtmelB7IJfWD2Fvb7+Z+ChTIKWq6kjda95fLcQKNS5aheVHn4IkfgRQE3sIIzTcSLwLcLZUD9UBt+V7+h+Pw==
 
-"@fulcrumapp/pg-query-deparser@0.0.1":
-  version "0.0.1"
-  resolved "https://npm.pkg.github.com/download/@fulcrumapp/pg-query-deparser/0.0.1/79a2480f4db872480ce68f183f556e011494f101#79a2480f4db872480ce68f183f556e011494f101"
-  integrity sha512-zosUzYvzxCvfoPyza53aUKITc3WRygr5a6ssp64NF4l+Ku5usa6XTz3Wremr0oSDu41/QWxd+Zyh71wvroz07Q==
+"@fulcrumapp/pg-query-deparser@^0.0.4":
+  version "0.0.4"
+  resolved "https://npm.pkg.github.com/download/@fulcrumapp/pg-query-deparser/0.0.4/e9bba0a5b64530312dcebabb0c284345fcaed976#e9bba0a5b64530312dcebabb0c284345fcaed976"
+  integrity sha512-P6TtYJOe1oZ5LXVTpVr4VWawVT6sO832xFv11IY/aFlARr9VwyzivkCTMH6obVb+zdYuproA7R2KGMR+fveBbg==
   dependencies:
     lodash "^4.17.21"
 
