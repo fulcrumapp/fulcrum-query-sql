@@ -610,7 +610,6 @@ class Converter {
             systemParts.push(this.boundingBoxFilter(query, boundingBox));
         }
         if (search && search.trim().length) {
-            console.log('In the first search section of FQS');
             systemParts.push(this.searchFilter(query, search));
         }
         systemParts.push(this.nodeForExpression(query.dateFilter, options));
@@ -626,7 +625,6 @@ class Converter {
                 }
             }
             if (item.search) {
-                console.log('In the item search section of FQS');
                 if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
                     const { element } = item.column;
                     const { _attributes } = element;
@@ -741,6 +739,7 @@ class Converter {
                     expression = this.AnyOf(filter.column, values);
                 }
                 else if (filter.column.element && filter.column.element.isCalculatedElement && filter.column.element.display.isDate) {
+                    console.log("createExpressionForColumnFilter with values", values);
                     expression = this.In(filter.column, values.map((value) => {
                         return new Date(value).getTime() / 1000;
                     }));
