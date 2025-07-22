@@ -504,6 +504,7 @@ export default class Converter {
 
     for (const item of query.columnSettings.columns) {
       if (item.hasFilter) {
+        console.log('item hasFilter, calling createExpressionForColumnFilter');
         const expression = this.createExpressionForColumnFilter(item.filter, options);
 
         if (expression) {
@@ -538,6 +539,7 @@ export default class Converter {
       }
 
       if (item.expression.isValid) {
+        console.log("item expression isValid, calling nodeForExpression");
         systemParts.push(this.nodeForExpression(item.expression, options));
       }
 
@@ -924,7 +926,7 @@ export default class Converter {
     }
 
     const mergedOptions = { ...options, ..._.omitBy(expression.options, _.isNull) };
-
+    console.log('expression in nodeForExpression', expression);
     return converter[expression.operator](expression, mergedOptions);
   }
 
@@ -1238,9 +1240,10 @@ export default class Converter {
     }
 
     if (column.isNumber) {
+      console.log('ConstValue, column isNumber');
       return AConst(FloatValue(value));
     }
-
+    console.log('ConstValue, value being converted to string');
     return AConst(StringValue(value));
   }
 
@@ -1253,6 +1256,7 @@ export default class Converter {
   ConvertDateValue = (expression, date) => {
     if (date && expression.column.element.isCalculatedElement) {
       console.log('ConvertDateValue with this date', date);
+      console.log('Converting to number i hope', date.getTime() / 1000)
       return date;
     } else if (date) {
       return expression.column.isDateTime ? date.toISOString() : date.format('YYYY-MM-DD');

@@ -249,8 +249,10 @@ class Converter {
                 return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(value));
             }
             if (column.isNumber) {
+                console.log('ConstValue, column isNumber');
                 return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));
             }
+            console.log('ConstValue, value being converted to string');
             return (0, helpers_1.AConst)((0, helpers_1.StringValue)(value));
         };
         this.GetDate = (dateString, options) => {
@@ -260,6 +262,7 @@ class Converter {
         this.ConvertDateValue = (expression, date) => {
             if (date && expression.column.element.isCalculatedElement) {
                 console.log('ConvertDateValue with this date', date);
+                console.log('Converting to number i hope', date.getTime() / 1000);
                 return date;
             }
             else if (date) {
@@ -619,6 +622,7 @@ class Converter {
         systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
         for (const item of query.columnSettings.columns) {
             if (item.hasFilter) {
+                console.log('item hasFilter, calling createExpressionForColumnFilter');
                 const expression = this.createExpressionForColumnFilter(item.filter, options);
                 if (expression) {
                     systemParts.push(expression);
@@ -646,6 +650,7 @@ class Converter {
                 }
             }
             if (item.expression.isValid) {
+                console.log("item expression isValid, calling nodeForExpression");
                 systemParts.push(this.nodeForExpression(item.expression, options));
             }
             if (item.range.isValid) {
@@ -970,6 +975,7 @@ class Converter {
             return null;
         }
         const mergedOptions = Object.assign(Object.assign({}, options), lodash_1.default.omitBy(expression.options, lodash_1.default.isNull));
+        console.log('expression in nodeForExpression', expression);
         return converter[expression.operator](expression, mergedOptions);
     }
 }
