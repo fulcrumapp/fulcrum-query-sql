@@ -482,6 +482,7 @@ export default class Converter {
   }
 
   whereClause(query, boundingBox, search, options = {}) {
+    console.log("we are in the whereClause");
     const systemParts = [];
     options = {...query.options || {}, ...options};
 
@@ -492,6 +493,7 @@ export default class Converter {
     }
 
     if (search && search.trim().length) {
+      console.log('In the first search section of FQS');
       systemParts.push(this.searchFilter(query, search));
     }
 
@@ -511,6 +513,7 @@ export default class Converter {
       }
 
       if (item.search) {
+        console.log('In the item search section of FQS');
         if (item.column?.element?.isRecordLinkElement) {
           const { element } = item.column;
           const { _attributes } = element;
@@ -1249,9 +1252,13 @@ export default class Converter {
   }
 
   ConvertDateValue = (expression, date) => {
-    if (date) {
+    if (date && expression.column.element.isCalculatedElement) {
+      console.log('ConvertDateValue with this date', date);
+      return date;
+    } else if (date) {
       return expression.column.isDateTime ? date.toISOString() : date.format('YYYY-MM-DD');
     }
+
     return null;
   }
 

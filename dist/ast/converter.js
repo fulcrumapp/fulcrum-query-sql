@@ -258,7 +258,11 @@ class Converter {
             return moment_timezone_1.default.tz(dateString !== null && dateString !== void 0 ? dateString : new Date().toISOString(), timeZone);
         };
         this.ConvertDateValue = (expression, date) => {
-            if (date) {
+            if (date && expression.column.element.isCalculatedElement) {
+                console.log('ConvertDateValue with this date', date);
+                return date;
+            }
+            else if (date) {
                 return expression.column.isDateTime ? date.toISOString() : date.format('YYYY-MM-DD');
             }
             return null;
@@ -598,6 +602,7 @@ class Converter {
     }
     whereClause(query, boundingBox, search, options = {}) {
         var _a, _b, _c;
+        console.log("we are in the whereClause");
         const systemParts = [];
         options = Object.assign(Object.assign({}, query.options || {}), options);
         const filterNode = this.nodeForCondition(query.filter, options);
@@ -605,6 +610,7 @@ class Converter {
             systemParts.push(this.boundingBoxFilter(query, boundingBox));
         }
         if (search && search.trim().length) {
+            console.log('In the first search section of FQS');
             systemParts.push(this.searchFilter(query, search));
         }
         systemParts.push(this.nodeForExpression(query.dateFilter, options));
@@ -620,6 +626,7 @@ class Converter {
                 }
             }
             if (item.search) {
+                console.log('In the item search section of FQS');
                 if ((_b = (_a = item.column) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.isRecordLinkElement) {
                     const { element } = item.column;
                     const { _attributes } = element;
