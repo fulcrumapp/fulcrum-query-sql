@@ -1241,7 +1241,8 @@ export default class Converter {
 
     if (column.isNumber) {
       if (column.element.isCalculatedElement && column.element.display.isDate) {
-        return AConst(FloatValue(value.unix()));
+        console.log("what is the value being passed in in this case ", value);
+        // return AConst(FloatValue(value.unix()));
       }
 
       return AConst(FloatValue(value));
@@ -1257,10 +1258,7 @@ export default class Converter {
   }
 
   ConvertDateValue = (expression, date) => {
-    if (date && expression.column.element.isCalculatedElement) {
-      console.log('ConvertDateValue with this date', date);
-      return date;
-    } else if (date) {
+    if (date) {
       return expression.column.isDateTime ? date.toISOString() : date.format('YYYY-MM-DD');
     }
 

@@ -250,7 +250,8 @@ class Converter {
             }
             if (column.isNumber) {
                 if (column.element.isCalculatedElement && column.element.display.isDate) {
-                    return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value.unix()));
+                    console.log("what is the value being passed in in this case ", value);
+                    // return AConst(FloatValue(value.unix()));
                 }
                 return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));
             }
@@ -261,11 +262,7 @@ class Converter {
             return moment_timezone_1.default.tz(dateString !== null && dateString !== void 0 ? dateString : new Date().toISOString(), timeZone);
         };
         this.ConvertDateValue = (expression, date) => {
-            if (date && expression.column.element.isCalculatedElement) {
-                console.log('ConvertDateValue with this date', date);
-                return date;
-            }
-            else if (date) {
+            if (date) {
                 return expression.column.isDateTime ? date.toISOString() : date.format('YYYY-MM-DD');
             }
             return null;
