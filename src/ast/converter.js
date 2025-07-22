@@ -1256,7 +1256,6 @@ export default class Converter {
   ConvertDateValue = (expression, date) => {
     if (date && expression.column.element.isCalculatedElement) {
       console.log('ConvertDateValue with this date', date);
-      console.log('Converting to number i hope', date.getTime() / 1000)
       return date;
     } else if (date) {
       return expression.column.isDateTime ? date.toISOString() : date.format('YYYY-MM-DD');
