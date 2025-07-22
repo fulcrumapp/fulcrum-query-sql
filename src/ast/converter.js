@@ -1240,7 +1240,9 @@ export default class Converter {
     }
 
     if (column.isNumber) {
-      console.log('ConstValue, column isNumber');
+      const floatVal = FloatValue(value);
+      console.log('ConstValue, column isNumber ', floatVal);
+      console.log('ConstValue, value passed in ', value);
       return AConst(FloatValue(value));
     }
     console.log('ConstValue, value being converted to string');

@@ -249,7 +249,9 @@ class Converter {
                 return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(value));
             }
             if (column.isNumber) {
-                console.log('ConstValue, column isNumber');
+                const floatVal = (0, helpers_1.FloatValue)(value);
+                console.log('ConstValue, column isNumber ', floatVal);
+                console.log('ConstValue, value passed in ', value);
                 return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));
             }
             console.log('ConstValue, value being converted to string');
