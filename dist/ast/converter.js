@@ -249,12 +249,11 @@ class Converter {
                 return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(value));
             }
             if (column.isNumber) {
-                const floatVal = (0, helpers_1.FloatValue)(value);
-                console.log('ConstValue, column isNumber ', floatVal);
-                console.log('ConstValue, value as unix passed in ', value.unix());
+                if (column.element.isCalculatedElement && column.element.display.isDate) {
+                    return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value.unix()));
+                }
                 return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));
             }
-            console.log('ConstValue, value being converted to string');
             return (0, helpers_1.AConst)((0, helpers_1.StringValue)(value));
         };
         this.GetDate = (dateString, options) => {

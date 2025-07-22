@@ -1240,12 +1240,13 @@ export default class Converter {
     }
 
     if (column.isNumber) {
-      const floatVal = FloatValue(value);
-      console.log('ConstValue, column isNumber ', floatVal);
-      console.log('ConstValue, value as unix passed in ', value.unix());
+      if (column.element.isCalculatedElement && column.element.display.isDate) {
+        return AConst(FloatValue(value.unix()));
+      }
+
       return AConst(FloatValue(value));
     }
-    console.log('ConstValue, value being converted to string');
+
     return AConst(StringValue(value));
   }
 
