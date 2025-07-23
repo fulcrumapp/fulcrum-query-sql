@@ -1255,6 +1255,10 @@ export default class Converter {
 
   ConvertDateValue = (expression, date) => {
     if (date) {
+      console.log('what is the date ', date);
+      console.log('is this a dateTime', expression.column.isDateTime);
+      console.log('toISOString ', date.toISOString());
+      console.log('the other date option ', date.format('YYYY-MM-DD'));
       return expression.column.isDateTime ? date.toISOString() : date.format('YYYY-MM-DD');
     }
     return null;
