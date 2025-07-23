@@ -246,14 +246,14 @@ class Converter {
                 return null;
             }
             if (column.isInteger) {
+                return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(value));
+            }
+            if (column.isNumber) {
                 if (column.element.isCalculatedElement && column.element.display.isDate) {
                     console.log('type of value ', (typeof value));
                     const doubleValue = (typeof value === 'number') ? value : (0, moment_timezone_1.default)(value).getTime() / 1000;
                     return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(doubleValue));
                 }
-                return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(value));
-            }
-            if (column.isNumber) {
                 return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));
             }
             return (0, helpers_1.AConst)((0, helpers_1.StringValue)(value));
