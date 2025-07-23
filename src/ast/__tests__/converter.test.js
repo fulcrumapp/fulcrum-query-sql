@@ -150,6 +150,54 @@ describe('NotEmpty converter', () => {
   });
 });
 
+describe('ConstValue converter', () => {
+  describe('given a Number column', () => {
+    const numValue = 72828292;
+    const numColumn = {
+      isNumber: true,
+      element: {
+        isCalculatedElement: false,
+        display: {
+          isDate: false,
+        },
+      },
+    };
+
+    const expectedValue = (val) => (
+      {
+        A_Const: {
+          val: {
+            Float: {
+              str: val != null ? val.toString() : '',
+            }
+          },
+        },
+      }
+    );
+
+    it('correctly structures a ConstValue with a Float type', () => {
+      expect(new Converter().ConstValue(numColumn, numValue)).toEqual(expectedValue(numValue));
+    });
+
+    describe('given a calculated field with a date display', () => {
+      const dateValue = '2025-07-22';
+      const calculatedColumn = {
+        isNumber: true,
+        element: {
+          isCalculatedElement: true,
+          display: {
+            isDate: true,
+          }
+        }
+      };
+
+      it('correctly structures a ConstValue with a Float type', () => {
+        expect(new Converter().ConstValue(calculatedColumn, dateValue)).toEqual(expectedValue(1753142400));
+      });
+    });
+  });
+});
+
 describe('Empty converter', () => {
   describe('given a non-array', () => {
     it('creates a subquery with a null test', () => {
