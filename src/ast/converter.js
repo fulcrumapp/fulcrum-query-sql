@@ -1238,7 +1238,7 @@ export default class Converter {
     if (column.isNumber) {
        if (column.element.isCalculatedElement && column.element.display.isDate) {
         console.log('type of value ', (typeof value));
-        console.log('also the value', value);
+        console.log('also the moment value', moment(value));
         const doubleValue = (typeof value === 'number') ? value : new Date(value).getTime() / 1000;
         return AConst(FloatValue(doubleValue));
       }
@@ -1255,12 +1255,7 @@ export default class Converter {
   }
 
   ConvertDateValue = (expression, date) => {
-    console.log('is there even a date here? ', date);
     if (date) {
-      console.log('what is the date ', date);
-      console.log('is this a dateTime', expression.column.isDateTime);
-      console.log('toISOString ', date.toISOString());
-      console.log('the other date option ', date.format('YYYY-MM-DD'));
       return expression.column.isDateTime ? date.toISOString() : date.format('YYYY-MM-DD');
     }
     return null;
