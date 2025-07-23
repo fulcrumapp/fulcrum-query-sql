@@ -249,6 +249,10 @@ class Converter {
                 return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(value));
             }
             if (column.isNumber) {
+                if (column.element.isCalculatedElement && column.element.display.isDate) {
+                    const doubleValue = new Date(value).getTime() / 1000;
+                    return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(doubleValue));
+                }
                 return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));
             }
             return (0, helpers_1.AConst)((0, helpers_1.StringValue)(value));
