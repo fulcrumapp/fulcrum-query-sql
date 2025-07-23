@@ -251,6 +251,7 @@ class Converter {
             if (column.isNumber) {
                 if (column.element.isCalculatedElement && column.element.display.isDate) {
                     console.log('type of value ', (typeof value));
+                    console.log('also the value', value);
                     const doubleValue = (typeof value === 'number') ? value : new Date(value).getTime() / 1000;
                     return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(doubleValue));
                 }
@@ -263,6 +264,7 @@ class Converter {
             return moment_timezone_1.default.tz(dateString !== null && dateString !== void 0 ? dateString : new Date().toISOString(), timeZone);
         };
         this.ConvertDateValue = (expression, date) => {
+            console.log('is there even a date here? ', date);
             if (date) {
                 console.log('what is the date ', date);
                 console.log('is this a dateTime', expression.column.isDateTime);
