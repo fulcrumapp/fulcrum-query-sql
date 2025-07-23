@@ -1238,8 +1238,8 @@ export default class Converter {
     if (column.isNumber) {
        if (column.element.isCalculatedElement && column.element.display.isDate) {
         console.log('type of value ', (typeof value));
-        console.log('also the moment value', moment(value));
-        const doubleValue = (typeof value === 'number') ? value : new Date(value).getTime() / 1000;
+        console.log('also the value', value);
+        const doubleValue = (typeof value === 'number') ? value : moment(value).valueOf() / 1000;
         return AConst(FloatValue(doubleValue));
       }
       return AConst(FloatValue(value));

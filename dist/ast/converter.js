@@ -251,8 +251,8 @@ class Converter {
             if (column.isNumber) {
                 if (column.element.isCalculatedElement && column.element.display.isDate) {
                     console.log('type of value ', (typeof value));
-                    console.log('also the moment value', (0, moment_timezone_1.default)(value));
-                    const doubleValue = (typeof value === 'number') ? value : new Date(value).getTime() / 1000;
+                    console.log('also the value', value);
+                    const doubleValue = (typeof value === 'number') ? value : (0, moment_timezone_1.default)(value).valueOf() / 1000;
                     return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(doubleValue));
                 }
                 return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));
