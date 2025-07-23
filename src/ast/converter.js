@@ -1233,7 +1233,8 @@ export default class Converter {
 
     if (column.isInteger) {
       if (column.element.isCalculatedElement && column.element.display.isDate) {
-        const doubleValue = moment(value).getTime() / 1000;
+        console.log('type of value ', (typeof value));
+        const doubleValue = (typeof value === 'number') ? value : moment(value).getTime() / 1000;
         return AConst(FloatValue(doubleValue));
       }
 
