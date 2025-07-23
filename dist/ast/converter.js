@@ -246,6 +246,10 @@ class Converter {
                 return null;
             }
             if (column.isInteger) {
+                if (column.element.isCalculatedElement && column.element.display.isDate) {
+                    const doubleValue = (0, moment_timezone_1.default)(value).getTime() / 1000;
+                    return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(doubleValue));
+                }
                 return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(value));
             }
             if (column.isNumber) {
