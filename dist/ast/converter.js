@@ -250,8 +250,10 @@ class Converter {
             }
             if (column.isNumber) {
                 if (column.element.isCalculatedElement && column.element.display.isDate) {
-                    console.log("what is the value being passed in in this case ", value);
-                    // return AConst(FloatValue(value.unix()));
+                    console.log('here is the value we are concerned with ', value);
+                    const doubleValue = new Date(value).getTime() / 1000;
+                    console.log("is doubleValue going to work", doubleValue);
+                    return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(doubleValue));
                 }
                 return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));
             }
@@ -741,7 +743,6 @@ class Converter {
                     expression = this.AnyOf(filter.column, values);
                 }
                 else if (filter.column.element && filter.column.element.isCalculatedElement && filter.column.element.display.isDate) {
-                    console.log("createExpressionForColumnFilter with values", values);
                     expression = this.In(filter.column, values.map((value) => {
                         return new Date(value).getTime() / 1000;
                     }));
