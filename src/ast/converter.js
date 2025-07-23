@@ -1238,7 +1238,7 @@ export default class Converter {
     if (column.isNumber) {
        if (column.element.isCalculatedElement && column.element.display.isDate) {
         console.log('type of value ', (typeof value));
-        const doubleValue = (typeof value === 'number') ? value : moment(value).getTime() / 1000;
+        const doubleValue = (typeof value === 'number') ? value : moment(value).getValue() / 1000;
         return AConst(FloatValue(doubleValue));
       }
       return AConst(FloatValue(value));
