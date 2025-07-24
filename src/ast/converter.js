@@ -224,6 +224,7 @@ export default class Converter {
       targetList = [ ResTarget(FuncCall('unnest', [ valueColumn ]), 'value') ];
     } else if (options.column.element && options.column.element.isCalculatedElement && options.column.element.display.isDate) {
       // SELECT pg_catalog.timezone('UTC', to_timestamp(column_name))::date
+      console.log('are we in toDistinctValuesAST for date?', options.column.element.display.isDate);
 
       const timeZoneCast = (param) => {
         return FuncCall([ StringValue('pg_catalog'), StringValue('timezone') ], [ AConst(StringValue('UTC')), param ]);
@@ -1035,10 +1036,10 @@ export default class Converter {
 
   DateBinaryConverter = (kind, operator, expression, options) => {
     const dates = {
-      '>': moment(expression.scalarValue),
-      '<=': moment(expression.scalarValue),
-      '<': moment(expression.scalarValue),
-      '>=': moment(expression.scalarValue),
+      '>': moment.utc(expression.scalarValue),
+      '<=': moment.utc(expression.scalarValue),
+      '<': moment.utc(expression.scalarValue),
+      '>=': moment.utc(expression.scalarValue),
     };
     const dateStr = this.ConvertDateValue(expression, dates[operator]);
     console.log('DateBinaryConverter, date', dates[operator], 'dateStr', dateStr);
