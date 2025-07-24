@@ -1041,7 +1041,7 @@ export default class Converter {
       '<': moment.utc(expression.scalarValue),
       '>=': moment.utc(expression.scalarValue),
     };
-    const dateStr = this.ConvertDateValue(expression, dates[operator]);
+    const dateStr = dates[operator].toISOString();
     console.log('DateBinaryConverter, date', dates[operator], 'dateStr', dateStr);
     return AExpr(kind, operator, columnRef(expression.column),
                  this.ConstValue(expression.column, dateStr));

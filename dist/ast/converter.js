@@ -106,7 +106,7 @@ class Converter {
                 '<': moment_timezone_1.default.utc(expression.scalarValue),
                 '>=': moment_timezone_1.default.utc(expression.scalarValue),
             };
-            const dateStr = this.ConvertDateValue(expression, dates[operator]);
+            const dateStr = dates[operator].toISOString();
             console.log('DateBinaryConverter, date', dates[operator], 'dateStr', dateStr);
             return (0, helpers_1.AExpr)(kind, operator, columnRef(expression.column), this.ConstValue(expression.column, dateStr));
         };
