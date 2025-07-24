@@ -101,10 +101,10 @@ class Converter {
         };
         this.DateBinaryConverter = (kind, operator, expression, options) => {
             const dates = {
-                '>': this.GetDate(expression.scalarValue, options).startOf('day'),
-                '<=': this.GetDate(expression.scalarValue, options).startOf('day'),
-                '<': this.GetDate(expression.scalarValue, options).endOf('day'),
-                '>=': this.GetDate(expression.scalarValue, options).endOf('day'),
+                '>': this.GetDate(expression.scalarValue, options),
+                '<=': this.GetDate(expression.scalarValue, options),
+                '<': this.GetDate(expression.scalarValue, options),
+                '>=': this.GetDate(expression.scalarValue, options),
             };
             const dateStr = this.ConvertDateValue(expression, dates[operator]);
             console.log('DateBinaryConverter, dateStr', dateStr);
