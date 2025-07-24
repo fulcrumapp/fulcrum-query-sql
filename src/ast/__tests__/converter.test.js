@@ -54,6 +54,58 @@ describe('NotEmpty converter', () => {
       expect(sql).toEqual(expectSql);
     });
   });
+
+  describe('ConstValue converter', () => {
+  describe('given a Number column', () => {
+    const numValue = 72828292;
+    const numColumn = {
+      isNumber: true,
+      element: {
+        isCalculatedElement: false,
+        display: {
+          isDate: false,
+        },
+      },
+    };
+
+    const expectedValue = (val) => (
+      {
+        A_Const: {
+          val: {
+            Float: {
+              str: val != null ? val.toString() : '',
+            }
+          },
+        },
+      }
+    );
+
+    it('correctly structures a ConstValue with a Float type', () => {
+      expect(new Converter().ConstValue(numColumn, numValue)).toEqual(expectedValue(numValue));
+    });
+
+    describe('given a calculated field with a date display', () => {
+      const calculatedColumn = {
+        isNumber: true,
+        element: {
+          isCalculatedElement: true,
+          display: {
+            isDate: true,
+          }
+        }
+      };
+
+      it('correctly structures a ConstValue with a Float type', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(1753156800));
+      });
+
+      it('correctly structures a ConstValue with a Float type when passed a date string with different formatting', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(1753156800));
+      });
+    });
+  });
+});
+
   describe('given media captions', () => {
     it('creates a subquery with array_to_string', () => {
       const formJson = {

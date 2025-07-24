@@ -1236,6 +1236,10 @@ export default class Converter {
     }
 
     if (column.isNumber) {
+        if (column.element.isCalculatedElement && column.element.display.isDate) {
+          const doubleValue = moment(value).valueOf() / 1000;
+          return AConst(FloatValue(doubleValue));
+        }
       return AConst(FloatValue(value));
     }
 
