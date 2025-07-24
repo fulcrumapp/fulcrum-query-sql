@@ -875,8 +875,8 @@ export default class Converter {
       [OperatorType.TextNotEqual.name]: this.TextNotEqualConverter,
       [OperatorType.TextMatch.name]: this.TextMatchConverter,
       [OperatorType.TextNotMatch.name]: this.TextNotMatchConverter,
-      [OperatorType.DateEqual.name]: this.BetweenConverter, // DateEqual is a special case of Between
-      [OperatorType.DateNotEqual.name]: this.NotBetweenConverter, // DateNotEqual is a special case of NotBetween
+      [OperatorType.DateEqual.name]: this.EqualConverter,
+      [OperatorType.DateNotEqual.name]: this.NotEqualConverter,
       [OperatorType.DateAfter.name]: this.GreaterThanConverter,
       [OperatorType.DateOnOrAfter.name]: this.GreaterThanOrEqualConverter,
       [OperatorType.DateBefore.name]: this.LessThanConverter,
@@ -976,10 +976,16 @@ export default class Converter {
   };
 
   EqualConverter = (expression) => {
+     if(expression.isDateOperator) {
+      return this.DateBinaryConverter(0, '=', expression);
+    }
     return this.BinaryConverter(0, '=', expression);
   }
 
   NotEqualConverter = (expression) => {
+     if(expression.isDateOperator) {
+      return this.DateBinaryConverter(0, '<>', expression);
+    }
     return this.BinaryConverter(0, '<>', expression);
   }
 
@@ -987,9 +993,9 @@ export default class Converter {
     return this.BinaryConverter(0, '>', expression);
   }
 
-  GreaterThanOrEqualConverter = (expression, options = {}) => {
+  GreaterThanOrEqualConverter = (expression) => {
     if(expression.isDateOperator) {
-      return this.DateBinaryConverter(0, '>=', expression, options);
+      return this.DateBinaryConverter(0, '>=', expression);
     }
     return this.BinaryConverter(0, '>=', expression);
   }
@@ -1034,8 +1040,10 @@ export default class Converter {
     return this.NotIn(expression.column, expression.arrayValue);
   }
 
-  DateBinaryConverter = (kind, operator, expression, options) => {
+  DateBinaryConverter = (kind, operator, expression) => {
     const dates = {
+      '=': moment.utc(expression.scalarValue),
+      '<>': moment.utc(expression.scalarValue),
       '>': moment.utc(expression.scalarValue),
       '<=': moment.utc(expression.scalarValue),
       '<': moment.utc(expression.scalarValue),

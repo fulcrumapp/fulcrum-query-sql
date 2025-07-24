@@ -55,17 +55,23 @@ class Converter {
             return (0, helpers_1.NullTest)(0, columnRef(expression.column));
         };
         this.EqualConverter = (expression) => {
+            if (expression.isDateOperator) {
+                return this.DateBinaryConverter(0, '=', expression);
+            }
             return this.BinaryConverter(0, '=', expression);
         };
         this.NotEqualConverter = (expression) => {
+            if (expression.isDateOperator) {
+                return this.DateBinaryConverter(0, '<>', expression);
+            }
             return this.BinaryConverter(0, '<>', expression);
         };
         this.GreaterThanConverter = (expression) => {
             return this.BinaryConverter(0, '>', expression);
         };
-        this.GreaterThanOrEqualConverter = (expression, options = {}) => {
+        this.GreaterThanOrEqualConverter = (expression) => {
             if (expression.isDateOperator) {
-                return this.DateBinaryConverter(0, '>=', expression, options);
+                return this.DateBinaryConverter(0, '>=', expression);
             }
             return this.BinaryConverter(0, '>=', expression);
         };
@@ -99,8 +105,10 @@ class Converter {
         this.NotInConverter = (expression) => {
             return this.NotIn(expression.column, expression.arrayValue);
         };
-        this.DateBinaryConverter = (kind, operator, expression, options) => {
+        this.DateBinaryConverter = (kind, operator, expression) => {
             const dates = {
+                '=': moment_timezone_1.default.utc(expression.scalarValue),
+                '<>': moment_timezone_1.default.utc(expression.scalarValue),
                 '>': moment_timezone_1.default.utc(expression.scalarValue),
                 '<=': moment_timezone_1.default.utc(expression.scalarValue),
                 '<': moment_timezone_1.default.utc(expression.scalarValue),
@@ -937,8 +945,8 @@ class Converter {
             [operator_1.OperatorType.TextNotEqual.name]: this.TextNotEqualConverter,
             [operator_1.OperatorType.TextMatch.name]: this.TextMatchConverter,
             [operator_1.OperatorType.TextNotMatch.name]: this.TextNotMatchConverter,
-            [operator_1.OperatorType.DateEqual.name]: this.BetweenConverter,
-            [operator_1.OperatorType.DateNotEqual.name]: this.NotBetweenConverter,
+            [operator_1.OperatorType.DateEqual.name]: this.EqualConverter,
+            [operator_1.OperatorType.DateNotEqual.name]: this.NotEqualConverter,
             [operator_1.OperatorType.DateAfter.name]: this.GreaterThanConverter,
             [operator_1.OperatorType.DateOnOrAfter.name]: this.GreaterThanOrEqualConverter,
             [operator_1.OperatorType.DateBefore.name]: this.LessThanConverter,
