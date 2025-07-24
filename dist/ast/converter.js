@@ -161,7 +161,7 @@ class Converter {
             // makes sure when the browser calculates a dynamic range, the server would calculate
             // the same range. So 'Today' is midnight to midnight in the user's local time. It would
             // be much less useful and confusing if we forced "Today" to always be London's today.
-            console.log('options being passed to date converter for "now" ', options);
+            console.log('options being passed to GetDate for "now" ', options);
             const now = this.GetDate(null, options);
             console.log('here is what we calculated for "now" ', now);
             const range = (0, operator_1.calculateDateRange)(expression.column, expression.operator, expression.value, now);
@@ -253,8 +253,8 @@ class Converter {
             if (column.isNumber) {
                 if (column.element.isCalculatedElement && column.element.display.isDate) {
                     // const doubleValue = moment(value).valueOf() / 1000;
-                    console.log('also, here is the moment amt ', (0, moment_timezone_1.default)(value).valueOf());
-                    const doubleValue = new Date(value).getTime();
+                    console.log('also, here is the moment amt ', (0, moment_timezone_1.default)(value).valueOf() / 1000);
+                    const doubleValue = new Date(value).getTime() / 1000;
                     console.log('and the Date amt ', doubleValue);
                     return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(doubleValue));
                 }
@@ -900,6 +900,7 @@ class Converter {
         return converter[condition.type](condition, options);
     }
     nodeForExpression(expression, options) {
+        console.log('options in nodeForExpression', options);
         if (expression.expressions) {
             return this.nodeForCondition(expression, options);
         }
