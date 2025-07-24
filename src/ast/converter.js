@@ -845,7 +845,6 @@ export default class Converter {
   }
 
   nodeForExpression(expression, options) {
-    console.log('options in nodeForExpression', options);
     if (expression.expressions) {
       return this.nodeForCondition(expression, options);
     }
@@ -987,7 +986,10 @@ export default class Converter {
     return this.BinaryConverter(0, '>', expression);
   }
 
-  GreaterThanOrEqualConverter = (expression) => {
+  GreaterThanOrEqualConverter = (expression, options = {}) => {
+    if(expression.isDateOperator) {
+      return this.DateBinaryConverter(0, '>=', expression, options);
+    }
     return this.BinaryConverter(0, '>=', expression);
   }
 
@@ -1031,8 +1033,13 @@ export default class Converter {
     return this.NotIn(expression.column, expression.arrayValue);
   }
 
+  DateBinaryConverter = (kind, operator, expression, options) => {
+    const value = this.ConvertDateValue(expression, this.GetDate(expression.value, options));
+    console.log('DateBinaryConverter, value', value);
+    return this.BinaryConverter(kind, operator, expression);
+  }
+
   BinaryConverter = (kind, operator, expression) => {
-    console.log('calling Binary Converter with expression scalar Value ', expression.scalarValue);
     return AExpr(kind, operator, columnRef(expression.column),
                  this.ConstValue(expression.column, expression.scalarValue));
   }

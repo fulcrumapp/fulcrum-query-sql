@@ -384,7 +384,7 @@ export default class Converter {
             rexpr: any;
         };
     };
-    GreaterThanOrEqualConverter: (expression: any) => {
+    GreaterThanOrEqualConverter: (expression: any, options?: {}) => {
         A_Expr: {
             kind: any;
             name: {
@@ -488,6 +488,18 @@ export default class Converter {
             nulltesttype: any;
         };
     } | null;
+    DateBinaryConverter: (kind: any, operator: any, expression: any, options: any) => {
+        A_Expr: {
+            kind: any;
+            name: {
+                String: {
+                    str: any;
+                };
+            }[];
+            lexpr: any;
+            rexpr: any;
+        };
+    };
     BinaryConverter: (kind: any, operator: any, expression: any) => {
         A_Expr: {
             kind: any;
