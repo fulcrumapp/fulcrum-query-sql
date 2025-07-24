@@ -101,10 +101,10 @@ class Converter {
         };
         this.DateBinaryConverter = (kind, operator, expression, options) => {
             const dates = {
-                '>': this.GetDate(expression.scalarValue, options).endOf('day'),
-                '<=': this.GetDate(expression.scalarValue, options).endOf('day'),
-                '<': this.GetDate(expression.scalarValue, options).startOf('day'),
-                '>=': this.GetDate(expression.scalarValue, options).startOf('day'),
+                '>': this.GetDate(expression.scalarValue, options).startOf('day'),
+                '<=': this.GetDate(expression.scalarValue, options).startOf('day'),
+                '<': this.GetDate(expression.scalarValue, options).endOf('day'),
+                '>=': this.GetDate(expression.scalarValue, options).endOf('day'),
             };
             const dateStr = this.ConvertDateValue(expression, dates[operator]);
             console.log('DateBinaryConverter, dateStr', dateStr);
@@ -175,9 +175,7 @@ class Converter {
             // makes sure when the browser calculates a dynamic range, the server would calculate
             // the same range. So 'Today' is midnight to midnight in the user's local time. It would
             // be much less useful and confusing if we forced "Today" to always be London's today.
-            console.log('DynamicDateConverter, GetDate for "now" ', options);
             const now = this.GetDate(null, options);
-            console.log('DynamicDateConverter, calculated for "now" ', now);
             const range = (0, operator_1.calculateDateRange)(expression.column, expression.operator, expression.value, now);
             const value1 = this.ConvertDateValue(expression, range[0]);
             const value2 = this.ConvertDateValue(expression, range[1]);
@@ -267,7 +265,6 @@ class Converter {
             if (column.isNumber) {
                 if (column.element.isCalculatedElement && column.element.display.isDate) {
                     const doubleValue = (0, moment_timezone_1.default)(value).valueOf() / 1000;
-                    console.log('and the double amt using moment', doubleValue);
                     return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(doubleValue));
                 }
                 return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));

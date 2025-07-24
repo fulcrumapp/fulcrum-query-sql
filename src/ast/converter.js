@@ -1035,10 +1035,10 @@ export default class Converter {
 
   DateBinaryConverter = (kind, operator, expression, options) => {
     const dates = {
-      '>': this.GetDate(expression.scalarValue, options).endOf('day'),
-      '<=': this.GetDate(expression.scalarValue, options).endOf('day'),
-      '<': this.GetDate(expression.scalarValue, options).startOf('day'),
-      '>=': this.GetDate(expression.scalarValue, options).startOf('day'),
+      '>': this.GetDate(expression.scalarValue, options).startOf('day'),
+      '<=': this.GetDate(expression.scalarValue, options).startOf('day'),
+      '<': this.GetDate(expression.scalarValue, options).endOf('day'),
+      '>=': this.GetDate(expression.scalarValue, options).endOf('day'),
     };
     const dateStr = this.ConvertDateValue(expression, dates[operator]);
     console.log('DateBinaryConverter, dateStr', dateStr);
@@ -1148,9 +1148,7 @@ export default class Converter {
     // makes sure when the browser calculates a dynamic range, the server would calculate
     // the same range. So 'Today' is midnight to midnight in the user's local time. It would
     // be much less useful and confusing if we forced "Today" to always be London's today.
-    console.log('DynamicDateConverter, GetDate for "now" ', options);
     const now = this.GetDate(null, options);
-    console.log('DynamicDateConverter, calculated for "now" ', now);
     const range = calculateDateRange(expression.column, expression.operator, expression.value, now);
 
     const value1 = this.ConvertDateValue(expression, range[0]);
@@ -1255,7 +1253,6 @@ export default class Converter {
     if (column.isNumber) {
       if (column.element.isCalculatedElement && column.element.display.isDate) {
         const doubleValue = moment(value).valueOf() / 1000;
-        console.log('and the double amt using moment', doubleValue);
         return AConst(FloatValue(doubleValue));
       }
 
