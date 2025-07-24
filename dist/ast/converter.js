@@ -101,13 +101,13 @@ class Converter {
         };
         this.DateBinaryConverter = (kind, operator, expression, options) => {
             const dates = {
-                '>': this.GetDate(expression.scalarValue, options),
-                '<=': this.GetDate(expression.scalarValue, options),
-                '<': this.GetDate(expression.scalarValue, options),
-                '>=': this.GetDate(expression.scalarValue, options),
+                '>': (0, moment_timezone_1.default)(expression.scalarValue),
+                '<=': (0, moment_timezone_1.default)(expression.scalarValue),
+                '<': (0, moment_timezone_1.default)(expression.scalarValue),
+                '>=': (0, moment_timezone_1.default)(expression.scalarValue),
             };
             const dateStr = this.ConvertDateValue(expression, dates[operator]);
-            console.log('DateBinaryConverter, dateStr', dateStr);
+            console.log('DateBinaryConverter, date', dates[operator], 'dateStr', dateStr);
             return (0, helpers_1.AExpr)(kind, operator, columnRef(expression.column), this.ConstValue(expression.column, dateStr));
         };
         this.BinaryConverter = (kind, operator, expression) => {

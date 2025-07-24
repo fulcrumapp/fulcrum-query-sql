@@ -1035,13 +1035,13 @@ export default class Converter {
 
   DateBinaryConverter = (kind, operator, expression, options) => {
     const dates = {
-      '>': this.GetDate(expression.scalarValue, options),
-      '<=': this.GetDate(expression.scalarValue, options),
-      '<': this.GetDate(expression.scalarValue, options),
-      '>=': this.GetDate(expression.scalarValue, options),
+      '>': moment(expression.scalarValue),
+      '<=': moment(expression.scalarValue),
+      '<': moment(expression.scalarValue),
+      '>=': moment(expression.scalarValue),
     };
     const dateStr = this.ConvertDateValue(expression, dates[operator]);
-    console.log('DateBinaryConverter, dateStr', dateStr);
+    console.log('DateBinaryConverter, date', dates[operator], 'dateStr', dateStr);
     return AExpr(kind, operator, columnRef(expression.column),
                  this.ConstValue(expression.column, dateStr));
   }
