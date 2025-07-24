@@ -874,8 +874,8 @@ export default class Converter {
       [OperatorType.TextNotEqual.name]: this.TextNotEqualConverter,
       [OperatorType.TextMatch.name]: this.TextMatchConverter,
       [OperatorType.TextNotMatch.name]: this.TextNotMatchConverter,
-      [OperatorType.DateEqual.name]: this.EqualConverter,
-      [OperatorType.DateNotEqual.name]: this.NotEqualConverter,
+      [OperatorType.DateEqual.name]: this.BetweenConverter, // DateEqual is a special case of Between
+      [OperatorType.DateNotEqual.name]: this.NotBetweenConverter, // DateNotEqual is a special case of NotBetween
       [OperatorType.DateAfter.name]: this.GreaterThanConverter,
       [OperatorType.DateOnOrAfter.name]: this.GreaterThanOrEqualConverter,
       [OperatorType.DateBefore.name]: this.LessThanConverter,
@@ -1033,9 +1033,15 @@ export default class Converter {
     return this.NotIn(expression.column, expression.arrayValue);
   }
 
-  DateBinaryConverter = (kind, operator, expression, options) => {
-    const value = this.ConvertDateValue(expression, this.GetDate(expression.value, options));
-    console.log('DateBinaryConverter, value', value);
+  DateBinaryConverter = (operator, expression, options) => {
+    const dates = {
+      '>': this.GetDate(expression.value, options).endOf('day'),
+      '<=': this.GetDate(expression.value, options).endOf('day'),
+      '<': this.GetDate(expression.value, options).startOf('day'),
+      '>=': this.GetDate(expression.value, options).startOf('day'),
+    };
+
+    console.log('DateBinaryConverter, value', dates);
     return this.BinaryConverter(kind, operator, expression);
   }
 

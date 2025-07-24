@@ -99,9 +99,14 @@ class Converter {
         this.NotInConverter = (expression) => {
             return this.NotIn(expression.column, expression.arrayValue);
         };
-        this.DateBinaryConverter = (kind, operator, expression, options) => {
-            const value = this.ConvertDateValue(expression, this.GetDate(expression.value, options));
-            console.log('DateBinaryConverter, value', value);
+        this.DateBinaryConverter = (operator, expression, options) => {
+            const dates = {
+                '>': this.GetDate(expression.value, options).endOf('day'),
+                '<=': this.GetDate(expression.value, options).endOf('day'),
+                '<': this.GetDate(expression.value, options).startOf('day'),
+                '>=': this.GetDate(expression.value, options).startOf('day'),
+            };
+            console.log('DateBinaryConverter, value', dates);
             return this.BinaryConverter(kind, operator, expression);
         };
         this.BinaryConverter = (kind, operator, expression) => {
@@ -933,8 +938,8 @@ class Converter {
             [operator_1.OperatorType.TextNotEqual.name]: this.TextNotEqualConverter,
             [operator_1.OperatorType.TextMatch.name]: this.TextMatchConverter,
             [operator_1.OperatorType.TextNotMatch.name]: this.TextNotMatchConverter,
-            [operator_1.OperatorType.DateEqual.name]: this.EqualConverter,
-            [operator_1.OperatorType.DateNotEqual.name]: this.NotEqualConverter,
+            [operator_1.OperatorType.DateEqual.name]: this.BetweenConverter,
+            [operator_1.OperatorType.DateNotEqual.name]: this.NotBetweenConverter,
             [operator_1.OperatorType.DateAfter.name]: this.GreaterThanConverter,
             [operator_1.OperatorType.DateOnOrAfter.name]: this.GreaterThanOrEqualConverter,
             [operator_1.OperatorType.DateBefore.name]: this.LessThanConverter,
