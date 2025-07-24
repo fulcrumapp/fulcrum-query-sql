@@ -1040,9 +1040,10 @@ export default class Converter {
       '<': this.GetDate(expression.scalarValue, options).startOf('day'),
       '>=': this.GetDate(expression.scalarValue, options).startOf('day'),
     };
-    expression.scalarValue = this.ConvertDateValue(expression, dates[operator]);
-    console.log('DateBinaryConverter, expression scalar', expression.scalarValue);
-    return this.BinaryConverter(kind, operator, expression);
+    const dateStr = this.ConvertDateValue(expression, dates[operator]);
+    console.log('DateBinaryConverter, dateStr', dateStr);
+    return AExpr(kind, operator, columnRef(expression.column),
+                 this.ConstValue(expression.column, dateStr));
   }
 
   BinaryConverter = (kind, operator, expression) => {
