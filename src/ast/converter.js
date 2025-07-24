@@ -1033,7 +1033,7 @@ export default class Converter {
     return this.NotIn(expression.column, expression.arrayValue);
   }
 
-  DateBinaryConverter = (operator, expression, options) => {
+  DateBinaryConverter = (kind, operator, expression, options) => {
     const dates = {
       '>': this.GetDate(expression.value, options).endOf('day'),
       '<=': this.GetDate(expression.value, options).endOf('day'),

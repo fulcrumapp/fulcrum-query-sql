@@ -99,7 +99,7 @@ class Converter {
         this.NotInConverter = (expression) => {
             return this.NotIn(expression.column, expression.arrayValue);
         };
-        this.DateBinaryConverter = (operator, expression, options) => {
+        this.DateBinaryConverter = (kind, operator, expression, options) => {
             const dates = {
                 '>': this.GetDate(expression.value, options).endOf('day'),
                 '<=': this.GetDate(expression.value, options).endOf('day'),

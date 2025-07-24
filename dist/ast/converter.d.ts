@@ -488,7 +488,7 @@ export default class Converter {
             nulltesttype: any;
         };
     } | null;
-    DateBinaryConverter: (operator: any, expression: any, options: any) => {
+    DateBinaryConverter: (kind: any, operator: any, expression: any, options: any) => {
         A_Expr: {
             kind: any;
             name: {
