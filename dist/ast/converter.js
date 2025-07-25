@@ -99,8 +99,10 @@ class Converter {
         this.BinaryConverter = (kind, operator, expression) => {
             let val = expression.scalarValue;
             if (expression.isDateOperator) {
+                console.log('Converting date:', val);
                 val = moment_timezone_1.default.utc(val).toISOString();
             }
+            console.log('BinaryConverter: ', val);
             return (0, helpers_1.AExpr)(kind, operator, columnRef(expression.column), this.ConstValue(expression.column, val));
         };
         this.FieldConverter = (expression) => {

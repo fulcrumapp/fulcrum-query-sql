@@ -1033,8 +1033,11 @@ export default class Converter {
   BinaryConverter = (kind, operator, expression) => {
     let val = expression.scalarValue;
     if (expression.isDateOperator) {
+      console.log('Converting date:', val);
       val = moment.utc(val).toISOString();
     }
+
+    console.log('BinaryConverter: ', val);
     return AExpr(kind, operator, columnRef(expression.column),
                  this.ConstValue(expression.column, val));
   }
