@@ -1246,10 +1246,9 @@ export default class Converter {
     }
 
     if (column.isNumber) {
-        if (column.element.isCalculatedElement && column.element.display.isDate) {
+        if (column.element.isCalculatedElement && column.element.display.isDate && (typeof value === 'string')) {
           const doubleValue = moment.utc(value).valueOf() / 1000;
           console.log('FQS: Converting value', value, 'to moment double value:', doubleValue);
-          console.log('FQS: Converting value', value, 'to JS double value:', new Date(doubleValue).getTime() / 1000);
           return AConst(FloatValue(doubleValue));
         }
       return AConst(FloatValue(value));
