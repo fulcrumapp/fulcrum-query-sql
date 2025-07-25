@@ -1140,11 +1140,12 @@ export default class Converter {
     // the same range. So 'Today' is midnight to midnight in the user's local time. It would
     // be much less useful and confusing if we forced "Today" to always be London's today.
     const now = this.GetDate(null, options);
-
     const range = calculateDateRange(expression.column, expression.operator, expression.value, now);
+    console.log('DynamicDateConverter calculated range: ', range);
 
     const value1 = this.ConvertDateValue(expression, range[0]);
     const value2 = this.ConvertDateValue(expression, range[1]);
+    console.log('DynamicDateConverter converted range: ', value1, value2);
 
     return this.Between(expression.column, value1, value2);
   }
@@ -1212,9 +1213,11 @@ export default class Converter {
       expression = AExpr(6, '<>', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
 
       if (hasNull) {
+        console.log('Null value detected in NotIn expression:', values);
         expression = BoolExpr(1, [ NullTest(1, columnRef(column)), expression ]);
       }
     } else if (hasNull) {
+      console.log("only null values");
       expression = NullTest(1, columnRef(column));
     }
 
