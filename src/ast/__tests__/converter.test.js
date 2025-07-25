@@ -1,5 +1,6 @@
 import { Form } from 'fulcrum-core';
 import Deparse from '@fulcrumapp/pg-query-deparser';
+import moment from 'moment-timezone';
 import Converter from '../converter';
 import FormSchema from '../../form-schema';
 import {
@@ -55,7 +56,7 @@ describe('NotEmpty converter', () => {
     });
   });
 
-  describe('ConstValue converter', () => {
+describe('ConstValue converter', () => {
   describe('given a Number column', () => {
     const numValue = 72828292;
     const numColumn = {
@@ -577,6 +578,7 @@ describe('toTilesAST converter', () => {
       expect(toTilesSQLQuery.replace(/\s+/g, ' ').trim()).toEqual(expectSql);
     });
 
+
     it('generates a regular tiles SQL when sort clause is undefined', () => {
       const query = new Query(queryOptions);
       const toTilesSQLQuery = query.toTileSQL(10000, undefined);
@@ -591,6 +593,276 @@ describe('toTilesAST converter', () => {
       `.replace(/\s+/g, ' ').trim();
 
       expect(toTilesSQLQuery.replace(/\s+/g, ' ').trim()).toEqual(expectSql);
+    });
+  });
+});
+
+describe('DateBinaryConverter', () => {
+  let converter;
+  let dateColumn;
+  let form;
+  let schema;
+
+  beforeEach(() => {
+    converter = new Converter();
+    
+    const formJson = {
+      id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+      name: 'TestForm',
+      status_field: {
+        type: 'StatusField',
+        label: 'Status',
+        data_name: 'status',
+      },
+      elements: [
+        {
+          type: 'DateTimeField',
+          key: 'date123',
+          label: 'Created Date',
+          data_name: 'created_date',
+        },
+      ],
+    };
+
+    const rawColumns = {
+      form: [
+        {
+          field: 'date123',
+          name: 'created_date',
+          type: 'date',
+        },
+      ],
+      repeatables: {},
+    };
+
+    form = new Form(formJson);
+    schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+    dateColumn = schema.columns.find(col => col.id === 'date123');
+  });
+
+  describe('when operator is equals (=)', () => {
+    it('creates an AExpr with equals operator and ISO string date', () => {
+      const testDate = '2025-07-25';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate
+      };
+
+      const result = converter.DateBinaryConverter(0, '=', expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('when operator is not equals (<>)', () => {
+    it('creates an AExpr with not equals operator and ISO string date', () => {
+      const testDate = '2025-12-25T15:45:30.000Z';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate
+      };
+
+      const result = converter.DateBinaryConverter(0, '<>', expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<>' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('when operator is greater than (>)', () => {
+    it('creates an AExpr with greater than operator and ISO string date', () => {
+      const testDate = '01/01/2025';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate
+      };
+
+      const result = converter.DateBinaryConverter(0, '>', expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '>' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('when operator is less than (<)', () => {
+    it('creates an AExpr with less than operator and ISO string date', () => {
+      const testDate = '06-15-2025';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate
+      };
+
+      const result = converter.DateBinaryConverter(0, '<', expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('when operator is greater than or equal (>=)', () => {
+    it('creates an AExpr with greater than or equal operator and ISO string date', () => {
+      const testDate = '2025-03-20T08:15:00.000Z';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate
+      };
+
+      const result = converter.DateBinaryConverter(0, '>=', expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '>=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('when operator is less than or equal (<=)', () => {
+    it('creates an AExpr with less than or equal operator and ISO string date', () => {
+      const testDate = '2025-09-10';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate
+      };
+
+      const result = converter.DateBinaryConverter(0, '<=', expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('with different date formats', () => {
+    it('handles date string without timezone and converts to UTC ISO string', () => {
+      const testDate = '2025-07-25T10:30:00';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate
+      };
+
+      const result = converter.DateBinaryConverter(0, '=', expression);
+      const expectedISOString = moment.utc(testDate).toISOString();
+
+      expect(result.A_Expr.rexpr.A_Const.val.String.str).toBe(expectedISOString);
+    });
+
+    it('handles date-only string and converts to UTC ISO string', () => {
+      const testDate = '2025-07-25';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate
+      };
+
+      const result = converter.DateBinaryConverter(0, '=', expression);
+      const expectedISOString = moment.utc(testDate).toISOString();
+
+      expect(result.A_Expr.rexpr.A_Const.val.String.str).toBe(expectedISOString);
     });
   });
 });

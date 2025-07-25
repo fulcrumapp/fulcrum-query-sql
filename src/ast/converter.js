@@ -1030,6 +1030,20 @@ export default class Converter {
     return this.NotIn(expression.column, expression.arrayValue);
   }
 
+  DateBinaryConverter = (kind, operator, expression) => {
+    const dates = {
+      '=': moment.utc(expression.scalarValue).toISOString(),
+      '<>': moment.utc(expression.scalarValue).toISOString(),
+      '>': moment.utc(expression.scalarValue).toISOString(),
+      '<=': moment.utc(expression.scalarValue).toISOString(),
+      '<': moment.utc(expression.scalarValue).toISOString(),
+      '>=': moment.utc(expression.scalarValue).toISOString(),
+    };
+    const dateStr = dates[operator];
+    return AExpr(kind, operator, columnRef(expression.column),
+                 this.ConstValue(expression.column, dateStr));
+  }
+
   BinaryConverter = (kind, operator, expression) => {
     return AExpr(kind, operator, columnRef(expression.column),
                  this.ConstValue(expression.column, expression.scalarValue));
