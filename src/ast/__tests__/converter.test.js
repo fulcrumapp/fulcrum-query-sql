@@ -103,6 +103,10 @@ describe('ConstValue converter', () => {
       it('correctly structures a ConstValue with a Float type when passed a date string with different formatting', () => {
         expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(1753156800));
       });
+
+      it('correctly structures a ConstValue with a Float type when passed a double value', () => {
+        expect(new Converter().ConstValue(calculatedColumn, 1753156800.123)).toEqual(expectedValue(1753156800.123));
+      });
     });
   });
 });

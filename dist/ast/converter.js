@@ -253,7 +253,7 @@ class Converter {
                 return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(value));
             }
             if (column.isNumber) {
-                if (column.element.isCalculatedElement && column.element.display.isDate) {
+                if (column.element.isCalculatedElement && column.element.display.isDate && (typeof value === 'string')) {
                     const doubleValue = (0, moment_timezone_1.default)(value).valueOf() / 1000;
                     return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(doubleValue));
                 }
