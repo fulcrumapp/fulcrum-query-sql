@@ -975,26 +975,44 @@ export default class Converter {
   };
 
   EqualConverter = (expression) => {
+    if (expression.isDateOperator) {
+      return this.DateBinaryConverter(0, '=', expression);
+    }
     return this.BinaryConverter(0, '=', expression);
   }
 
   NotEqualConverter = (expression) => {
+    if (expression.isDateOperator) {
+      return this.DateBinaryConverter(0, '<>', expression);
+    }
     return this.BinaryConverter(0, '<>', expression);
   }
 
   GreaterThanConverter = (expression) => {
+    if (expression.isDateOperator) {
+      return this.DateBinaryConverter(0, '>', expression);
+    }
     return this.BinaryConverter(0, '>', expression);
   }
 
   GreaterThanOrEqualConverter = (expression) => {
+    if (expression.isDateOperator) {
+      return this.DateBinaryConverter(0, '>=', expression);
+    }
     return this.BinaryConverter(0, '>=', expression);
   }
 
   LessThanConverter = (expression) => {
+    if (expression.isDateOperator) {
+      return this.DateBinaryConverter(0, '<', expression);
+    }
     return this.BinaryConverter(0, '<', expression);
   }
 
   LessThanOrEqualConverter = (expression) => {
+    if (expression.isDateOperator) {
+      return this.DateBinaryConverter(0, '<=', expression);
+    }
     return this.BinaryConverter(0, '<=', expression);
   }
 

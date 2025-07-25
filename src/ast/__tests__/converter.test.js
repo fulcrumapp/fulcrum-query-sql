@@ -866,3 +866,1161 @@ describe('DateBinaryConverter', () => {
     });
   });
 });
+
+describe('EqualConverter', () => {
+  const converter = new Converter();
+  const formJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    name: 'TestForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'DateTimeField',
+        key: 'date123',
+        label: 'Created Date',
+        data_name: 'created_date',
+      },
+      {
+        type: 'TextField',
+        key: 'text456',
+        label: 'Name',
+        data_name: 'name',
+      },
+    ],
+  };
+
+  const rawColumns = {
+    form: [
+      {
+        field: 'date123',
+        name: 'created_date',
+        type: 'date',
+      },
+      {
+        field: 'text456',
+        name: 'name',
+        type: 'string',
+      },
+    ],
+    repeatables: {},
+  };
+
+  const form = new Form(formJson);
+  const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+  const dateColumn = schema.columns.find(col => col.id === 'date123');
+  const textColumn = schema.columns.find(col => col.id === 'text456');
+
+  describe('when isDateOperator is true', () => {
+    it('calls DateBinaryConverter and returns AExpr with ISO string date', () => {
+      const testDate = '2025-07-25';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate,
+        isDateOperator: true
+      };
+
+      const result = converter.EqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('when isDateOperator is false or undefined', () => {
+    it('calls BinaryConverter and returns AExpr with scalar value', () => {
+      const testValue = 'John Doe';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.EqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('handles numeric values when isDateOperator is false', () => {
+      // Create a numeric column for this test
+      const numericColumn = {
+        id: 'num789',
+        columnName: 'age',
+        isNumber: true,
+        element: {
+          isCalculatedElement: false,
+          display: {
+            isDate: false,
+          },
+        },
+      };
+
+      const testValue = 25;
+      const expression = {
+        column: numericColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.EqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'age' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                Float: {
+                  str: '25'
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('works when isDateOperator is undefined', () => {
+      const testValue = 'Jane Smith';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue
+        // isDateOperator is undefined
+      };
+
+      const result = converter.EqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+});
+
+describe('NotEqualConverter', () => {
+  const converter = new Converter();
+  const formJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    name: 'TestForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'DateTimeField',
+        key: 'date123',
+        label: 'Created Date',
+        data_name: 'created_date',
+      },
+      {
+        type: 'TextField',
+        key: 'text456',
+        label: 'Name',
+        data_name: 'name',
+      },
+    ],
+  };
+
+  const rawColumns = {
+    form: [
+      {
+        field: 'date123',
+        name: 'created_date',
+        type: 'date',
+      },
+      {
+        field: 'text456',
+        name: 'name',
+        type: 'string',
+      },
+    ],
+    repeatables: {},
+  };
+
+  const form = new Form(formJson);
+  const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+  const dateColumn = schema.columns.find(col => col.id === 'date123');
+  const textColumn = schema.columns.find(col => col.id === 'text456');
+
+  describe('when isDateOperator is true', () => {
+    it('calls DateBinaryConverter and returns AExpr with ISO string date', () => {
+      const testDate = '2025-07-25';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate,
+        isDateOperator: true
+      };
+
+      const result = converter.NotEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<>' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('when isDateOperator is false or undefined', () => {
+    it('calls BinaryConverter and returns AExpr with scalar value', () => {
+      const testValue = 'John Doe';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.NotEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<>' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('handles numeric values when isDateOperator is false', () => {
+      // Create a numeric column for this test
+      const numericColumn = {
+        id: 'num789',
+        columnName: 'age',
+        isNumber: true,
+        element: {
+          isCalculatedElement: false,
+          display: {
+            isDate: false,
+          },
+        },
+      };
+
+      const testValue = 25;
+      const expression = {
+        column: numericColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.NotEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<>' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'age' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                Float: {
+                  str: '25'
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('works when isDateOperator is undefined', () => {
+      const testValue = 'Jane Smith';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue
+        // isDateOperator is undefined
+      };
+
+      const result = converter.NotEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<>' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+});
+
+describe('GreaterThanConverter', () => {
+  const converter = new Converter();
+  const formJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    name: 'TestForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'DateTimeField',
+        key: 'date123',
+        label: 'Created Date',
+        data_name: 'created_date',
+      },
+      {
+        type: 'TextField',
+        key: 'text456',
+        label: 'Name',
+        data_name: 'name',
+      },
+    ],
+  };
+
+  const rawColumns = {
+    form: [
+      {
+        field: 'date123',
+        name: 'created_date',
+        type: 'date',
+      },
+      {
+        field: 'text456',
+        name: 'name',
+        type: 'string',
+      },
+    ],
+    repeatables: {},
+  };
+
+  const form = new Form(formJson);
+  const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+  const dateColumn = schema.columns.find(col => col.id === 'date123');
+  const textColumn = schema.columns.find(col => col.id === 'text456');
+
+  describe('when isDateOperator is true', () => {
+    it('calls DateBinaryConverter and returns AExpr with ISO string date', () => {
+      const testDate = '2025-07-25';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate,
+        isDateOperator: true
+      };
+
+      const result = converter.GreaterThanConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '>' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('when isDateOperator is false or undefined', () => {
+    it('calls BinaryConverter and returns AExpr with scalar value', () => {
+      const testValue = 'John Doe';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.GreaterThanConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '>' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('handles numeric values when isDateOperator is false', () => {
+      // Create a numeric column for this test
+      const numericColumn = {
+        id: 'num789',
+        columnName: 'age',
+        isNumber: true,
+        element: {
+          isCalculatedElement: false,
+          display: {
+            isDate: false,
+          },
+        },
+      };
+
+      const testValue = 25;
+      const expression = {
+        column: numericColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.GreaterThanConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '>' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'age' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                Float: {
+                  str: '25'
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('works when isDateOperator is undefined', () => {
+      const testValue = 'Jane Smith';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue
+        // isDateOperator is undefined
+      };
+
+      const result = converter.GreaterThanConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '>' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+});
+
+describe('GreaterThanOrEqualConverter', () => {
+  const converter = new Converter();
+  const formJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    name: 'TestForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'DateTimeField',
+        key: 'date123',
+        label: 'Created Date',
+        data_name: 'created_date',
+      },
+      {
+        type: 'TextField',
+        key: 'text456',
+        label: 'Name',
+        data_name: 'name',
+      },
+    ],
+  };
+
+  const rawColumns = {
+    form: [
+      {
+        field: 'date123',
+        name: 'created_date',
+        type: 'date',
+      },
+      {
+        field: 'text456',
+        name: 'name',
+        type: 'string',
+      },
+    ],
+    repeatables: {},
+  };
+
+  const form = new Form(formJson);
+  const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+  const dateColumn = schema.columns.find(col => col.id === 'date123');
+  const textColumn = schema.columns.find(col => col.id === 'text456');
+
+  describe('when isDateOperator is true', () => {
+    it('calls DateBinaryConverter and returns AExpr with ISO string date', () => {
+      const testDate = '2025-07-25';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate,
+        isDateOperator: true
+      };
+
+      const result = converter.GreaterThanOrEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '>=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('when isDateOperator is false or undefined', () => {
+    it('calls BinaryConverter and returns AExpr with scalar value', () => {
+      const testValue = 'John Doe';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.GreaterThanOrEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '>=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('handles numeric values when isDateOperator is false', () => {
+      // Create a numeric column for this test
+      const numericColumn = {
+        id: 'num789',
+        columnName: 'age',
+        isNumber: true,
+        element: {
+          isCalculatedElement: false,
+          display: {
+            isDate: false,
+          },
+        },
+      };
+
+      const testValue = 25;
+      const expression = {
+        column: numericColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.GreaterThanOrEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '>=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'age' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                Float: {
+                  str: '25'
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('works when isDateOperator is undefined', () => {
+      const testValue = 'Jane Smith';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue
+        // isDateOperator is undefined
+      };
+
+      const result = converter.GreaterThanOrEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '>=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+});
+
+describe('LessThanConverter', () => {
+  const converter = new Converter();
+  const formJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    name: 'TestForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'DateTimeField',
+        key: 'date123',
+        label: 'Created Date',
+        data_name: 'created_date',
+      },
+      {
+        type: 'TextField',
+        key: 'text456',
+        label: 'Name',
+        data_name: 'name',
+      },
+    ],
+  };
+
+  const rawColumns = {
+    form: [
+      {
+        field: 'date123',
+        name: 'created_date',
+        type: 'date',
+      },
+      {
+        field: 'text456',
+        name: 'name',
+        type: 'string',
+      },
+    ],
+    repeatables: {},
+  };
+
+  const form = new Form(formJson);
+  const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+  const dateColumn = schema.columns.find(col => col.id === 'date123');
+  const textColumn = schema.columns.find(col => col.id === 'text456');
+
+  describe('when isDateOperator is true', () => {
+    it('calls DateBinaryConverter and returns AExpr with ISO string date', () => {
+      const testDate = '2025-07-25';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate,
+        isDateOperator: true
+      };
+
+      const result = converter.LessThanConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('when isDateOperator is false or undefined', () => {
+    it('calls BinaryConverter and returns AExpr with scalar value', () => {
+      const testValue = 'John Doe';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.LessThanConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('handles numeric values when isDateOperator is false', () => {
+      // Create a numeric column for this test
+      const numericColumn = {
+        id: 'num789',
+        columnName: 'age',
+        isNumber: true,
+        element: {
+          isCalculatedElement: false,
+          display: {
+            isDate: false,
+          },
+        },
+      };
+
+      const testValue = 25;
+      const expression = {
+        column: numericColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.LessThanConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'age' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                Float: {
+                  str: '25'
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('works when isDateOperator is undefined', () => {
+      const testValue = 'Jane Smith';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue
+        // isDateOperator is undefined
+      };
+
+      const result = converter.LessThanConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+});
+
+describe('LessThanOrEqualConverter', () => {
+  const converter = new Converter();
+  const formJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    name: 'TestForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'DateTimeField',
+        key: 'date123',
+        label: 'Created Date',
+        data_name: 'created_date',
+      },
+      {
+        type: 'TextField',
+        key: 'text456',
+        label: 'Name',
+        data_name: 'name',
+      },
+    ],
+  };
+
+  const rawColumns = {
+    form: [
+      {
+        field: 'date123',
+        name: 'created_date',
+        type: 'date',
+      },
+      {
+        field: 'text456',
+        name: 'name',
+        type: 'string',
+      },
+    ],
+    repeatables: {},
+  };
+
+  const form = new Form(formJson);
+  const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+  const dateColumn = schema.columns.find(col => col.id === 'date123');
+  const textColumn = schema.columns.find(col => col.id === 'text456');
+
+  describe('when isDateOperator is true', () => {
+    it('calls DateBinaryConverter and returns AExpr with ISO string date', () => {
+      const testDate = '2025-07-25';
+      const expression = {
+        column: dateColumn,
+        scalarValue: testDate,
+        isDateOperator: true
+      };
+
+      const result = converter.LessThanOrEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+
+  describe('when isDateOperator is false or undefined', () => {
+    it('calls BinaryConverter and returns AExpr with scalar value', () => {
+      const testValue = 'John Doe';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.LessThanOrEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('handles numeric values when isDateOperator is false', () => {
+      // Create a numeric column for this test
+      const numericColumn = {
+        id: 'num789',
+        columnName: 'age',
+        isNumber: true,
+        element: {
+          isCalculatedElement: false,
+          display: {
+            isDate: false,
+          },
+        },
+      };
+
+      const testValue = 25;
+      const expression = {
+        column: numericColumn,
+        scalarValue: testValue,
+        isDateOperator: false
+      };
+
+      const result = converter.LessThanOrEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'age' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                Float: {
+                  str: '25'
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it('works when isDateOperator is undefined', () => {
+      const testValue = 'Jane Smith';
+      const expression = {
+        column: textColumn,
+        scalarValue: testValue
+        // isDateOperator is undefined
+      };
+
+      const result = converter.LessThanOrEqualConverter(expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '<=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'name' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: testValue
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+});
