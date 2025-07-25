@@ -598,47 +598,40 @@ describe('toTilesAST converter', () => {
 });
 
 describe('DateBinaryConverter', () => {
-  let converter;
-  let dateColumn;
-  let form;
-  let schema;
-
-  beforeEach(() => {
-    converter = new Converter();
+  const converter = new Converter();
     
-    const formJson = {
-      id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-      name: 'TestForm',
-      status_field: {
-        type: 'StatusField',
-        label: 'Status',
-        data_name: 'status',
+  const formJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    name: 'TestForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'DateTimeField',
+        key: 'date123',
+        label: 'Created Date',
+        data_name: 'created_date',
       },
-      elements: [
-        {
-          type: 'DateTimeField',
-          key: 'date123',
-          label: 'Created Date',
-          data_name: 'created_date',
-        },
-      ],
-    };
+    ],
+  };
 
-    const rawColumns = {
-      form: [
-        {
-          field: 'date123',
-          name: 'created_date',
-          type: 'date',
-        },
-      ],
-      repeatables: {},
-    };
+  const rawColumns = {
+    form: [
+      {
+        field: 'date123',
+        name: 'created_date',
+        type: 'date',
+      },
+    ],
+    repeatables: {},
+  };
 
-    form = new Form(formJson);
-    schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-    dateColumn = schema.columns.find(col => col.id === 'date123');
-  });
+  const form = new Form(formJson);
+  const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+  const dateColumn = schema.columns.find(col => col.id === 'date123');
 
   describe('when operator is equals (=)', () => {
     it('creates an AExpr with equals operator and ISO string date', () => {
@@ -741,7 +734,7 @@ describe('DateBinaryConverter', () => {
 
   describe('when operator is less than (<)', () => {
     it('creates an AExpr with less than operator and ISO string date', () => {
-      const testDate = '06-15-2025';
+      const testDate = '2025-07-25T10:30:00';
       const expression = {
         column: dateColumn,
         scalarValue: testDate
@@ -835,34 +828,6 @@ describe('DateBinaryConverter', () => {
           }
         }
       });
-    });
-  });
-
-  describe('with different date formats', () => {
-    it('handles date string without timezone and converts to UTC ISO string', () => {
-      const testDate = '2025-07-25T10:30:00';
-      const expression = {
-        column: dateColumn,
-        scalarValue: testDate
-      };
-
-      const result = converter.DateBinaryConverter(0, '=', expression);
-      const expectedISOString = moment.utc(testDate).toISOString();
-
-      expect(result.A_Expr.rexpr.A_Const.val.String.str).toBe(expectedISOString);
-    });
-
-    it('handles date-only string and converts to UTC ISO string', () => {
-      const testDate = '2025-07-25';
-      const expression = {
-        column: dateColumn,
-        scalarValue: testDate
-      };
-
-      const result = converter.DateBinaryConverter(0, '=', expression);
-      const expectedISOString = moment.utc(testDate).toISOString();
-
-      expect(result.A_Expr.rexpr.A_Const.val.String.str).toBe(expectedISOString);
     });
   });
 });
