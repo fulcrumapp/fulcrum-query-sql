@@ -488,18 +488,6 @@ export default class Converter {
             nulltesttype: any;
         };
     } | null;
-    DateBinaryConverter: (kind: any, operator: any, expression: any) => {
-        A_Expr: {
-            kind: any;
-            name: {
-                String: {
-                    str: any;
-                };
-            }[];
-            lexpr: any;
-            rexpr: any;
-        };
-    };
     BinaryConverter: (kind: any, operator: any, expression: any) => {
         A_Expr: {
             kind: any;

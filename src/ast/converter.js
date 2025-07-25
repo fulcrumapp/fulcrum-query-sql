@@ -975,44 +975,26 @@ export default class Converter {
   };
 
   EqualConverter = (expression) => {
-    if (expression.isDateOperator) {
-      return this.DateBinaryConverter(0, '=', expression);
-    }
     return this.BinaryConverter(0, '=', expression);
   }
 
   NotEqualConverter = (expression) => {
-    if (expression.isDateOperator) {
-      return this.DateBinaryConverter(0, '<>', expression);
-    }
     return this.BinaryConverter(0, '<>', expression);
   }
 
   GreaterThanConverter = (expression) => {
-    if (expression.isDateOperator) {
-      return this.DateBinaryConverter(0, '>', expression);
-    }
     return this.BinaryConverter(0, '>', expression);
   }
 
   GreaterThanOrEqualConverter = (expression) => {
-    if (expression.isDateOperator) {
-      return this.DateBinaryConverter(0, '>=', expression);
-    }
     return this.BinaryConverter(0, '>=', expression);
   }
 
   LessThanConverter = (expression) => {
-    if (expression.isDateOperator) {
-      return this.DateBinaryConverter(0, '<', expression);
-    }
     return this.BinaryConverter(0, '<', expression);
   }
 
   LessThanOrEqualConverter = (expression) => {
-    if (expression.isDateOperator) {
-      return this.DateBinaryConverter(0, '<=', expression);
-    }
     return this.BinaryConverter(0, '<=', expression);
   }
 
@@ -1048,23 +1030,13 @@ export default class Converter {
     return this.NotIn(expression.column, expression.arrayValue);
   }
 
-  DateBinaryConverter = (kind, operator, expression) => {
-    const dates = {
-      '=': moment.utc(expression.scalarValue).toISOString(),
-      '<>': moment.utc(expression.scalarValue).toISOString(),
-      '>': moment.utc(expression.scalarValue).toISOString(),
-      '<=': moment.utc(expression.scalarValue).toISOString(),
-      '<': moment.utc(expression.scalarValue).toISOString(),
-      '>=': moment.utc(expression.scalarValue).toISOString(),
-    };
-    const dateStr = dates[operator];
-    return AExpr(kind, operator, columnRef(expression.column),
-                 this.ConstValue(expression.column, dateStr));
-  }
-
   BinaryConverter = (kind, operator, expression) => {
+    let val = expression.scalarValue;
+    if (expression.isDateOperator) {
+      val = moment.utc(val).toISOString();
+    }
     return AExpr(kind, operator, columnRef(expression.column),
-                 this.ConstValue(expression.column, expression.scalarValue));
+                 this.ConstValue(expression.column, val));
   }
 
   FieldConverter = (expression) => {
