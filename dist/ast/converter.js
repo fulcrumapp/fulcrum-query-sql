@@ -55,21 +55,39 @@ class Converter {
             return (0, helpers_1.NullTest)(0, columnRef(expression.column));
         };
         this.EqualConverter = (expression) => {
+            if (expression.isDateOperator) {
+                return this.DateBinaryConverter(0, '=', expression);
+            }
             return this.BinaryConverter(0, '=', expression);
         };
         this.NotEqualConverter = (expression) => {
+            if (expression.isDateOperator) {
+                return this.DateBinaryConverter(0, '<>', expression);
+            }
             return this.BinaryConverter(0, '<>', expression);
         };
         this.GreaterThanConverter = (expression) => {
+            if (expression.isDateOperator) {
+                return this.DateBinaryConverter(0, '>', expression);
+            }
             return this.BinaryConverter(0, '>', expression);
         };
         this.GreaterThanOrEqualConverter = (expression) => {
+            if (expression.isDateOperator) {
+                return this.DateBinaryConverter(0, '>=', expression);
+            }
             return this.BinaryConverter(0, '>=', expression);
         };
         this.LessThanConverter = (expression) => {
+            if (expression.isDateOperator) {
+                return this.DateBinaryConverter(0, '<', expression);
+            }
             return this.BinaryConverter(0, '<', expression);
         };
         this.LessThanOrEqualConverter = (expression) => {
+            if (expression.isDateOperator) {
+                return this.DateBinaryConverter(0, '<=', expression);
+            }
             return this.BinaryConverter(0, '<=', expression);
         };
         this.BetweenConverter = (expression, options) => {
@@ -95,6 +113,18 @@ class Converter {
         };
         this.NotInConverter = (expression) => {
             return this.NotIn(expression.column, expression.arrayValue);
+        };
+        this.DateBinaryConverter = (kind, operator, expression) => {
+            const dates = {
+                '=': moment_timezone_1.default.utc(expression.scalarValue).toISOString(),
+                '<>': moment_timezone_1.default.utc(expression.scalarValue).toISOString(),
+                '>': moment_timezone_1.default.utc(expression.scalarValue).toISOString(),
+                '<=': moment_timezone_1.default.utc(expression.scalarValue).toISOString(),
+                '<': moment_timezone_1.default.utc(expression.scalarValue).toISOString(),
+                '>=': moment_timezone_1.default.utc(expression.scalarValue).toISOString(),
+            };
+            const dateStr = dates[operator];
+            return (0, helpers_1.AExpr)(kind, operator, columnRef(expression.column), this.ConstValue(expression.column, dateStr));
         };
         this.BinaryConverter = (kind, operator, expression) => {
             return (0, helpers_1.AExpr)(kind, operator, columnRef(expression.column), this.ConstValue(expression.column, expression.scalarValue));
@@ -249,6 +279,10 @@ class Converter {
                 return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(value));
             }
             if (column.isNumber) {
+                if (column.element.isCalculatedElement && column.element.display.isDate) {
+                    const doubleValue = (0, moment_timezone_1.default)(value).valueOf() / 1000;
+                    return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(doubleValue));
+                }
                 return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));
             }
             return (0, helpers_1.AConst)((0, helpers_1.StringValue)(value));
