@@ -1,6 +1,6 @@
 import { Form } from 'fulcrum-core';
 import Deparse from '@fulcrumapp/pg-query-deparser';
-import moment, { isDate } from 'moment-timezone';
+import moment from 'moment-timezone';
 import Converter from '../converter';
 import FormSchema from '../../form-schema';
 import {
