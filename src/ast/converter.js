@@ -1033,11 +1033,11 @@ export default class Converter {
   BinaryConverter = (kind, operator, expression) => {
     let val = expression.scalarValue;
     if (expression.isDateOperator) {
-      console.log('Converting date:', val);
+      console.log('FQS: Converting date:', val);
       val = moment.utc(val).toISOString();
     }
 
-    console.log('BinaryConverter: ', val);
+    console.log('FQS: BinaryConverter: ', val);
     return AExpr(kind, operator, columnRef(expression.column),
                  this.ConstValue(expression.column, val));
   }
@@ -1141,11 +1141,11 @@ export default class Converter {
     // be much less useful and confusing if we forced "Today" to always be London's today.
     const now = this.GetDate(null, options);
     const range = calculateDateRange(expression.column, expression.operator, expression.value, now);
-    console.log('DynamicDateConverter calculated range: ', range);
+    console.log('FQS: DynamicDateConverter calculated range: ', range);
 
     const value1 = this.ConvertDateValue(expression, range[0]);
     const value2 = this.ConvertDateValue(expression, range[1]);
-    console.log('DynamicDateConverter converted range: ', value1, value2);
+    console.log('FQS: DynamicDateConverter converted range: ', value1, value2);
 
     return this.Between(expression.column, value1, value2);
   }
@@ -1213,11 +1213,11 @@ export default class Converter {
       expression = AExpr(6, '<>', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
 
       if (hasNull) {
-        console.log('Null value detected in NotIn expression:', values);
+        console.log('FQS: Null value detected in NotIn expression:', values);
         expression = BoolExpr(1, [ NullTest(1, columnRef(column)), expression ]);
       }
     } else if (hasNull) {
-      console.log("only null values");
+      console.log("FQS: only null values");
       expression = NullTest(1, columnRef(column));
     }
 
@@ -1248,7 +1248,8 @@ export default class Converter {
     if (column.isNumber) {
         if (column.element.isCalculatedElement && column.element.display.isDate) {
           const doubleValue = moment.utc(value).valueOf() / 1000;
-          console.log('Converting date to double value:', doubleValue);
+          console.log('FQS: Converting value', value, 'to moment double value:', doubleValue);
+          console.log('FQS: Converting value', value, 'to JS double value:', new Date(doubleValue).getTime() / 1000);
           return AConst(FloatValue(doubleValue));
         }
       return AConst(FloatValue(value));
