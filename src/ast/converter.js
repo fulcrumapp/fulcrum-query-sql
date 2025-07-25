@@ -1247,7 +1247,8 @@ export default class Converter {
 
     if (column.isNumber) {
         if (column.element.isCalculatedElement && column.element.display.isDate) {
-          const doubleValue = moment(value).valueOf() / 1000;
+          const doubleValue = moment.utc(value).valueOf() / 1000;
+          console.log('Converting date to double value:', doubleValue);
           return AConst(FloatValue(doubleValue));
         }
       return AConst(FloatValue(value));
