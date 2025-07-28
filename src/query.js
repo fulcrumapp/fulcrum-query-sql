@@ -194,6 +194,7 @@ export default class Query {
   }
 
   set boundingBox(box) {
+    console.log("Bounding box getting updated!", box);
     this._boundingBox = box;
   }
 
