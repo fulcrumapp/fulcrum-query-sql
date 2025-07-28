@@ -41,6 +41,8 @@ export default class Query {
     this._changesetFilter = new ColumnFilter({...attrs.changeset_filter, field: '_changeset_id'}, this._schema);
     this._full = attrs.full != null ? !!attrs.full : true;
 
+    console.log("Query initialized!", this._boundingBox);
+
     this.setup();
   }
 
@@ -286,6 +288,7 @@ export default class Query {
   }
 
   toCountSQL() {
+    console.log("To Count SQL:", this.runtimeFilters);
     return this.deparse(this.toCountAST(this.runtimeFilters));
   }
 
