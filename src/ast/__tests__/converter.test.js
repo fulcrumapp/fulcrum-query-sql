@@ -1,5 +1,6 @@
 import { Form } from 'fulcrum-core';
 import Deparse from '@fulcrumapp/pg-query-deparser';
+import moment from 'moment-timezone';
 import Converter from '../converter';
 import FormSchema from '../../form-schema';
 import {
@@ -54,6 +55,62 @@ describe('NotEmpty converter', () => {
       expect(sql).toEqual(expectSql);
     });
   });
+
+describe('ConstValue converter', () => {
+  describe('given a Number column', () => {
+    const numValue = 72828292;
+    const numColumn = {
+      isNumber: true,
+      element: {
+        isCalculatedElement: false,
+        display: {
+          isDate: false,
+        },
+      },
+    };
+
+    const expectedValue = (val) => (
+      {
+        A_Const: {
+          val: {
+            Float: {
+              str: val != null ? val.toString() : '',
+            }
+          },
+        },
+      }
+    );
+
+    it('correctly structures a ConstValue with a Float type', () => {
+      expect(new Converter().ConstValue(numColumn, numValue)).toEqual(expectedValue(numValue));
+    });
+
+    describe('given a calculated field with a date display', () => {
+      const calculatedColumn = {
+        isNumber: true,
+        element: {
+          isCalculatedElement: true,
+          display: {
+            isDate: true,
+          }
+        }
+      };
+
+      it('correctly structures a ConstValue with a Float type', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(1753156800));
+      });
+
+      it('correctly structures a ConstValue with a Float type when passed a date string with different formatting', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(1753156800));
+      });
+
+      it('correctly structures a ConstValue with a Float type when passed a double value', () => {
+        expect(new Converter().ConstValue(calculatedColumn, 1753156800.123)).toEqual(expectedValue(1753156800.123));
+      });
+    });
+  });
+});
+
   describe('given media captions', () => {
     it('creates a subquery with array_to_string', () => {
       const formJson = {
@@ -525,6 +582,7 @@ describe('toTilesAST converter', () => {
       expect(toTilesSQLQuery.replace(/\s+/g, ' ').trim()).toEqual(expectSql);
     });
 
+
     it('generates a regular tiles SQL when sort clause is undefined', () => {
       const query = new Query(queryOptions);
       const toTilesSQLQuery = query.toTileSQL(10000, undefined);
@@ -539,6 +597,122 @@ describe('toTilesAST converter', () => {
       `.replace(/\s+/g, ' ').trim();
 
       expect(toTilesSQLQuery.replace(/\s+/g, ' ').trim()).toEqual(expectSql);
+    });
+  });
+});
+
+describe('BinaryConverter', () => {
+  const converter = new Converter();
+    
+  const formJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    name: 'TestForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'DateTimeField',
+        key: 'date123',
+        label: 'Created Date',
+        data_name: 'created_date',
+      },
+      {
+        type: 'TextField',
+        key: '3bd0',
+        numeric: true,
+        label: 'Numbers',
+        data_name: 'numbers',
+        format: 'decimal',
+      },
+    ],
+  };
+
+  const rawColumns = {
+    form: [
+      {
+        field: 'date123',
+        name: 'created_date',
+        type: 'date',
+      },
+      {
+        field: '3bd0',
+        name: 'numbers',
+        type: 'double',
+      },
+    ],
+    repeatables: {},
+  };
+
+  const form = new Form(formJson);
+  const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+  const dateColumn = schema.columns.find(col => col.id === 'date123');
+  const numberColumn = schema.columns.find(col => col.id === '3bd0');
+
+  describe('with a non-date column', () => {
+    it('creates an AExpr with equals operator and string value', () => {
+      const expression = {
+        column: numberColumn,
+        scalarValue: '123.45'
+      };
+
+      const result = converter.BinaryConverter(0, '=', expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'numbers' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                Float: {
+                  str: '123.45'
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  });
+  describe('with a date column', () => {
+    it('creates an AExpr with equals operator and ISO string date', () => {
+      const testDate = '2025-07-25';
+      const expression = {
+        isDateOperator: true,
+        column: dateColumn,
+        scalarValue: testDate
+      };
+
+      const result = converter.BinaryConverter(0, '>=', expression);
+
+      expect(result).toEqual({
+        A_Expr: {
+          kind: 0,
+          name: [{ String: { str: '>=' } }],
+          lexpr: {
+            ColumnRef: {
+              fields: [{ String: { str: 'created_date' } }]
+            }
+          },
+          rexpr: {
+            A_Const: {
+              val: {
+                String: {
+                  str: moment.utc(testDate).toISOString()
+                }
+              }
+            }
+          }
+        }
+      });
     });
   });
 });

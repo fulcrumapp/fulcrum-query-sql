@@ -1031,8 +1031,12 @@ export default class Converter {
   }
 
   BinaryConverter = (kind, operator, expression) => {
+    let val = expression.scalarValue;
+    if (expression.isDateOperator) {
+      val = moment.utc(val).toISOString();
+    }
     return AExpr(kind, operator, columnRef(expression.column),
-                 this.ConstValue(expression.column, expression.scalarValue));
+                 this.ConstValue(expression.column, val));
   }
 
   FieldConverter = (expression) => {
@@ -1236,6 +1240,10 @@ export default class Converter {
     }
 
     if (column.isNumber) {
+        if (column.element.isCalculatedElement && column.element.display.isDate && (typeof value === 'string')) {
+          const doubleValue = moment(value).valueOf() / 1000;
+          return AConst(FloatValue(doubleValue));
+        }
       return AConst(FloatValue(value));
     }
 

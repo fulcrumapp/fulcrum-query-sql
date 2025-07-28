@@ -97,7 +97,11 @@ class Converter {
             return this.NotIn(expression.column, expression.arrayValue);
         };
         this.BinaryConverter = (kind, operator, expression) => {
-            return (0, helpers_1.AExpr)(kind, operator, columnRef(expression.column), this.ConstValue(expression.column, expression.scalarValue));
+            let val = expression.scalarValue;
+            if (expression.isDateOperator) {
+                val = moment_timezone_1.default.utc(val).toISOString();
+            }
+            return (0, helpers_1.AExpr)(kind, operator, columnRef(expression.column), this.ConstValue(expression.column, val));
         };
         this.FieldConverter = (expression) => {
             return (0, helpers_1.ColumnRef)(expression.name);
@@ -249,6 +253,10 @@ class Converter {
                 return (0, helpers_1.AConst)((0, helpers_1.IntegerValue)(value));
             }
             if (column.isNumber) {
+                if (column.element.isCalculatedElement && column.element.display.isDate && (typeof value === 'string')) {
+                    const doubleValue = (0, moment_timezone_1.default)(value).valueOf() / 1000;
+                    return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(doubleValue));
+                }
                 return (0, helpers_1.AConst)((0, helpers_1.FloatValue)(value));
             }
             return (0, helpers_1.AConst)((0, helpers_1.StringValue)(value));
