@@ -10,21 +10,21 @@ export class Expression {
     get hasValue(): boolean;
     get value(): any;
     get arrayValue(): any;
-    set scalarValue(arg: any);
+    set scalarValue(value: any);
     get scalarValue(): any;
-    set value1(arg: any);
+    set value1(value: any);
     get value1(): any;
-    set value2(arg: any);
+    set value2(value: any);
     get value2(): any;
     get isDateOperator(): {
         name: string;
         label: string;
     } | undefined;
-    set operator(arg: any);
+    set operator(operator: any);
     get operator(): any;
-    set field(arg: any);
+    set field(field: any);
     get field(): any;
-    set column(arg: any);
+    set column(column: any);
     get column(): any;
     get columnName(): any;
     toggleValue(value: any): void;
@@ -36,16 +36,14 @@ export class Expression {
     } | null;
     isEqual(other: any): boolean;
     availableOperators(): any;
-    set startDate(arg: any);
+    set startDate(date: any);
     get startDate(): any;
-    set endDate(arg: any);
+    set endDate(date: any);
     get endDate(): any;
-    set options(arg: QueryOptions);
+    set options(options: QueryOptions);
     get options(): QueryOptions;
     clearRangeValuesIfNull(): void;
-    labelForValue(value: any, { separator }?: {
-        separator: any;
-    }): any;
+    labelForValue(value: any, { separator }?: {}): any;
     toHumanDescription(): string | null;
 }
 import QueryOptions from './query-options';

@@ -31,6 +31,7 @@ class Query {
         this._assignmentFilter = new column_filter_1.default(Object.assign(Object.assign({}, attrs.assignment_filter), { field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name' }), this._schema);
         this._changesetFilter = new column_filter_1.default(Object.assign(Object.assign({}, attrs.changeset_filter), { field: '_changeset_id' }), this._schema);
         this._full = attrs.full != null ? !!attrs.full : true;
+        console.log("Query initialized!", this._boundingBox);
         this.setup();
     }
     get ast() {
@@ -148,6 +149,7 @@ class Query {
         this._dateFilter = new expression_1.Expression({ field: this.defaultDateField }, this._schema);
     }
     set boundingBox(box) {
+        console.log("Bounding box getting updated!", box);
         this._boundingBox = box;
     }
     get boundingBox() {
@@ -220,6 +222,7 @@ class Query {
         return this.deparse(this.toHistogramAST(options));
     }
     toCountSQL() {
+        console.log("To Count SQL:", this.runtimeFilters);
         return this.deparse(this.toCountAST(this.runtimeFilters));
     }
     toSQL({ applySort, pageSize, pageIndex, outerLimit }) {

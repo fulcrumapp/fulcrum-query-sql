@@ -36,9 +36,9 @@ export default class Query {
     get joinColumnsWithSorting(): any[];
     get defaultDateField(): "_updated_at" | "_server_updated_at";
     clearAllFilters(): void;
-    set boundingBox(arg: any);
+    set boundingBox(box: any);
     get boundingBox(): any;
-    set searchFilter(arg: any);
+    set searchFilter(filter: any);
     get searchFilter(): any;
     get runtimeFilters(): {
         boundingBox: any;
@@ -199,7 +199,7 @@ export default class Query {
     toTileSQL(maxTileRecords?: any, sorting?: {
         field?: string | undefined;
         direction?: number | undefined;
-    } | undefined): any;
+    }): any;
     toSummarySQL(columnSetting: any): any;
     targetList(): any;
     fromClause({ applySort, pageSize, pageIndex, boundingBox, searchFilter }: {

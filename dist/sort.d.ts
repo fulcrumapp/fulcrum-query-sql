@@ -10,10 +10,10 @@ export class Sort {
     _direction: any;
     _schema: any;
     get isValid(): boolean;
-    set direction(arg: any);
+    set direction(direction: any);
     get direction(): any;
     get field(): any;
-    set column(arg: any);
+    set column(column: any);
     get column(): any;
     get columnName(): any;
     toJSON(): {

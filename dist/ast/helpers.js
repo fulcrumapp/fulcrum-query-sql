@@ -1,6 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CoalesceExpr = exports.SubLink = exports.RangeFunction = exports.CommonTableExpr = exports.WithClause = exports.NullTest = exports.SortBy = exports.AArrayExpr = exports.RangeSubselect = exports.AExpr = exports.BooleanTest = exports.BoolExpr = exports.AStar = exports.AConst = exports.JoinExpr = exports.TypeName = exports.TypeCast = exports.ColumnRef = exports.WindowDef = exports.FuncCall = exports.ResTarget = exports.RangeVar = exports.Alias = exports.FloatValue = exports.IntegerValue = exports.StringValue = exports.SelectStmt = void 0;
+exports.SelectStmt = SelectStmt;
+exports.StringValue = StringValue;
+exports.IntegerValue = IntegerValue;
+exports.FloatValue = FloatValue;
+exports.Alias = Alias;
+exports.RangeVar = RangeVar;
+exports.ResTarget = ResTarget;
+exports.FuncCall = FuncCall;
+exports.WindowDef = WindowDef;
+exports.ColumnRef = ColumnRef;
+exports.TypeCast = TypeCast;
+exports.TypeName = TypeName;
+exports.JoinExpr = JoinExpr;
+exports.AConst = AConst;
+exports.AStar = AStar;
+exports.BoolExpr = BoolExpr;
+exports.BooleanTest = BooleanTest;
+exports.AExpr = AExpr;
+exports.RangeSubselect = RangeSubselect;
+exports.AArrayExpr = AArrayExpr;
+exports.SortBy = SortBy;
+exports.NullTest = NullTest;
+exports.WithClause = WithClause;
+exports.CommonTableExpr = CommonTableExpr;
+exports.RangeFunction = RangeFunction;
+exports.SubLink = SubLink;
+exports.CoalesceExpr = CoalesceExpr;
 function SelectStmt({ targetList, fromClause, whereClause, sortClause, limitOffset, limitCount, groupClause, withClause }) {
     return {
         SelectStmt: {
@@ -16,7 +42,6 @@ function SelectStmt({ targetList, fromClause, whereClause, sortClause, limitOffs
         }
     };
 }
-exports.SelectStmt = SelectStmt;
 function StringValue(value) {
     return {
         String: {
@@ -24,7 +49,6 @@ function StringValue(value) {
         }
     };
 }
-exports.StringValue = StringValue;
 function IntegerValue(value) {
     return {
         Integer: {
@@ -32,7 +56,6 @@ function IntegerValue(value) {
         }
     };
 }
-exports.IntegerValue = IntegerValue;
 function FloatValue(value) {
     return {
         Float: {
@@ -40,7 +63,6 @@ function FloatValue(value) {
         }
     };
 }
-exports.FloatValue = FloatValue;
 function Alias(name) {
     return {
         Alias: {
@@ -48,7 +70,6 @@ function Alias(name) {
         }
     };
 }
-exports.Alias = Alias;
 function RangeVar(name, alias) {
     return {
         RangeVar: {
@@ -59,7 +80,6 @@ function RangeVar(name, alias) {
         }
     };
 }
-exports.RangeVar = RangeVar;
 function ResTarget(node, name = null) {
     return {
         ResTarget: {
@@ -68,13 +88,11 @@ function ResTarget(node, name = null) {
         }
     };
 }
-exports.ResTarget = ResTarget;
 function FuncCall(name, args, options) {
     return {
         FuncCall: Object.assign({ funcname: Array.isArray(name) ? name : [StringValue(name)], args: args }, options)
     };
 }
-exports.FuncCall = FuncCall;
 function WindowDef(orderClause, frameOptions) {
     return {
         WindowDef: {
@@ -83,7 +101,6 @@ function WindowDef(orderClause, frameOptions) {
         }
     };
 }
-exports.WindowDef = WindowDef;
 function ColumnRef(name, source) {
     const nameValue = typeof name === 'string' ? StringValue(name) : name;
     const fields = source ? [StringValue(source), nameValue]
@@ -94,7 +111,6 @@ function ColumnRef(name, source) {
         }
     };
 }
-exports.ColumnRef = ColumnRef;
 function TypeCast(typeName, arg) {
     return {
         TypeCast: {
@@ -103,7 +119,6 @@ function TypeCast(typeName, arg) {
         }
     };
 }
-exports.TypeCast = TypeCast;
 function TypeName(names, mod) {
     return {
         TypeName: {
@@ -112,7 +127,6 @@ function TypeName(names, mod) {
         }
     };
 }
-exports.TypeName = TypeName;
 function JoinExpr(type, larg, rarg, quals) {
     return {
         JoinExpr: {
@@ -123,7 +137,6 @@ function JoinExpr(type, larg, rarg, quals) {
         }
     };
 }
-exports.JoinExpr = JoinExpr;
 function AConst(value) {
     return {
         A_Const: {
@@ -131,13 +144,11 @@ function AConst(value) {
         }
     };
 }
-exports.AConst = AConst;
 function AStar() {
     return {
         A_Star: {}
     };
 }
-exports.AStar = AStar;
 function BoolExpr(op, args) {
     return {
         BoolExpr: {
@@ -146,7 +157,6 @@ function BoolExpr(op, args) {
         }
     };
 }
-exports.BoolExpr = BoolExpr;
 function BooleanTest(arg, booltesttype) {
     return {
         BooleanTest: {
@@ -155,7 +165,6 @@ function BooleanTest(arg, booltesttype) {
         }
     };
 }
-exports.BooleanTest = BooleanTest;
 function AExpr(kind, name, lexpr, rexpr) {
     return {
         A_Expr: {
@@ -166,7 +175,6 @@ function AExpr(kind, name, lexpr, rexpr) {
         }
     };
 }
-exports.AExpr = AExpr;
 function RangeSubselect(subquery, alias) {
     return {
         RangeSubselect: {
@@ -175,7 +183,6 @@ function RangeSubselect(subquery, alias) {
         }
     };
 }
-exports.RangeSubselect = RangeSubselect;
 function AArrayExpr(values) {
     return {
         A_ArrayExpr: {
@@ -183,7 +190,6 @@ function AArrayExpr(values) {
         }
     };
 }
-exports.AArrayExpr = AArrayExpr;
 function SortBy(node, direction, nulls) {
     return {
         SortBy: {
@@ -193,7 +199,6 @@ function SortBy(node, direction, nulls) {
         }
     };
 }
-exports.SortBy = SortBy;
 // 0 : IS NULL
 // 1 : IS NOT NULL
 function NullTest(type, arg) {
@@ -204,7 +209,6 @@ function NullTest(type, arg) {
         }
     };
 }
-exports.NullTest = NullTest;
 function WithClause(ctes) {
     return {
         WithClause: {
@@ -212,7 +216,6 @@ function WithClause(ctes) {
         }
     };
 }
-exports.WithClause = WithClause;
 function CommonTableExpr(name, query) {
     return {
         CommonTableExpr: {
@@ -221,7 +224,6 @@ function CommonTableExpr(name, query) {
         }
     };
 }
-exports.CommonTableExpr = CommonTableExpr;
 function RangeFunction(functions, alias) {
     return {
         RangeFunction: {
@@ -230,7 +232,6 @@ function RangeFunction(functions, alias) {
         }
     };
 }
-exports.RangeFunction = RangeFunction;
 function SubLink(type, subselect) {
     return {
         SubLink: {
@@ -239,7 +240,6 @@ function SubLink(type, subselect) {
         }
     };
 }
-exports.SubLink = SubLink;
 function CoalesceExpr(args) {
     return {
         CoalesceExpr: {
@@ -247,5 +247,4 @@ function CoalesceExpr(args) {
         }
     };
 }
-exports.CoalesceExpr = CoalesceExpr;
 //# sourceMappingURL=helpers.js.map

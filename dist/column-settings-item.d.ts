@@ -14,14 +14,14 @@ export default class ColumnSettingsItem {
         column: any;
     };
     get hasFilter(): any;
-    set search(arg: any);
+    set search(search: any);
     get search(): any;
     get column(): any;
     get filter(): ColumnFilter;
     get summary(): ColumnSummary;
     get isVisible(): boolean;
     get isHidden(): boolean;
-    set hidden(arg: any);
+    set hidden(hidden: any);
     get expression(): Expression;
     get range(): Expression;
 }

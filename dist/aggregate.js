@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DATE_AGGREGATES = exports.NUMERIC_AGGREGATES = exports.TEXTUAL_AGGREGATES = exports.availableAggregatesForColumn = exports.AggregatesByValue = exports.AggregateType = void 0;
+exports.DATE_AGGREGATES = exports.NUMERIC_AGGREGATES = exports.TEXTUAL_AGGREGATES = exports.AggregatesByValue = exports.AggregateType = void 0;
+exports.availableAggregatesForColumn = availableAggregatesForColumn;
 exports.AggregateType = {
     Sum: {
         name: 'sum',
@@ -116,5 +117,4 @@ function availableAggregatesForColumn(column) {
     }
     return aggregates;
 }
-exports.availableAggregatesForColumn = availableAggregatesForColumn;
 //# sourceMappingURL=aggregate.js.map

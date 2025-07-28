@@ -3,7 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.calculateDateRange = exports.availableOperatorsForColumn = exports.isDateOperator = exports.isValueRequired = exports.FRIENDLY_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = exports.OperatorsByValue = exports.OperatorType = void 0;
+exports.FRIENDLY_DATE_OPERATORS = exports.DYNAMIC_DATE_OPERATORS = exports.OperatorsByValue = exports.OperatorType = void 0;
+exports.isValueRequired = isValueRequired;
+exports.isDateOperator = isDateOperator;
+exports.availableOperatorsForColumn = availableOperatorsForColumn;
+exports.calculateDateRange = calculateDateRange;
 const moment_1 = __importDefault(require("moment"));
 exports.OperatorType = {
     Empty: {
@@ -454,11 +458,9 @@ const SYSTEM_COLUMNS = {
 function isValueRequired(operator) {
     return !NO_VALUE_OPERATORS.find(o => o.name === operator);
 }
-exports.isValueRequired = isValueRequired;
 function isDateOperator(operator) {
     return DATE_OPERATORS.find(o => o.name === operator);
 }
-exports.isDateOperator = isDateOperator;
 function availableOperatorsForColumn(column) {
     const operators = [];
     if (column == null) {
@@ -542,7 +544,6 @@ function availableOperatorsForColumn(column) {
     }
     return operators;
 }
-exports.availableOperatorsForColumn = availableOperatorsForColumn;
 function calculateDateRange(column, operator, value, now) {
     now = (0, moment_1.default)(now || new Date()).clone().startOf('day');
     const date1 = now.clone();
@@ -616,5 +617,4 @@ function calculateDateRange(column, operator, value, now) {
             return null;
     }
 }
-exports.calculateDateRange = calculateDateRange;
 //# sourceMappingURL=operator.js.map

@@ -124,9 +124,7 @@ export default class Converter {
             ctes: any;
         };
     };
-    toSchemaAST(query: any, { schemaOnly }?: {
-        schemaOnly: any;
-    }): {
+    toSchemaAST(query: any, { schemaOnly }?: {}): {
         SelectStmt: {
             targetList: any;
             fromClause: any;
@@ -757,7 +755,7 @@ export default class Converter {
             val: any;
         };
     } | null;
-    GetDate: (dateString: any, options: any) => moment.Moment;
+    GetDate: (dateString: any, options: any) => any;
     ConvertDateValue: (expression: any, date: any) => any;
     ConvertToText: (column: any) => {
         ColumnRef: {
@@ -771,4 +769,3 @@ export default class Converter {
     };
     IsValidRegExp: (string: any) => boolean;
 }
-import moment from 'moment-timezone';

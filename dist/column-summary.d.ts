@@ -6,7 +6,7 @@ export default class ColumnSummary {
     get field(): any;
     get column(): any;
     get columnName(): any;
-    set aggregate(arg: any);
+    set aggregate(aggregate: any);
     get aggregate(): any;
     availableAggregates(): any[];
 }

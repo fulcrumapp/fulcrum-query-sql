@@ -8,7 +8,7 @@ export class Condition {
     _type: any;
     _schema: any;
     _expressions: any;
-    set type(arg: any);
+    set type(type: any);
     get type(): any;
     get expressions(): any;
     addEmptyCondition(): void;
