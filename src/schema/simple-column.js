@@ -68,8 +68,10 @@ export default class SimpleColumn extends Column {
 
   valueFrom(object) {
     if (this.attributeName === 'recordKey') {
-      console.log('valueFrom called on SimpleColumn', this.attributeName, this._accessor, object);
-      console.log("Get the value:", object[this.attributeName], object.recordKey, object._recordKey);
+      return object._recordKey;
+    }
+    if (this.attributeName === 'recordSequence') {
+      return object._recordSequence;
     }
     return this._accessor(object);
   }
