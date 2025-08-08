@@ -57,7 +57,10 @@ class SimpleColumn extends column_1.default {
         return this._attributeName;
     }
     valueFrom(object) {
-        console.log('valueFrom called on SimpleColumn', this.attributeName, this._accessor, object);
+        if (this.attributeName === 'recordKey') {
+            console.log('valueFrom called on SimpleColumn', this.attributeName, this._accessor, object);
+            console.log("Get the value:", object[this.attributeName], object.recordKey, object._recordKey);
+        }
         return this._accessor(object);
     }
     exportValue(object, options = {}) {
