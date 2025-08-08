@@ -67,6 +67,7 @@ export default class SimpleColumn extends Column {
   }
 
   valueFrom(object) {
+    console.log('valueFrom called on SimpleColumn', this._accessor, object);
     return this._accessor(object);
   }
 

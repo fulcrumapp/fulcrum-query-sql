@@ -322,6 +322,9 @@ class Query {
                 joinedColumns.push((0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)(alias + '.rrule'), 'rrule'));
             }
         }
+        if (this.schema.recordKeyColumns) {
+            console.log("Of course there are record key columns", this.schema.recordKeyColumns);
+        }
         if (this.repeatableKey) {
             return [
                 (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_record_status'), 'record_status'),
