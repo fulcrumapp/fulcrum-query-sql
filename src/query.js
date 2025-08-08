@@ -408,6 +408,10 @@ export default class Query {
       }
     }
 
+    if (this.schema.recordKeyColumns) {
+      console.log("Of course there are record key columns", this.schema.recordKeyColumns);
+    }
+
     if (this.repeatableKey) {
       return [
         ResTarget(ColumnRef('_record_status'), 'record_status'),
