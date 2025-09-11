@@ -1,5 +1,3 @@
-import uuid from 'uuid';
-
 export function SelectStmt({targetList, fromClause, whereClause, sortClause, limitOffset, limitCount, groupClause, withClause}) {
   return {
     SelectStmt: {
@@ -18,7 +16,8 @@ export function SelectStmt({targetList, fromClause, whereClause, sortClause, lim
 
 export function StringValue(value) {
   let str = value != null ? value.toString() : null;
-  if (!uuid.validate(str) && !isNaN(Number(str[0]))) {
+  const isUUID = str?.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+  if (!isUUID && !isNaN(Number(str[0]))) {
     str = `'${str}'`;
   }
   return {
