@@ -19,7 +19,7 @@ export function StringValue(value) {
   const isUUID = str?.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
   if (!isUUID && !isNaN(Number(str[0]))) {
     console.log('not a UUID and starts with number', str);
-    str = `'${str}'`;
+    str = `""${str}""`;
     console.log('converted to', str);
   }
   return {
