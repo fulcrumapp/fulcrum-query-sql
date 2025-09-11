@@ -31,11 +31,12 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@fulcrumapp/pg-query-deparser": "^0.0.4",
     "array-move": "^1.0.0",
     "lodash": "^4.16.2",
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.11",
-    "@fulcrumapp/pg-query-deparser": "^0.0.4"
+    "uuid": "^13.0.0"
   },
   "keywords": [
     "fulcrum"

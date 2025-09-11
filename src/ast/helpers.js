@@ -1,3 +1,5 @@
+import { validate } from 'uuid';
+
 export function SelectStmt({targetList, fromClause, whereClause, sortClause, limitOffset, limitCount, groupClause, withClause}) {
   return {
     SelectStmt: {
@@ -16,7 +18,7 @@ export function SelectStmt({targetList, fromClause, whereClause, sortClause, lim
 
 export function StringValue(value) {
   let str = value != null ? value.toString() : null;
-  if (!isNaN(Number(str[0]))) {
+  if (!validate(str) && !isNaN(Number(str[0]))) {
     str = `'${str}'`;
   }
   return {
