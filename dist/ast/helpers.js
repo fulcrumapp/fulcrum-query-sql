@@ -1,7 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CoalesceExpr = exports.SubLink = exports.RangeFunction = exports.CommonTableExpr = exports.WithClause = exports.NullTest = exports.SortBy = exports.AArrayExpr = exports.RangeSubselect = exports.AExpr = exports.BooleanTest = exports.BoolExpr = exports.AStar = exports.AConst = exports.JoinExpr = exports.TypeName = exports.TypeCast = exports.ColumnRef = exports.WindowDef = exports.FuncCall = exports.ResTarget = exports.RangeVar = exports.Alias = exports.FloatValue = exports.IntegerValue = exports.StringValue = exports.SelectStmt = void 0;
-const uuid_1 = require("uuid");
+const uuid_1 = __importDefault(require("uuid"));
 function SelectStmt({ targetList, fromClause, whereClause, sortClause, limitOffset, limitCount, groupClause, withClause }) {
     return {
         SelectStmt: {
@@ -20,7 +23,7 @@ function SelectStmt({ targetList, fromClause, whereClause, sortClause, limitOffs
 exports.SelectStmt = SelectStmt;
 function StringValue(value) {
     let str = value != null ? value.toString() : null;
-    if (!(0, uuid_1.validate)(str) && !isNaN(Number(str[0]))) {
+    if (!uuid_1.default.validate(str) && !isNaN(Number(str[0]))) {
         str = `'${str}'`;
     }
     return {
