@@ -18,9 +18,13 @@ function SelectStmt({ targetList, fromClause, whereClause, sortClause, limitOffs
 }
 exports.SelectStmt = SelectStmt;
 function StringValue(value) {
+    let str = value != null ? value.toString() : null;
+    if (!isNaN(Number(str[0]))) {
+        str = `'${str}'`;
+    }
     return {
         String: {
-            str: value != null ? value.toString() : null
+            str,
         }
     };
 }

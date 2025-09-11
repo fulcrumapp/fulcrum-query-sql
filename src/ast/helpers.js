@@ -16,7 +16,7 @@ export function SelectStmt({targetList, fromClause, whereClause, sortClause, lim
 
 export function StringValue(value) {
   let str = value != null ? value.toString() : null;
-  if (str[0] === '"') {
+  if (!isNaN(Number(str[0]))) {
     str = `'${str}'`;
   }
   return {
