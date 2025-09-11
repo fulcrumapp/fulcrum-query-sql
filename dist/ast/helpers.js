@@ -21,7 +21,7 @@ function StringValue(value) {
     let str = value != null ? value.toString() : null;
     const isUUID = str === null || str === void 0 ? void 0 : str.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
     if (!isUUID && !isNaN(Number(str[0]))) {
-        str = `'${str}'`;
+        str = `"${str}"`;
     }
     return {
         String: {
