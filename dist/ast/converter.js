@@ -622,7 +622,9 @@ class Converter {
         systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
         for (const item of query.columnSettings.columns) {
             if (item.hasFilter) {
+                console.log('item has filter');
                 const expression = this.createExpressionForColumnFilter(item.filter, options);
+                console.log('expression from item having filter', expression);
                 if (expression) {
                     systemParts.push(expression);
                 }
@@ -649,6 +651,7 @@ class Converter {
                 }
             }
             if (item.expression.isValid) {
+                console.log('item has expression and is valid', item.expression);
                 systemParts.push(this.nodeForExpression(item.expression, options));
             }
             if (item.range.isValid) {
@@ -656,6 +659,7 @@ class Converter {
             }
         }
         if (options.expressions) {
+            console.log('options has expressions', options.expressions);
             systemParts.push.apply(systemParts, options.expressions);
         }
         const expressions = systemParts.filter(o => o != null);
@@ -663,6 +667,7 @@ class Converter {
             return (0, helpers_1.BoolExpr)(0, [filterNode, ...expressions]);
         }
         else if (expressions.length) {
+            console.log("no filter node, but have expressions", expressions);
             return (0, helpers_1.BoolExpr)(0, [...expressions]);
         }
         return filterNode;
