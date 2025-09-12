@@ -712,6 +712,15 @@ export default class Converter {
     return AExpr(0, '&&', ColumnRef(columnName), rhs);
   }
 
+  checkDataname(value) {
+    // dataname values can only contain letters, numbers, and underscores
+    let str = value != null ? value.toString() : null;
+    const isUUID = str?.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+    if (!isUUID && !isNaN(Number(str[0]))) {
+      console.log('not a UUID and starts with number', str);
+    }
+  }
+
   escapeLikePercent(value) {
     return value.replace(/\\/g, '\\\\').replace(/\%/g, '\\%').replace(/_/g, '\\_%');
   }
@@ -850,8 +859,11 @@ export default class Converter {
 
   nodeForExpression(expression, options) {
     if (expression.expressions) {
+      console.log('expression has expressions, treating as condition', expression);
       return this.nodeForCondition(expression, options);
     }
+
+    console.log('node for expression', expression, options);
 
     if (expression === options.except) {
       return null;

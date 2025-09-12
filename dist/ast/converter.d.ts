@@ -240,6 +240,7 @@ export default class Converter {
             rexpr: any;
         };
     };
+    checkDataname(value: any): void;
     escapeLikePercent(value: any): any;
     searchFilter(query: any, search: any): {
         BoolExpr: {

@@ -795,6 +795,14 @@ class Converter {
         const rhs = (0, helpers_1.FuncCall)('st_makeenvelope', args);
         return (0, helpers_1.AExpr)(0, '&&', (0, helpers_1.ColumnRef)(columnName), rhs);
     }
+    checkDataname(value) {
+        // dataname values can only contain letters, numbers, and underscores
+        let str = value != null ? value.toString() : null;
+        const isUUID = str === null || str === void 0 ? void 0 : str.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+        if (!isUUID && !isNaN(Number(str[0]))) {
+            console.log('not a UUID and starts with number', str);
+        }
+    }
     escapeLikePercent(value) {
         return value.replace(/\\/g, '\\\\').replace(/\%/g, '\\%').replace(/_/g, '\\_%');
     }
@@ -905,8 +913,10 @@ class Converter {
     }
     nodeForExpression(expression, options) {
         if (expression.expressions) {
+            console.log('expression has expressions, treating as condition', expression);
             return this.nodeForCondition(expression, options);
         }
+        console.log('node for expression', expression, options);
         if (expression === options.except) {
             return null;
         }
