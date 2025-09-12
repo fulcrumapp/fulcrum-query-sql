@@ -503,7 +503,6 @@ export default class Converter {
 
     for (const item of query.columnSettings.columns) {
       if (item.hasFilter) {
-        console.log('item has filter');
         const expression = this.createExpressionForColumnFilter(item.filter, options);
         console.log('expression from item having filter', expression);
         if (expression) {
@@ -538,7 +537,6 @@ export default class Converter {
       }
 
       if (item.expression.isValid) {
-        console.log('item has expression and is valid', item.expression);
         systemParts.push(this.nodeForExpression(item.expression, options));
       }
 
@@ -548,7 +546,6 @@ export default class Converter {
     }
 
     if (options.expressions) {
-      console.log('options has expressions', options.expressions);
       systemParts.push.apply(systemParts, options.expressions);
     }
 
@@ -557,7 +554,6 @@ export default class Converter {
     if (filterNode && expressions.length) {
       return BoolExpr(0, [ filterNode, ...expressions ]);
     } else if (expressions.length) {
-      console.log("no filter node, but have expressions", expressions);
       return BoolExpr(0, [ ...expressions ]);
     }
 
@@ -1039,6 +1035,7 @@ export default class Converter {
   }
 
   InConverter = (expression) => {
+    console.log('in converter', expression);
     return this.In(expression.column, expression.arrayValue);
   }
 
@@ -1195,6 +1192,7 @@ export default class Converter {
     let expression = null;
 
     if (inValues.length) {
+      console.log('in values', inValues);
       expression = AExpr(6, '=', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
 
       if (hasNull) {

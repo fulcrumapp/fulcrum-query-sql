@@ -91,6 +91,7 @@ class Converter {
             return this.NotBetween(expression.column, value1, value2);
         };
         this.InConverter = (expression) => {
+            console.log('in converter', expression);
             return this.In(expression.column, expression.arrayValue);
         };
         this.NotInConverter = (expression) => {
@@ -200,6 +201,7 @@ class Converter {
             });
             let expression = null;
             if (inValues.length) {
+                console.log('in values', inValues);
                 expression = (0, helpers_1.AExpr)(6, '=', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
                 if (hasNull) {
                     expression = (0, helpers_1.BoolExpr)(1, [(0, helpers_1.NullTest)(0, columnRef(column)), expression]);
@@ -622,7 +624,6 @@ class Converter {
         systemParts.push(this.createExpressionForColumnFilter(query.changesetFilter, options));
         for (const item of query.columnSettings.columns) {
             if (item.hasFilter) {
-                console.log('item has filter');
                 const expression = this.createExpressionForColumnFilter(item.filter, options);
                 console.log('expression from item having filter', expression);
                 if (expression) {
@@ -651,7 +652,6 @@ class Converter {
                 }
             }
             if (item.expression.isValid) {
-                console.log('item has expression and is valid', item.expression);
                 systemParts.push(this.nodeForExpression(item.expression, options));
             }
             if (item.range.isValid) {
@@ -659,7 +659,6 @@ class Converter {
             }
         }
         if (options.expressions) {
-            console.log('options has expressions', options.expressions);
             systemParts.push.apply(systemParts, options.expressions);
         }
         const expressions = systemParts.filter(o => o != null);
@@ -667,7 +666,6 @@ class Converter {
             return (0, helpers_1.BoolExpr)(0, [filterNode, ...expressions]);
         }
         else if (expressions.length) {
-            console.log("no filter node, but have expressions", expressions);
             return (0, helpers_1.BoolExpr)(0, [...expressions]);
         }
         return filterNode;
