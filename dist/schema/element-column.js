@@ -87,6 +87,7 @@ class ElementColumn extends column_1.default {
         if (this.element.isPhotoElement ||
             this.element.isVideoElement ||
             this.element.isAudioElement ||
+            this.element.isSketchElement ||
             this.element.isSignatureElement ||
             this.element.isAttachmentElement ||
             this.element.isRepeatableElement) {
