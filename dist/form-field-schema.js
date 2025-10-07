@@ -61,6 +61,9 @@ class FormFieldSchema {
                 this.addElementColumn(element, 'captions', 'array');
                 this.addElementColumn(element, 'urls', 'array');
             }
+            if (this.fullSchema && element.isSketchElement) {
+                this.addElementColumn(element, 'urls', 'array');
+            }
             if (this.fullSchema && element.isSignatureElement) {
                 this.addElementColumn(element, 'timestamp');
             }

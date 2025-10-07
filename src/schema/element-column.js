@@ -106,6 +106,7 @@ export default class ElementColumn extends Column {
     if (this.element.isPhotoElement ||
         this.element.isVideoElement ||
         this.element.isAudioElement ||
+        this.element.isSketchElement ||
         this.element.isSignatureElement ||
         this.element.isAttachmentElement ||
         this.element.isRepeatableElement) {
