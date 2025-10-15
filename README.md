@@ -30,8 +30,10 @@ Reach out to your local engineering manager for this step.
 - In your other repo (most likely `fulcrum-components`)
   - Run `yalc add fulcrum-query-sql`
   - Rebuild the lock file by running `./yarn` if the version or commit has changed.
+  - Run `yalc remove fulcrum-query-sql` when done testing in that repository.
 - Re-skaffold or let skaffold sync and the changes will now be visible for debugging. Skaffold may sync twice and the first attempt may produce an error because the lock file has not yet been updated.
 - Run `yalc publish --push` for subsequent changes and to push these changes automatically to any applications where the `yalc` version has been insalled. You still need to run `./yarn` if the version or commit has changed.
+- You can also run `yalc publish` from this repository and `yalc update fulcrum-query-sql` from the other repository.
 
 ### Debugging troubleshooting
 
