@@ -26,12 +26,14 @@ Reach out to your local engineering manager for this step.
 
 - Create a branch
 - Add logs or a `debugger` in fulcrum-query-sql where applicable
-- Build the package, commit and push the changes
+- Run `yalc publish`
 - In your other repo (most likely `fulcrum-components`)
-  - In `package.json`, point your `fulcrum-query-sql` npm package to that branch in this format
-  - `'fulcrum-query-sql': 'github:fulcrumapp/fulcrum-query-sql#BRANCH-NAME'`
-- Rebuild the lock file by running `./yarn` (Do NOT delete the existing `yarn.lock`)
-- Re-skaffold and the changes will now be visible for debugging
+  - Run `yalc add fulcrum-query-sql`
+  - Rebuild the lock file by running `./yarn` if the version or commit has changed.
+  - Run `yalc remove fulcrum-query-sql` when done testing in that repository.
+- Re-skaffold or let skaffold sync and the changes will now be visible for debugging. Skaffold may sync twice and the first attempt may produce an error because the lock file has not yet been updated.
+- Run `yalc publish --push` for subsequent changes and to push these changes automatically to any applications where the `yalc` version has been installed. You still need to run `./yarn` if the version or commit has changed.
+- You can also run `yalc publish` from this repository and `yalc update fulcrum-query-sql` from the other repository.
 
 ### Debugging troubleshooting
 
