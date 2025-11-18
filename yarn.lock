@@ -1715,7 +1715,7 @@ fsevents@^2.3.2:
 
 "fulcrum-core@https://github.com/fulcrumapp/fulcrum-core#bug/FLCRM-19150-fix-null-statusfield-bug":
   version "1.5.5"
-  resolved "https://github.com/fulcrumapp/fulcrum-core#4c643d196365cafe7bdcca2be2a354a961674d39"
+  resolved "https://github.com/fulcrumapp/fulcrum-core#03bcbf198e6c82411787c5ee0c6bba6f1634232e"
   dependencies:
     async "^3.2.4"
     lodash "^4.17.21"
