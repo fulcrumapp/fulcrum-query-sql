@@ -515,7 +515,6 @@ export default class Converter {
           const { element } = item.column;
           const { _attributes } = element;
           const formId = element?.form?.id || _attributes.form_id;
-          
           systemParts.push(SubLink(
             0,
             SelectStmt({
