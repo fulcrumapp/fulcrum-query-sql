@@ -346,6 +346,66 @@ describe('Empty converter', () => {
   });
 });
 
+describe('NotIn converter', () => {
+  const formJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    name: 'TestForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'TextField',
+        key: '3bd0',
+        label: 'Text',
+        data_name: 'text',
+      },
+    ],
+  };
+
+  const rawColumns = {
+    form: [
+      {
+        field: '3bd0',
+        name: 'text',
+        type: 'string',
+      },
+    ],
+    repeatables: {},
+  };
+
+  const schema = new FormSchema(new Form(formJson), rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+
+  it('includes blank (NULL) values when excluding non-blank values', () => {
+    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: ['A'] }, schema);
+
+    const expr = new Converter().NotInConverter(expression);
+    const sql = new Deparse().deparse(expr);
+
+    expect(sql).toEqual('("text" IS NULL OR "text" NOT IN (\'A\'))');
+  });
+
+  it('excludes blank (NULL) values when blank is selected along with other values', () => {
+    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: ['A', null] }, schema);
+
+    const expr = new Converter().NotInConverter(expression);
+    const sql = new Deparse().deparse(expr);
+
+    expect(sql).toEqual('("text" IS NOT NULL AND "text" NOT IN (\'A\'))');
+  });
+
+  it('excludes only blank (NULL) values when blank is the only selected value', () => {
+    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: [null] }, schema);
+
+    const expr = new Converter().NotInConverter(expression);
+    const sql = new Deparse().deparse(expr);
+
+    expect(sql).toEqual('"text" IS NOT NULL');
+  });
+});
+
 describe('WhereClause converter', () => {
   describe('given a record link column to search on', () => {
     it('generates an exists subquery', () => {

@@ -515,7 +515,7 @@ export default class Converter {
           const { element } = item.column;
           const { _attributes } = element;
           const formId = element?.form?.id || _attributes.form_id;
-
+          
           systemParts.push(SubLink(
             0,
             SelectStmt({
@@ -1209,7 +1209,9 @@ export default class Converter {
       expression = AExpr(6, '<>', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
 
       if (hasNull) {
-        expression = BoolExpr(1, [ NullTest(1, columnRef(column)), expression ]);
+        expression = BoolExpr(0, [ NullTest(1, columnRef(column)), expression ]);
+      } else {
+        expression = BoolExpr(1, [ NullTest(0, columnRef(column)), expression ]);
       }
     } else if (hasNull) {
       expression = NullTest(1, columnRef(column));
