@@ -472,17 +472,6 @@ export default class Converter {
             args: any;
         };
     } | {
-        A_Expr: {
-            kind: any;
-            name: {
-                String: {
-                    str: any;
-                };
-            }[];
-            lexpr: any;
-            rexpr: any;
-        };
-    } | {
         NullTest: {
             arg: any;
             nulltesttype: any;
@@ -722,17 +711,6 @@ export default class Converter {
         BoolExpr: {
             boolop: any;
             args: any;
-        };
-    } | {
-        A_Expr: {
-            kind: any;
-            name: {
-                String: {
-                    str: any;
-                };
-            }[];
-            lexpr: any;
-            rexpr: any;
         };
     } | {
         NullTest: {

@@ -225,7 +225,10 @@ class Converter {
             if (inValues.length) {
                 expression = (0, helpers_1.AExpr)(6, '<>', columnRef(column), inValues.map(v => this.ConstValue(column, v)));
                 if (hasNull) {
-                    expression = (0, helpers_1.BoolExpr)(1, [(0, helpers_1.NullTest)(1, columnRef(column)), expression]);
+                    expression = (0, helpers_1.BoolExpr)(0, [(0, helpers_1.NullTest)(1, columnRef(column)), expression]);
+                }
+                else {
+                    expression = (0, helpers_1.BoolExpr)(1, [(0, helpers_1.NullTest)(0, columnRef(column)), expression]);
                 }
             }
             else if (hasNull) {
