@@ -1,6 +1,6 @@
 {
   "name": "@fulcrumapp/query-sql",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "Fulcrum Query SQL Utilities",
   "homepage": "http://github.com/fulcrumapp/fulcrum-query-sql",
   "type": "module",
@@ -17,8 +17,8 @@
     "dist"
   ],
   "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "prepublishOnly": "yarn run clean && yarn run build",
     "lint": "eslint src/* src/**/*",
     "build": "tsc",
@@ -38,12 +38,11 @@
     "@fulcrumapp/fulcrum-core": "^1.5.3",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
-    "@vitest/coverage-v8": "^4.1.5",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.0",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.5"
+    "jest": "^30.0.0",
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "@fulcrumapp/pg-query-deparser": "^0.0.4",
