@@ -1,4 +1,4 @@
-import FormFieldSchema from './form-field-schema';
+import FormFieldSchema from './form-field-schema.js';
 
 const SYSTEM_COLUMNS = [
   '_child_record_id',

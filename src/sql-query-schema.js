@@ -1,4 +1,4 @@
-import FormFieldSchema from './form-field-schema';
+import FormFieldSchema from './form-field-schema.js';
 
 export default class SQLQuerySchema extends FormFieldSchema {
   constructor(rawColumns, tableName) {

@@ -1,9 +1,9 @@
-import RepeatableSchema from './repeatable-schema';
-import FormFieldSchema from './form-field-schema';
+import RepeatableSchema from './repeatable-schema.js';
+import FormFieldSchema from './form-field-schema.js';
 import { ColumnRef,
   BoolExpr,
   BooleanTest,
-  AExpr } from './ast/helpers';
+  AExpr } from './ast/helpers.js';
 
 const SYSTEM_COLUMNS = [
   '_record_id',
