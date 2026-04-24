@@ -1,4 +1,4 @@
-import { Form } from 'fulcrum-core';
+import { Form } from '@fulcrumapp/fulcrum-core';
 import Deparse from '@fulcrumapp/pg-query-deparser';
 import moment from 'moment-timezone';
 import Converter from '../converter';

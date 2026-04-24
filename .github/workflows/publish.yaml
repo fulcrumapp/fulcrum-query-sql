@@ -1,0 +1,44 @@
+name: 📦 Publish
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    name: 📦 Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://npm.pkg.github.com
+          scope: "@fulcrumapp"
+          cache: yarn
+
+      - name: 📥 Install Dependencies
+        run: yarn install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔎 Type Check
+        run: yarn run typecheck
+
+      - name: ⚡ Run Tests
+        run: yarn run test
+
+      - name: 🏗️ Build
+        run: yarn run build
+
+      - name: 🚀 Publish
+        run: yarn publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

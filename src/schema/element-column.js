@@ -1,4 +1,4 @@
-import { StatusValue, Record } from 'fulcrum-core';
+import { StatusValue, Record } from '@fulcrumapp/fulcrum-core';
 import Column from './column';
 
 export default class ElementColumn extends Column {
