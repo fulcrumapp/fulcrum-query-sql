@@ -41,7 +41,8 @@ const SYSTEM_COLUMNS = [
     '_created_duration',
     '_updated_duration',
     '_edited_duration',
-    '_record_series_id'
+    '_record_series_id',
+    '_gps_device_capture'
 ];
 class FormSchema extends form_field_schema_1.default {
     constructor(form, rawColumns, repeatableColumns, { fullSchema = false }) {
@@ -125,6 +126,7 @@ class FormSchema extends form_field_schema_1.default {
             this.addSystemColumn('Altitude', 'altitude', '_altitude', 'double');
             this.addSystemColumn('Accuracy', 'horizontalAccuracy', '_horizontal_accuracy', 'double');
             this.addSystemColumn('Changeset', 'changesetID', '_changeset_id', 'string');
+            this.addSystemColumn('GPS Device Capture', 'gpsDeviceCapture', '_gps_device_capture', 'string');
             this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
             this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
             this.addSystemColumn('Edited Duration', 'editedDuration', '_edited_duration', 'integer');

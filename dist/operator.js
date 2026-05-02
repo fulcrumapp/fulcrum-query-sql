@@ -448,6 +448,7 @@ const SYSTEM_COLUMNS = {
     _created_duration: NUMERIC_OPERATORS,
     _updated_duration: NUMERIC_OPERATORS,
     _edited_duration: NUMERIC_OPERATORS,
+    _gps_device_capture: TEXTUAL_OPERATORS,
     _record_key: TEXTUAL_OPERATORS,
     _record_sequence: NUMERIC_OPERATORS
 };

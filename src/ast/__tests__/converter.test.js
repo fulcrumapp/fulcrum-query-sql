@@ -11,6 +11,7 @@ import {
 } from '../helpers';
 import Query from '../../query';
 import { Expression } from '../../expression';
+import { availableOperatorsForColumn } from '../../operator';
 
 describe('NotEmpty converter', () => {
   describe('given a non-array', () => {
@@ -773,6 +774,79 @@ describe('BinaryConverter', () => {
           }
         }
       });
+    });
+  });
+});
+
+describe('gps_device_capture column', () => {
+  const formJson = {
+    id: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+    name: 'GPSForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'TextField',
+        key: 'f001',
+        label: 'Name',
+        data_name: 'name',
+      },
+    ],
+  };
+
+  const rawColumns = {
+    form: [
+      { field: 'f001', name: 'name', type: 'string' },
+      { name: '_gps_device_capture', type: 'string' },
+    ],
+    repeatables: {},
+  };
+
+  describe('FormSchema', () => {
+    it('includes _gps_device_capture in fullSchema columns', () => {
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+      const col = schema.columns.find(c => c.id === '_gps_device_capture');
+
+      expect(col).toBeDefined();
+      expect(col.name).toBe('GPS Device Capture');
+      expect(col.attributeName).toBe('gpsDeviceCapture');
+    });
+
+    it('does not include _gps_device_capture when fullSchema is false', () => {
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: false });
+      const col = schema.columns.find(c => c.id === '_gps_device_capture');
+
+      expect(col).toBeUndefined();
+    });
+  });
+
+  describe('Query targetList', () => {
+    it('includes gps_device_capture in the SQL target list', () => {
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+      const query = new Query({ form, schema, full: true });
+      const sql = query.toSQL({ applySort: false });
+
+      expect(sql).toContain('"_gps_device_capture" AS "gps_device_capture"');
+    });
+  });
+
+  describe('operators', () => {
+    it('returns textual operators for _gps_device_capture', () => {
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+      const col = schema.columns.find(c => c.id === '_gps_device_capture');
+      const ops = availableOperatorsForColumn(col);
+
+      expect(ops.length).toBeGreaterThan(0);
+      expect(ops.find(o => o.name === 'is_empty')).toBeDefined();
+      expect(ops.find(o => o.name === 'is_not_empty')).toBeDefined();
+      expect(ops.find(o => o.name === 'text_contain')).toBeDefined();
     });
   });
 });
