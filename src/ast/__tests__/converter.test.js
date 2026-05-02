@@ -837,16 +837,26 @@ describe('gps_device_capture column', () => {
   });
 
   describe('operators', () => {
-    it('returns textual operators for _gps_device_capture', () => {
+    it('returns only empty/not-empty operators for _gps_device_capture (JSONB)', () => {
       const form = new Form(formJson);
       const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
       const col = schema.columns.find(c => c.id === '_gps_device_capture');
       const ops = availableOperatorsForColumn(col);
 
-      expect(ops.length).toBeGreaterThan(0);
+      expect(ops).toHaveLength(2);
       expect(ops.find(o => o.name === 'is_empty')).toBeDefined();
       expect(ops.find(o => o.name === 'is_not_empty')).toBeDefined();
-      expect(ops.find(o => o.name === 'text_contain')).toBeDefined();
+    });
+
+    it('does not include text operators that would fail on JSONB', () => {
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+      const col = schema.columns.find(c => c.id === '_gps_device_capture');
+      const ops = availableOperatorsForColumn(col);
+
+      expect(ops.find(o => o.name === 'text_contain')).toBeUndefined();
+      expect(ops.find(o => o.name === 'text_match')).toBeUndefined();
+      expect(ops.find(o => o.name === 'in')).toBeUndefined();
     });
   });
 });
