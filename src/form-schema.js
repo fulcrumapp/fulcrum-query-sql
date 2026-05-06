@@ -40,7 +40,8 @@ const SYSTEM_COLUMNS = [
   '_created_duration',
   '_updated_duration',
   '_edited_duration',
-  '_record_series_id'
+  '_record_series_id',
+  '_gps_device_capture'
 ];
 
 export default class FormSchema extends FormFieldSchema {
@@ -174,6 +175,10 @@ export default class FormSchema extends FormFieldSchema {
       this.addSystemColumn('Altitude', 'altitude', '_altitude', 'double');
       this.addSystemColumn('Accuracy', 'horizontalAccuracy', '_horizontal_accuracy', 'double');
       this.addSystemColumn('Changeset', 'changesetID', '_changeset_id', 'string');
+
+      // JSONB in Postgres but typed as 'string' here — no jsonb type exists in this schema system.
+      // Only Empty/NotEmpty operators are allowed (see MEDIA_OPERATORS in operator.js).
+      this.addSystemColumn('GPS Device Capture', 'gpsDeviceCapture', '_gps_device_capture', 'string');
 
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
