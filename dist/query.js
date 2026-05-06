@@ -386,6 +386,7 @@ class Query {
             (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_course'), 'course'),
             (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_horizontal_accuracy'), 'horizontal_accuracy'),
             (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_vertical_accuracy'), 'vertical_accuracy'),
+            (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_gps_device_capture'), 'gps_device_capture'),
             (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_edited_duration'), 'edited_duration'),
             (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_updated_duration'), 'updated_duration'),
             (0, helpers_1.ResTarget)((0, helpers_1.ColumnRef)('_created_duration'), 'created_duration'),
