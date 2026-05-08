@@ -1,12 +1,9 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-module.exports = {
-  preset: 'ts-jest/presets/js-with-ts',
-  roots: [ '<rootDir>/src' ],
+/** @type {import('jest').Config} */
+export default {
   testEnvironment: 'node',
-  collectCoverage: true,
-  collectCoverageFrom: [
-    'src/**/*.js',
-    'src/**/*.ts',
-  ],
-  coverageDirectory: 'coverage',
+  testMatch: ['**/src/**/*.test.{js,ts}'],
+  transform: {},
+  coverageProvider: 'v8',
+  collectCoverageFrom: ['src/**/*.{js,ts}'],
+  coverageReporters: ['text', 'lcov'],
 };

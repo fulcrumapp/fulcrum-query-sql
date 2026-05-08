@@ -1,4 +1,4 @@
-import { Sort } from './sort';
+import { Sort } from './sort.js';
 
 export default class SortExpressions {
   constructor(sorts, schema) {

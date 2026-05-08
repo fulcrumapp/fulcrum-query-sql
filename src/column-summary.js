@@ -1,4 +1,4 @@
-import { availableAggregatesForColumn } from './aggregate';
+import { availableAggregatesForColumn } from './aggregate.js';
 
 export default class ColumnSummary {
   constructor(attrs, schema) {

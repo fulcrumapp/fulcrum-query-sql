@@ -1,7 +1,7 @@
-import { Expression } from './expression';
-import { OperatorType } from './operator';
-import ColumnFilter from './column-filter';
-import ColumnSummary from './column-summary';
+import { Expression } from './expression.js';
+import { OperatorType } from './operator.js';
+import ColumnFilter from './column-filter.js';
+import ColumnSummary from './column-summary.js';
 
 export default class ColumnSettingsItem {
   constructor(attrs, schema) {

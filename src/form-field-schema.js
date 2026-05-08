@@ -1,5 +1,5 @@
-import ElementColumn from './schema/element-column';
-import SimpleColumn from './schema/simple-column';
+import ElementColumn from './schema/element-column.js';
+import SimpleColumn from './schema/simple-column.js';
 
 export default class FormFieldSchema {
   constructor({fullSchema = false}) {

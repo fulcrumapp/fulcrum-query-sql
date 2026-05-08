@@ -1,5 +1,5 @@
-import Column from './column';
-import Join from './join';
+import Column from './column.js';
+import Join from './join.js';
 
 export default class SimpleColumn extends Column {
   constructor({name, attributeName, columnName, type = null, accessor = null, join = null, sql = null, index}) {

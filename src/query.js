@@ -1,12 +1,12 @@
-import { Condition } from './condition';
-import { Expression } from './expression';
-import SortExpressions from './sort-expressions';
-import Converter from './ast/converter';
-import ColumnFilter from './column-filter';
+import { Condition } from './condition.js';
+import { Expression } from './expression.js';
+import SortExpressions from './sort-expressions.js';
+import Converter from './ast/converter.js';
+import ColumnFilter from './column-filter.js';
 import Deparse from '@fulcrumapp/pg-query-deparser';
-import QueryOptions from './query-options';
+import QueryOptions from './query-options.js';
 import _ from 'lodash';
-import ColumnSettings from './column-settings';
+import ColumnSettings from './column-settings.js';
 
 import { ResTarget,
          ColumnRef,
@@ -20,7 +20,7 @@ import { ResTarget,
          SelectStmt,
          SortBy,
          IntegerValue,
-         AStar } from './ast/helpers';
+         AStar } from './ast/helpers.js';
 
 export default class Query {
   constructor(attrs) {

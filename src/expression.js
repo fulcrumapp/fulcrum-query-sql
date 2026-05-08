@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
-import { availableOperatorsForColumn, isValueRequired, isDateOperator, OperatorsByValue } from './operator';
-import QueryOptions from './query-options';
+import { availableOperatorsForColumn, isValueRequired, isDateOperator, OperatorsByValue } from './operator.js';
+import QueryOptions from './query-options.js';
 
 export class Expression {
   constructor(attrs, schema) {

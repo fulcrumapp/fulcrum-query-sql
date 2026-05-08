@@ -11,18 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
 
       - name: ⬇️ Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: ⎔ Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: 📥 Install Dependencies
-        uses: bahmutov/npm-install@v1
+        run: yarn install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🔬 Lint
         run: yarn run lint || true
@@ -32,39 +34,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
 
       - name: ⬇️ Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: ⎔ Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
-      - name: 📥 Download Dependencies
-        uses: bahmutov/npm-install@v1
+      - name: 📥 Install Dependencies
+        run: yarn install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🔎 Type Check
         run: yarn run typecheck
 
-  vitest:
-    name: ⚡ Tests
+  jest:
+    name: 🃏 Tests
     runs-on: ubuntu-latest
     steps:
       - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
 
       - name: ⬇️ Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: ⎔ Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
-      - name: 📥 Download Dependencies
-        uses: bahmutov/npm-install@v1
+      - name: 📥 Install Dependencies
+        run: yarn install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: ⚡ Run Vitest
+      - name: 🃏 Run Jest
         run: yarn run test

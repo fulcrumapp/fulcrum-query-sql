@@ -1,5 +1,5 @@
 import arrayMove from 'array-move';
-import ColumnSettingsItem from './column-settings-item';
+import ColumnSettingsItem from './column-settings-item.js';
 
 export default class ColumnSettings {
   constructor(schema, settings) {

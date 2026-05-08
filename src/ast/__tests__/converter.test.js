@@ -1,17 +1,17 @@
-import { Form } from 'fulcrum-core';
+import { Form } from '@fulcrumapp/fulcrum-core';
 import Deparse from '@fulcrumapp/pg-query-deparser';
 import moment from 'moment-timezone';
-import Converter from '../converter';
-import FormSchema from '../../form-schema';
+import Converter from '../converter.js';
+import FormSchema from '../../form-schema.js';
 import {
   ColumnRef,
   BoolExpr,
   AExpr,
   BooleanTest,
-} from '../helpers';
-import Query from '../../query';
-import { Expression } from '../../expression';
-import { availableOperatorsForColumn } from '../../operator';
+} from '../helpers.js';
+import Query from '../../query.js';
+import { Expression } from '../../expression.js';
+import { availableOperatorsForColumn } from '../../operator.js';
 
 describe('NotEmpty converter', () => {
   describe('given a non-array', () => {
