@@ -264,7 +264,7 @@ export function RangeFunction(functions, alias) {
   };
 }
 
-const SUBLINK_TYPE_MAP = { 0: 'EXISTS_SUBLINK', 1: 'ALL_SUBLINK', 2: 'ANY_SUBLINK', 3: 'ROWCOMPARE_SUBLINK', 4: 'EXISTS_SUBLINK', 5: 'MULTIEXPR_SUBLINK', 6: 'ARRAY_SUBLINK', 7: 'CTE_SUBLINK' };
+const SUBLINK_TYPE_MAP = { 0: 'EXISTS_SUBLINK', 1: 'ALL_SUBLINK', 2: 'ANY_SUBLINK', 3: 'ROWCOMPARE_SUBLINK', 4: 'EXPR_SUBLINK', 5: 'MULTIEXPR_SUBLINK', 6: 'ARRAY_SUBLINK', 7: 'CTE_SUBLINK' };
 
 export function SubLink(type, subselect) {
   return {
