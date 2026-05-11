@@ -1,5 +1,5 @@
 import { Form } from '@fulcrumapp/fulcrum-core';
-import Deparse from '@fulcrumapp/pg-query-deparser';
+import { deparseSync } from 'pgsql-deparser';
 import moment from 'moment-timezone';
 import Converter from '../converter.js';
 import FormSchema from '../../form-schema.js';
@@ -12,6 +12,31 @@ import {
 import Query from '../../query.js';
 import { Expression } from '../../expression.js';
 import { availableOperatorsForColumn } from '../../operator.js';
+
+// Helper to deparse a single AST expression node using pgsql-deparser.
+// Wraps the expression in a SELECT statement, deparses, then strips the "SELECT " prefix.
+function deparseExpr(node) {
+  const tree = {
+    stmts: [{
+      stmt: {
+        SelectStmt: {
+          targetList: [{
+            ResTarget: { val: node }
+          }],
+          limitOption: 'LIMIT_OPTION_DEFAULT',
+          op: 'SETOP_NONE'
+        }
+      }
+    }]
+  };
+  const sql = deparseSync(tree);
+  return sql.replace(/^SELECT\s+/i, '').trim();
+}
+
+// Normalize SQL for comparison: collapse whitespace to single spaces
+function normalizeSQL(sql) {
+  return sql.replace(/\s+/g, ' ').trim();
+}
 
 describe('NotEmpty converter', () => {
   describe('given a non-array', () => {
@@ -50,10 +75,10 @@ describe('NotEmpty converter', () => {
 
       const expr = new Converter().NotEmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = deparseExpr(expr);
 
-      const expectSql = '"text" IS NOT NULL';
-      expect(sql).toEqual(expectSql);
+      const expectSql = 'text IS NOT NULL';
+      expect(normalizeSQL(sql)).toEqual(normalizeSQL(expectSql));
     });
   });
 
@@ -73,10 +98,8 @@ describe('ConstValue converter', () => {
     const expectedValue = (val) => (
       {
         A_Const: {
-          val: {
-            Float: {
-              str: val != null ? val.toString() : '',
-            }
+          fval: {
+            fval: val != null ? val.toString() : '',
           },
         },
       }
@@ -98,11 +121,13 @@ describe('ConstValue converter', () => {
       };
 
       it('correctly structures a ConstValue with a Float type', () => {
-        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(1753156800));
+        const expected = moment('2025-07-22').valueOf() / 1000;
+        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(expected));
       });
 
       it('correctly structures a ConstValue with a Float type when passed a date string with different formatting', () => {
-        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(1753156800));
+        const expected = moment('07/22/2025').valueOf() / 1000;
+        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(expected));
       });
 
       it('correctly structures a ConstValue with a Float type when passed a double value', () => {
@@ -153,10 +178,10 @@ describe('ConstValue converter', () => {
 
       const expr = new Converter().NotEmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = deparseExpr(expr);
 
-      const expectSql = '("photos_captions" IS NOT NULL AND ((length(array_to_string("photos_captions", \'\'))) > (0)))';
-      expect(sql).toEqual(expectSql);
+      const expectSql = 'photos_captions IS NOT NULL AND length(array_to_string(photos_captions, \'\')) > 0';
+      expect(normalizeSQL(sql)).toEqual(normalizeSQL(expectSql));
     });
   });
   describe('given media field except captions', () => {
@@ -200,10 +225,10 @@ describe('ConstValue converter', () => {
 
       const expr = new Converter().NotEmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = deparseExpr(expr);
 
-      const expectSql = '"photos_captions" IS NOT NULL';
-      expect(sql).toEqual(expectSql);
+      const expectSql = 'photos_captions IS NOT NULL';
+      expect(normalizeSQL(sql)).toEqual(normalizeSQL(expectSql));
     });
   });
 });
@@ -245,10 +270,10 @@ describe('Empty converter', () => {
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = deparseExpr(expr);
 
-      const expectSql = '"text" IS NULL';
-      expect(sql).toEqual(expectSql);
+      const expectSql = 'text IS NULL';
+      expect(normalizeSQL(sql)).toEqual(normalizeSQL(expectSql));
     });
   });
   describe('given media captions', () => {
@@ -292,10 +317,10 @@ describe('Empty converter', () => {
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = deparseExpr(expr);
 
-      const expectSql = '("photos_captions" IS NULL OR ((COALESCE(array_position("photos_captions", NULL), 0)) > (0)))';
-      expect(sql).toEqual(expectSql);
+      const expectSql = 'photos_captions IS NULL OR (COALESCE(array_position(photos_captions, NULL), 0)) > 0';
+      expect(normalizeSQL(sql)).toEqual(normalizeSQL(expectSql));
     });
   });
   describe('given media field except captions', () => {
@@ -339,10 +364,10 @@ describe('Empty converter', () => {
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = deparseExpr(expr);
 
-      const expectSql = '"photos_captions" IS NULL';
-      expect(sql).toEqual(expectSql);
+      const expectSql = 'photos_captions IS NULL';
+      expect(normalizeSQL(sql)).toEqual(normalizeSQL(expectSql));
     });
   });
 });
@@ -383,27 +408,27 @@ describe('NotIn converter', () => {
     const expression = new Expression({ field: '3bd0', operator: 'not_in', value: ['A'] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const sql = new Deparse().deparse(expr);
+    const sql = deparseExpr(expr);
 
-    expect(sql).toEqual('("text" IS NULL OR "text" NOT IN (\'A\'))');
+    expect(normalizeSQL(sql)).toEqual(normalizeSQL('text IS NULL OR text NOT IN (\'A\')'));
   });
 
   it('excludes blank (NULL) values when blank is selected along with other values', () => {
     const expression = new Expression({ field: '3bd0', operator: 'not_in', value: ['A', null] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const sql = new Deparse().deparse(expr);
+    const sql = deparseExpr(expr);
 
-    expect(sql).toEqual('("text" IS NOT NULL AND "text" NOT IN (\'A\'))');
+    expect(normalizeSQL(sql)).toEqual(normalizeSQL('text IS NOT NULL AND text NOT IN (\'A\')'));
   });
 
   it('excludes only blank (NULL) values when blank is the only selected value', () => {
     const expression = new Expression({ field: '3bd0', operator: 'not_in', value: [null] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const sql = new Deparse().deparse(expr);
+    const sql = deparseExpr(expr);
 
-    expect(sql).toEqual('"text" IS NOT NULL');
+    expect(normalizeSQL(sql)).toEqual(normalizeSQL('text IS NOT NULL'));
   });
 });
 
@@ -469,12 +494,11 @@ describe('WhereClause converter', () => {
       const query = new Query(queryOptions);
       query.columnSettings.columnsByID['3bd0'].search = 'test';
       const boolExpr = new Converter().whereClause(query);
-      const sql = new Deparse().deparse(boolExpr);
+      const sql = deparseExpr(boolExpr);
 
-      const expectSql = '(EXISTS (SELECT 1 FROM "ea635699-133f-4844-ae77-f4090fffc7b0" WHERE ("ea635699-133f-4844-ae77-f4090fffc7b0"."_record_id" = ANY (ARRAY["records"."rl"]) AND "ea635699-133f-4844-ae77-f4090fffc7b0"."_title" ILIKE (\'%test%\'))))';
-      console.log("THIS IS SQL", sql);
+      const expectSql = 'EXISTS (SELECT 1 FROM "ea635699-133f-4844-ae77-f4090fffc7b0" WHERE ("ea635699-133f-4844-ae77-f4090fffc7b0"._record_id = ANY (ARRAY[records.rl]) AND "ea635699-133f-4844-ae77-f4090fffc7b0"._title ILIKE \'%test%\'))';
       
-      expect(sql).toEqual(expectSql);
+      expect(normalizeSQL(sql)).toEqual(normalizeSQL(expectSql));
     });
   });
 });
@@ -492,10 +516,10 @@ describe('JoinClause converter', () => {
 
       const { JoinExpr } = Converter.joinClause(baseQuery, join);
       const { quals: ast } = JoinExpr;
-      const sql = new Deparse().deparse(ast);
+      const sql = deparseExpr(ast);
 
-      const expectSql = '(("records"."_record_series_id") = ("record_series"."record_series_id"))';
-      expect(sql).toEqual(expectSql);
+      const expectSql = 'records._record_series_id = record_series.record_series_id';
+      expect(normalizeSQL(sql)).toEqual(normalizeSQL(expectSql));
     });
   });
 
@@ -514,10 +538,10 @@ describe('JoinClause converter', () => {
 
       const { JoinExpr } = Converter.joinClause(baseQuery, join);
       const { quals: ast } = JoinExpr;
-      const sql = new Deparse().deparse(ast);
+      const sql = deparseExpr(ast);
 
-      const expectSql = '((("records"."_record_series_id") = ("record_series"."record_series_id")) AND "record_series"."enabled" IS TRUE)';
-      expect(sql).toEqual(expectSql);
+      const expectSql = 'records._record_series_id = record_series.record_series_id AND record_series.enabled IS TRUE';
+      expect(normalizeSQL(sql)).toEqual(normalizeSQL(expectSql));
     });
   });
 });
@@ -576,13 +600,13 @@ describe('toTilesAST converter', () => {
       const toTilesSQLQuery = query.toTileSQL(10000, { field: '_name', direction: 2 });
 
       const expectSql = `
-        SELECT "_record_id" AS "id",
-        "_geometry" AS "geometry",
-        "_status" AS "status",
-        '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS "form_id",
-        "_name" AS "sorting_field"
-        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records"
-        ORDER BY "sorting_field" DESC
+        SELECT _record_id AS id,
+        _geometry AS geometry,
+        _status AS status,
+        '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS form_id,
+        _name AS sorting_field
+        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS records
+        ORDER BY sorting_field DESC
         LIMIT 10000
       `.replace(/\s+/g, ' ').trim();
 
@@ -594,13 +618,13 @@ describe('toTilesAST converter', () => {
       const toTilesSQLQuery = query.toTileSQL(10000, { field: '_name', direction: 1 });
 
       const expectSql = `
-        SELECT "_record_id" AS "id",
-        "_geometry" AS "geometry",
-        "_status" AS "status",
-        '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS "form_id",
-        "_name" AS "sorting_field"
-        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records"
-        ORDER BY "sorting_field" ASC
+        SELECT _record_id AS id,
+        _geometry AS geometry,
+        _status AS status,
+        '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS form_id,
+        _name AS sorting_field
+        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS records
+        ORDER BY sorting_field ASC
         LIMIT 10000
       `.replace(/\s+/g, ' ').trim();
 
@@ -612,13 +636,13 @@ describe('toTilesAST converter', () => {
       const toTilesSQLQuery = query.toTileSQL(10000, { field: '7a6f-4eb8-480c-8f0c-34ee', direction: 2 });
 
       const expectSql = `
-        SELECT "_record_id" AS "id",
-        "_geometry" AS "geometry",
-        "_status" AS "status",
-        '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS "form_id",
-        '7a6f-4eb8-480c-8f0c-34ee'::text AS "sorting_field"
-        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records"
-        ORDER BY "sorting_field" DESC
+        SELECT _record_id AS id,
+        _geometry AS geometry,
+        _status AS status,
+        '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS form_id,
+        '7a6f-4eb8-480c-8f0c-34ee'::text AS sorting_field
+        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS records
+        ORDER BY sorting_field DESC
         LIMIT 10000
       `.replace(/\s+/g, ' ').trim();
 
@@ -630,13 +654,13 @@ describe('toTilesAST converter', () => {
       const toTilesSQLQuery = query.toTileSQL(10000, { field: '7a6f-4eb8-480c-8f0c-34ee', direction: 1 });
 
       const expectSql = `
-        SELECT "_record_id" AS "id",
-        "_geometry" AS "geometry",
-        "_status" AS "status",
-        '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS "form_id",
-        '7a6f-4eb8-480c-8f0c-34ee'::text AS "sorting_field"
-        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records"
-        ORDER BY "sorting_field" ASC
+        SELECT _record_id AS id,
+        _geometry AS geometry,
+        _status AS status,
+        '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS form_id,
+        '7a6f-4eb8-480c-8f0c-34ee'::text AS sorting_field
+        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS records
+        ORDER BY sorting_field ASC
         LIMIT 10000
       `.replace(/\s+/g, ' ').trim();
 
@@ -649,11 +673,11 @@ describe('toTilesAST converter', () => {
       const toTilesSQLQuery = query.toTileSQL(10000, undefined);
 
       const expectSql = `
-        SELECT "_record_id" AS "id",
-        "_geometry" AS "geometry",
-        "_status" AS "status",
-        '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS "form_id"
-        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS "records"
+        SELECT _record_id AS id,
+        _geometry AS geometry,
+        _status AS status,
+        '7a62278f-4eb8-480c-8f0c-34fc79d28bee'::text AS form_id
+        FROM "7a62278f-4eb8-480c-8f0c-34fc79d28bee/_full" AS records
         LIMIT 10000
       `.replace(/\s+/g, ' ').trim();
 
@@ -723,19 +747,17 @@ describe('BinaryConverter', () => {
 
       expect(result).toEqual({
         A_Expr: {
-          kind: 0,
-          name: [{ String: { str: '=' } }],
+          kind: 'AEXPR_OP',
+          name: [{ String: { sval: '=' } }],
           lexpr: {
             ColumnRef: {
-              fields: [{ String: { str: 'numbers' } }]
+              fields: [{ String: { sval: 'numbers' } }]
             }
           },
           rexpr: {
             A_Const: {
-              val: {
-                Float: {
-                  str: '123.45'
-                }
+              fval: {
+                fval: '123.45'
               }
             }
           }
@@ -756,19 +778,17 @@ describe('BinaryConverter', () => {
 
       expect(result).toEqual({
         A_Expr: {
-          kind: 0,
-          name: [{ String: { str: '>=' } }],
+          kind: 'AEXPR_OP',
+          name: [{ String: { sval: '>=' } }],
           lexpr: {
             ColumnRef: {
-              fields: [{ String: { str: 'created_date' } }]
+              fields: [{ String: { sval: 'created_date' } }]
             }
           },
           rexpr: {
             A_Const: {
-              val: {
-                String: {
-                  str: moment.utc(testDate).toISOString()
-                }
+              sval: {
+                sval: moment.utc(testDate).toISOString()
               }
             }
           }
@@ -832,7 +852,7 @@ describe('gps_device_capture column', () => {
       const query = new Query({ form, schema, full: true });
       const sql = query.toSQL({ applySort: false });
 
-      expect(sql).toContain('"_gps_device_capture" AS "gps_device_capture"');
+      expect(sql).toContain('_gps_device_capture AS gps_device_capture');
     });
   });
 

@@ -13,7 +13,6 @@ import { ColumnRef,
          StringValue,
          AArrayExpr,
          IntegerValue,
-         BooleanValue,
          FloatValue,
          SortBy,
          TypeCast,
@@ -27,7 +26,8 @@ import { ColumnRef,
          JoinExpr,
          Alias,
          CoalesceExpr,
-         SubLink } from './helpers.js';
+         SubLink,
+         NullConst } from './helpers.js';
 
 import { ConditionType } from '../condition.js';
 import { OperatorType, calculateDateRange } from '../operator.js';
@@ -965,7 +965,7 @@ export default class Converter {
   EmptyConverter = (expression) => {
     if (expression.column.isArray && expression.column.part === 'captions') {
       const nullTest = NullTest(0, columnRef(expression.column));
-      const arrayPos = CoalesceExpr([FuncCall('array_position', [columnRef(expression.column), StringValue('NULL')]), AConst(IntegerValue(0))]);
+      const arrayPos = CoalesceExpr([FuncCall('array_position', [columnRef(expression.column), NullConst()]), AConst(IntegerValue(0))]);
       const lenTest = AExpr(0, '>', arrayPos, AConst(IntegerValue(0)));
       return BoolExpr(1, [nullTest, lenTest]);
     }

@@ -3,7 +3,7 @@ import { Expression } from './expression.js';
 import SortExpressions from './sort-expressions.js';
 import Converter from './ast/converter.js';
 import ColumnFilter from './column-filter.js';
-import Deparse from '@fulcrumapp/pg-query-deparser';
+import { deparseSync } from 'pgsql-deparser';
 import QueryOptions from './query-options.js';
 import _ from 'lodash';
 import ColumnSettings from './column-settings.js';
@@ -269,7 +269,8 @@ export default class Query {
   }
 
   deparse(ast) {
-    return new Deparse().deparse(ast);
+    const tree = { stmts: [{ stmt: ast }] };
+    return deparseSync(tree);
   }
 
   toSchemaAST(ast, options) {
