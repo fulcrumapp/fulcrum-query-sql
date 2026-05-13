@@ -1,4 +1,4 @@
-import arrayMove from 'array-move';
+import {arrayMoveImmutable as arrayMove} from 'array-move';
 import ColumnSettingsItem from './column-settings-item.js';
 
 export default class ColumnSettings {
