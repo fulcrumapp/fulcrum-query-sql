@@ -25,27 +25,27 @@ Reach out to your local engineering manager for this step.
 ### Debugging
 
 - Create a branch
-- Add logs or a `debugger` in fulcrum-query-sql where applicable
+- Add logs or a `debugger` in @fulcrumapp/query-sql where applicable
 - Run `yalc publish`
 - In your other repo (most likely `fulcrum-components`)
-  - Run `yalc add fulcrum-query-sql`
+  - Run `yalc add @fulcrumapp/query-sql`
   - Rebuild the lock file by running `./yarn` if the version or commit has changed.
-  - Run `yalc remove fulcrum-query-sql` when done testing in that repository.
+  - Run `yalc remove @fulcrumapp/query-sql` when done testing in that repository.
 - Re-skaffold or let skaffold sync and the changes will now be visible for debugging. Skaffold may sync twice and the first attempt may produce an error because the lock file has not yet been updated.
 - Run `yalc publish --push` for subsequent changes and to push these changes automatically to any applications where the `yalc` version has been installed. You still need to run `./yarn` if the version or commit has changed.
-- You can also run `yalc publish` from this repository and `yalc update fulcrum-query-sql` from the other repository.
+- You can also run `yalc publish` from this repository and `yalc update @fulcrumapp/query-sql` from the other repository.
 
 ### Debugging troubleshooting
 
 ***Issue: Changes not visible in `fulcrum` after following the `Debugging` steps.***
 
-***Solution***: If changes are not reflecting even after following the debugging steps, you might need to ensure a completely clean environment for your dependencies. Here are some steps to ensure that the `fulcrum` repository is correctly picking up the changes from `fulcrum-query-sql`:
+***Solution***: If changes are not reflecting even after following the debugging steps, you might need to ensure a completely clean environment for your dependencies. Here are some steps to ensure that the `fulcrum` repository is correctly picking up the changes from `@fulcrumapp/query-sql`:
 
 1. Update Dependencies Safely:
 - Inside `fulcrum-components` run:
 
 ```
-yarn remove fulcrum-query-sql
+yarn remove @fulcrumapp/query-sql
 ```
 - After that
 
