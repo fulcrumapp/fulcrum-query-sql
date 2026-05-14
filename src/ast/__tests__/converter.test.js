@@ -860,3 +860,35 @@ describe('gps_device_capture column', () => {
     });
   });
 });
+
+describe.skip('toDistinctValuesAST limit override', () => {
+  const customFormJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    elements: [{ type: 'TextField', key: '3bd0', data_name: 'text' }]
+  };
+  const customRawColumns = {
+    form: [{ field: '3bd0', name: 'text', type: 'string' }],
+    repeatables: {}
+  };
+
+  it('uses MAX_DISTINCT_VALUES (1000) as the default limit when options.limit is undefined', () => {
+    const form = new Form(customFormJson);
+    const schema = new FormSchema(form, customRawColumns.form, customRawColumns.repeatables, { fullSchema: true });
+    const query = new Query({ form, schema, full: true });
+    const col = schema.columns.find(c => c.id === '3bd0');
+
+    const ast = new Converter().toDistinctValuesAST(query, { column: col });
+    // limitCount is essentially AConst(IntegerValue(1000))
+    expect(ast.SelectStmt.limitCount.A_Const.val.Integer.ival).toEqual(1000);
+  });
+
+  it('uses the provided limit override from options', () => {
+    const form = new Form(customFormJson);
+    const schema = new FormSchema(form, customRawColumns.form, customRawColumns.repeatables, { fullSchema: true });
+    const query = new Query({ form, schema, full: true });
+    const col = schema.columns.find(c => c.id === '3bd0');
+
+    const ast = new Converter().toDistinctValuesAST(query, { column: col, limit: 10000 });
+    expect(ast.SelectStmt.limitCount.A_Const.val.Integer.ival).toEqual(10000);
+  });
+});
