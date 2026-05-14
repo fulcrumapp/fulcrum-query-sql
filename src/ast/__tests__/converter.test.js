@@ -861,7 +861,7 @@ describe('gps_device_capture column', () => {
   });
 });
 
-describe.skip('toDistinctValuesAST limit override', () => {
+describe('toDistinctValuesAST limit override', () => {
   const customFormJson = {
     id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
     elements: [{ type: 'TextField', key: '3bd0', data_name: 'text' }]
