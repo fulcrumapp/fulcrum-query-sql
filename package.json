@@ -4,12 +4,13 @@
   "description": "Fulcrum Query SQL Utilities",
   "homepage": "http://github.com/fulcrumapp/fulcrum-query-sql",
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     }
   },
@@ -21,7 +22,7 @@
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "prepublishOnly": "yarn run clean && yarn run build",
     "lint": "eslint src/* src/**/*",
-    "build": "tsc",
+    "build": "tsdown && tsc --emitDeclarationOnly --noEmit false",
     "clean": "rm -rf dist",
     "typecheck": "tsc -b"
   },
@@ -42,12 +43,12 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.0",
     "jest": "^30.0.0",
+    "tsdown": "^0.22.0",
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "@fulcrumapp/pg-query-deparser": "^0.0.4",
+    "@fulcrumapp/pg-query-deparser": "0.0.4",
     "array-move": "^4.0.0",
-    "lodash": "^4.18.1",
     "moment": "^2.30.1",
     "moment-timezone": "^0.6.1"
   },

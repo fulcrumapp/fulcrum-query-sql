@@ -1,10 +1,10 @@
-import { Expression } from './expression.js';
-import _ from 'lodash';
+/* eslint-disable no-underscore-dangle */
+import Expression from './expression.js';
 
 export const ConditionType = {
   And: 'and',
   Or: 'or',
-  Not: 'not'
+  Not: 'not',
 };
 
 export class Condition {
@@ -49,7 +49,7 @@ export class Condition {
   }
 
   removeCondition(condition) {
-    this._expressions = _.without(this._expressions, condition);
+    this._expressions = this._expressions.filter((c) => c !== condition);
   }
 
   ensureEmptyExpression() {
@@ -72,7 +72,7 @@ export class Condition {
   }
 
   removeExpression(expression) {
-    this._expressions = _.without(this._expressions, expression);
+    this._expressions = this._expressions.filter(e => e !== expression);
   }
 
   toJSON() {
@@ -122,7 +122,7 @@ export class Condition {
     }
 
     if (this.type === 'not') {
-      return '(NOT ' + descriptions.join(' AND ') + ')';
+      return `(NOT ${descriptions.join(' AND ')})`;
     }
 
     return '(' + descriptions.join(' ' + this.type.toUpperCase() + ' ') + ')';

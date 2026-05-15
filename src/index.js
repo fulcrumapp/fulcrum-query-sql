@@ -5,7 +5,7 @@ export { default as Column } from './schema/column.js';
 export { default as SimpleColumn } from './schema/simple-column.js';
 export { default as ElementColumn } from './schema/element-column.js';
 export { default as Converter } from './ast/converter.js';
-export * from './expression.js';
+export { default as Expression } from './expression.js';
 export * from './condition.js';
 export * from './operator.js';
 export * from './aggregate.js';

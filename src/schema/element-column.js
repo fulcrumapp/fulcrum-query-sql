@@ -1,8 +1,11 @@
+/* eslint-disable no-underscore-dangle */
 import { StatusValue, Record } from '@fulcrumapp/fulcrum-core';
 import Column from './column.js';
 
 export default class ElementColumn extends Column {
-  constructor({element, rawColumn, type, id, part, index}) {
+  constructor({
+    element, rawColumn, type, id, part, index,
+  }) {
     super();
 
     this._type = type;
@@ -13,7 +16,7 @@ export default class ElementColumn extends Column {
     this._index = index;
 
     if (part) {
-      this._id += '_' + part;
+      this._id += `_${part}`;
     }
   }
 
@@ -23,7 +26,7 @@ export default class ElementColumn extends Column {
 
   get name() {
     if (this.part) {
-      return this.element.label + ' (' + this.part + ')';
+      return `${this.element.label} (${this.part})`;
     }
 
     return this.element.label;
@@ -38,12 +41,12 @@ export default class ElementColumn extends Column {
   }
 
   get columnName() {
-    if (this.rawColumn) {
+    if (this.rawColumn && this.rawColumn.name != null) {
       return this.rawColumn.name;
     }
 
     if (this.part) {
-      return this.element.dataName + '_' + this.part;
+      return `${this.element.dataName}_${this.part}`;
     }
 
     return this.element.dataName;
@@ -73,19 +76,19 @@ export default class ElementColumn extends Column {
     const value = this.valueFrom(feature);
 
     if (value) {
-      return value.format({feature, part: this.part, ...options});
+      return value.format({ feature, part: this.part, ...options });
     }
 
     return null;
   }
 
   get canSearch() {
-    if (this.element.isPhotoElement ||
-        this.element.isVideoElement ||
-        this.element.isAudioElement ||
-        this.element.isSignatureElement ||
-        this.element.isAttachmentElement ||
-        this.element.isRepeatableElement) {
+    if (this.element.isPhotoElement
+        || this.element.isVideoElement
+        || this.element.isAudioElement
+        || this.element.isSignatureElement
+        || this.element.isAttachmentElement
+        || this.element.isRepeatableElement) {
       return false;
     }
 
@@ -103,13 +106,13 @@ export default class ElementColumn extends Column {
   }
 
   get isSortable() {
-    if (this.element.isPhotoElement ||
-        this.element.isVideoElement ||
-        this.element.isAudioElement ||
-        this.element.isSketchElement ||
-        this.element.isSignatureElement ||
-        this.element.isAttachmentElement ||
-        this.element.isRepeatableElement) {
+    if (this.element.isPhotoElement
+        || this.element.isVideoElement
+        || this.element.isAudioElement
+        || this.element.isSketchElement
+        || this.element.isSignatureElement
+        || this.element.isAttachmentElement
+        || this.element.isRepeatableElement) {
       return false;
     }
 

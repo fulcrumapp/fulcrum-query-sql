@@ -1,26 +1,28 @@
+/* eslint-disable no-underscore-dangle */
+import Deparse from '@fulcrumapp/pg-query-deparser';
 import { Condition } from './condition.js';
-import { Expression } from './expression.js';
+import Expression from './expression.js';
 import SortExpressions from './sort-expressions.js';
 import Converter from './ast/converter.js';
 import ColumnFilter from './column-filter.js';
-import Deparse from '@fulcrumapp/pg-query-deparser';
 import QueryOptions from './query-options.js';
-import _ from 'lodash';
 import ColumnSettings from './column-settings.js';
 
-import { ResTarget,
-         ColumnRef,
-         FuncCall,
-         AConst,
-         StringValue,
-         TypeCast,
-         TypeName,
-         Alias,
-         RangeSubselect,
-         SelectStmt,
-         SortBy,
-         IntegerValue,
-         AStar } from './ast/helpers.js';
+import {
+  ResTarget,
+  ColumnRef,
+  FuncCall,
+  AConst,
+  StringValue,
+  TypeCast,
+  TypeName,
+  Alias,
+  RangeSubselect,
+  SelectStmt,
+  SortBy,
+  IntegerValue,
+  AStar,
+} from './ast/helpers.js';
 
 export default class Query {
   constructor(attrs) {
@@ -32,13 +34,13 @@ export default class Query {
     this._sorting = new SortExpressions(attrs.sorting, attrs.schema);
     this._boundingBox = attrs.bounding_box || null;
     this._searchFilter = attrs.search_filter;
-    this._dateFilter = new Expression(attrs.date_filter || {field: this.defaultDateField}, attrs.schema);
+    this._dateFilter = new Expression(attrs.date_filter || { field: this.defaultDateField }, attrs.schema);
     this._options = new QueryOptions(attrs.options || {});
     this._columnSettings = new ColumnSettings(this._schema, attrs.columns);
-    this._statusFilter = new ColumnFilter({...attrs.status_filter, field: attrs.repeatableKey ? '_record_status' : '_status'}, this._schema);
-    this._projectFilter = new ColumnFilter({...attrs.project_filter, field: attrs.repeatableKey ? 'record_project.name' : 'project.name'}, this._schema);
-    this._assignmentFilter = new ColumnFilter({...attrs.assignment_filter, field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name'}, this._schema);
-    this._changesetFilter = new ColumnFilter({...attrs.changeset_filter, field: '_changeset_id'}, this._schema);
+    this._statusFilter = new ColumnFilter({ ...attrs.status_filter, field: attrs.repeatableKey ? '_record_status' : '_status' }, this._schema);
+    this._projectFilter = new ColumnFilter({ ...attrs.project_filter, field: attrs.repeatableKey ? 'record_project.name' : 'project.name' }, this._schema);
+    this._assignmentFilter = new ColumnFilter({ ...attrs.assignment_filter, field: attrs.repeatableKey ? 'record_assigned_to.name' : 'assigned_to.name' }, this._schema);
+    this._changesetFilter = new ColumnFilter({ ...attrs.changeset_filter, field: '_changeset_id' }, this._schema);
     this._full = attrs.full != null ? !!attrs.full : true;
 
     this.setup();
@@ -101,15 +103,14 @@ export default class Query {
   }
 
   get hasFilter() {
-    return this.statusFilter.hasFilter ||
-           this.projectFilter.hasFilter ||
-           this.assignmentFilter.hasFilter ||
-           this.changesetFilter.hasFilter ||
-           this.columnSettings.columns.find(o => o.hasFilter) ||
-           this.searchFilter ||
-           this.dateFilter.isValid ||
-           this.filter.expressions.find(o => o.isValid) ||
-           this.sorting.hasSort;
+    return this.statusFilter.hasFilter
+           || this.projectFilter.hasFilter
+           || this.assignmentFilter.hasFilter
+           || this.changesetFilter.hasFilter
+           || this.searchFilter
+           || this.dateFilter.isValid
+           || this.filter.expressions.find((o) => o.isValid)
+           || this.sorting.hasSort;
   }
 
   get joinColumns() {
@@ -123,13 +124,9 @@ export default class Query {
       joins.push(this.assignmentFilter.column);
     }
 
-    joins.push.apply(joins, this.columnSettings.columns.filter((o) => {
-      return o.hasFilter && o.column.join;
-    }).map(o => o.column));
+    joins.push.apply(joins, this.columnSettings.columns.filter((o) => o.hasFilter && o.column.join).map((o) => o.column));
 
-    joins.push.apply(joins, this.filter.allExpressions.filter((o) => {
-      return o.isValid && o.column.join;
-    }).map(o => o.column));
+    joins.push.apply(joins, this.filter.allExpressions.filter((o) => o.isValid && o.column.join).map((o) => o.column));
 
     return joins;
   }
@@ -145,18 +142,12 @@ export default class Query {
       columns.push(this.assignmentFilter.column);
     }
 
-    columns.push.apply(columns, this.columnSettings.columns.filter((o) => {
-      return o.hasFilter;
-    }).map(o => o.column));
+    columns.push.apply(columns, this.columnSettings.columns.filter((o) => o.hasFilter).map((o) => o.column));
 
-    columns.push.apply(columns, this.filter.allExpressions.filter((o) => {
-      return o.isValid;
-    }).map(o => o.column));
+    columns.push.apply(columns, this.filter.allExpressions.filter((o) => o.isValid).map((o) => o.column));
 
     if (this.sorting.hasSort) {
-      columns.push.apply(columns, this.sorting.expressions.filter((o) => {
-        return o.isValid;
-      }).map(o => o.column));
+      columns.push.apply(columns, this.sorting.expressions.filter((o) => o.isValid).map((o) => o.column));
     }
 
     return columns;
@@ -166,9 +157,7 @@ export default class Query {
     const joins = this.joinColumns;
 
     if (this.sorting.hasSort) {
-      joins.push.apply(joins, this.sorting.expressions.filter((o) => {
-        return o.isValid && o.column.join;
-      }).map(o => o.column));
+      joins.push.apply(joins, this.sorting.expressions.filter((o) => o.isValid && o.column.join).map((o) => o.column));
     }
 
     return joins;
@@ -190,7 +179,7 @@ export default class Query {
     this._sorting = new SortExpressions(null, this._schema);
     // this._boundingBox = null;
     this._searchFilter = '';
-    this._dateFilter = new Expression({field: this.defaultDateField}, this._schema);
+    this._dateFilter = new Expression({ field: this.defaultDateField }, this._schema);
   }
 
   set boundingBox(box) {
@@ -213,11 +202,11 @@ export default class Query {
     return {
       boundingBox: this.boundingBox,
       searchFilter: this.searchFilter,
-      dateFilter: this.dateFilter
+      dateFilter: this.dateFilter,
     };
   }
 
-  toJSON({boundingBox = false} = {}) {
+  toJSON({ boundingBox = false } = {}) {
     return {
       filter: this.filter.toJSON(),
       sorting: this.sorting.toJSON(),
@@ -229,7 +218,7 @@ export default class Query {
       status_filter: this.statusFilter.toJSON(),
       changeset_filter: this.changesetFilter.toJSON(),
       project_filter: this.projectFilter.toJSON(),
-      assignment_filter: this.assignmentFilter.toJSON()
+      assignment_filter: this.assignmentFilter.toJSON(),
     };
   }
 
@@ -253,23 +242,28 @@ export default class Query {
     return new Converter().toHistogramAST(this, options);
   }
 
-  toAST({applySort, pageSize, pageIndex, outerLimit}) {
+  toAST({
+    applySort, pageSize, pageIndex, outerLimit,
+  }) {
     const finalLimit = outerLimit ? AConst(IntegerValue(+outerLimit)) : null;
 
     const sortClause = applySort ? this.outerSortClause : null;
 
-    const fromClause = this.fromClause({applySort, pageSize, pageIndex, ...this.runtimeFilters});
+    const fromClause = this.fromClause({
+      applySort, pageSize, pageIndex, ...this.runtimeFilters,
+    });
 
     return SelectStmt({
       targetList: this.targetList(),
-      fromClause: fromClause,
-      sortClause: sortClause,
+      fromClause,
+      sortClause,
       limitCount: finalLimit,
     });
   }
 
   deparse(ast) {
-    return new Deparse().deparse(ast);
+    const deparser = new Deparse.default();
+    return deparser.deparse(ast);
   }
 
   toSchemaAST(ast, options) {
@@ -288,13 +282,15 @@ export default class Query {
     return this.deparse(this.toCountAST(this.runtimeFilters));
   }
 
-  toSQL({applySort, pageSize, pageIndex, outerLimit}) {
+  toSQL({
+    applySort, pageSize, pageIndex, outerLimit,
+  }) {
     const options = {
       applySort,
       pageSize,
       pageIndex,
       outerLimit,
-      ...this.runtimeFilters
+      ...this.runtimeFilters,
     };
 
     return this.deparse(this.toAST(options));
@@ -321,11 +317,11 @@ export default class Query {
 
   targetList() {
     if (this.ast) {
-      return [ ResTarget(ColumnRef(AStar())) ];
+      return [ResTarget(ColumnRef(AStar()))];
     }
 
     if (!this.full) {
-      return _.compact(this.columnSettings.enabledColumns.map(column => {
+      return this.columnSettings.enabledColumns.map((column) => {
         if (column.element && !column.rawColumn) {
           return null;
         }
@@ -337,12 +333,10 @@ export default class Query {
         }
 
         return ResTarget(ColumnRef(column.columnName, column.source || 'records'), columnAlias);
-      }));
+      }).filter(Boolean);
     }
 
-    const timeZoneCast = (columnRef) => {
-      return FuncCall([ StringValue('pg_catalog'), StringValue('timezone') ], [ AConst(StringValue('UTC')), columnRef ]);
-    };
+    const timeZoneCast = (columnRef) => FuncCall([StringValue('pg_catalog'), StringValue('timezone')], [AConst(StringValue('UTC')), columnRef]);
 
     const timeZoneFormat = AConst(StringValue('YYYY-MM-DD"T"HH24:MI:SS"Z"'));
 
@@ -378,33 +372,33 @@ export default class Query {
     }
 
     if (this.schema.assignedToColumn) {
-      const alias = this.schema.assignedToColumn.join.alias;
+      const { alias } = this.schema.assignedToColumn.join;
 
       if (subJoinColumns.indexOf(this.schema.assignedToColumn) === -1) {
         joinedColumns.push(ResTarget(ColumnRef('name', alias), alias));
       } else {
-        joinedColumns.push(ResTarget(ColumnRef(alias + '.name'), alias));
+        joinedColumns.push(ResTarget(ColumnRef(`${alias}.name`), alias));
       }
     }
 
     if (this.schema.projectColumn) {
-      const alias = this.schema.projectColumn.join.alias;
+      const { alias } = this.schema.projectColumn.join;
 
       if (subJoinColumns.indexOf(this.schema.projectColumn) === -1) {
         joinedColumns.push(ResTarget(ColumnRef('name', alias), alias));
       } else {
-        joinedColumns.push(ResTarget(ColumnRef(alias + '.name'), alias));
+        joinedColumns.push(ResTarget(ColumnRef(`${alias}.name`), alias));
       }
     }
     if (this.schema.recordSeriesColumn) {
-      const alias = this.schema.recordSeriesColumn.join.alias;
+      const { alias } = this.schema.recordSeriesColumn.join;
 
       if (subJoinColumns.indexOf(this.schema.recordSeriesColumn) === -1) {
         joinedColumns.push(ResTarget(ColumnRef('record_series_id', alias), 'record_series_id'));
         joinedColumns.push(ResTarget(ColumnRef('rrule', alias), 'rrule'));
       } else {
-        joinedColumns.push(ResTarget(ColumnRef(alias + '.record_series_id'), 'record_series_id'));
-        joinedColumns.push(ResTarget(ColumnRef(alias + '.rrule'), 'rrule'));
+        joinedColumns.push(ResTarget(ColumnRef(`${alias}.record_series_id`), 'record_series_id'));
+        joinedColumns.push(ResTarget(ColumnRef(`${alias}.rrule`), 'rrule'));
       }
     }
 
@@ -416,18 +410,34 @@ export default class Query {
         ResTarget(ColumnRef('_record_id'), 'record_id'),
         ResTarget(ColumnRef('_parent_id'), 'parent_id'),
         ResTarget(ColumnRef('_index'), 'index'),
-        ResTarget(FuncCall([ StringValue('pg_catalog'), StringValue('date_part') ],
-                           [ AConst(StringValue('epoch')), timeZoneCast(ColumnRef('_server_created_at')) ]),
-                  'created_at'),
-        ResTarget(FuncCall([ StringValue('pg_catalog'), StringValue('date_part') ],
-                           [ AConst(StringValue('epoch')), timeZoneCast(ColumnRef('_server_updated_at')) ]),
-                  'updated_at'),
-        ResTarget(FuncCall([ StringValue('pg_catalog'), StringValue('date_part') ],
-                           [ AConst(StringValue('epoch')), timeZoneCast(ColumnRef('_created_at')) ]),
-                  'client_created_at'),
-        ResTarget(FuncCall([ StringValue('pg_catalog'), StringValue('date_part') ],
-                           [ AConst(StringValue('epoch')), timeZoneCast(ColumnRef('_updated_at')) ]),
-                  'client_updated_at'),
+        ResTarget(
+          FuncCall(
+            [StringValue('pg_catalog'), StringValue('date_part')],
+            [AConst(StringValue('epoch')), timeZoneCast(ColumnRef('_server_created_at'))],
+          ),
+          'created_at',
+        ),
+        ResTarget(
+          FuncCall(
+            [StringValue('pg_catalog'), StringValue('date_part')],
+            [AConst(StringValue('epoch')), timeZoneCast(ColumnRef('_server_updated_at'))],
+          ),
+          'updated_at',
+        ),
+        ResTarget(
+          FuncCall(
+            [StringValue('pg_catalog'), StringValue('date_part')],
+            [AConst(StringValue('epoch')), timeZoneCast(ColumnRef('_created_at'))],
+          ),
+          'client_created_at',
+        ),
+        ResTarget(
+          FuncCall(
+            [StringValue('pg_catalog'), StringValue('date_part')],
+            [AConst(StringValue('epoch')), timeZoneCast(ColumnRef('_updated_at'))],
+          ),
+          'client_updated_at',
+        ),
         ResTarget(ColumnRef('_created_by_id'), 'created_by_id'),
         ResTarget(ColumnRef('_updated_by_id'), 'updated_by_id'),
         ResTarget(TypeCast(TypeName('text'), AConst(StringValue(this.form.id))), 'form_id'),
@@ -451,7 +461,7 @@ export default class Query {
         ResTarget(ColumnRef('_updated_longitude'), 'updated_longitude'),
         ResTarget(ColumnRef('_updated_altitude'), 'updated_altitude'),
         ResTarget(ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
-        ...joinedColumns
+        ...joinedColumns,
       ];
     }
 
@@ -459,14 +469,14 @@ export default class Query {
       ResTarget(ColumnRef('_status'), 'status'),
       ResTarget(ColumnRef('_version'), 'version'),
       ResTarget(ColumnRef('_record_id'), 'id'),
-      ResTarget(FuncCall('to_char', [ timeZoneCast(ColumnRef('_server_created_at')),
-                                      timeZoneFormat ]), 'created_at'),
-      ResTarget(FuncCall('to_char', [ timeZoneCast(ColumnRef('_server_updated_at')),
-                                      timeZoneFormat ]), 'updated_at'),
-      ResTarget(FuncCall('to_char', [ timeZoneCast(ColumnRef('_created_at')),
-                                      timeZoneFormat ]), 'client_created_at'),
-      ResTarget(FuncCall('to_char', [ timeZoneCast(ColumnRef('_updated_at')),
-                                      timeZoneFormat ]), 'client_updated_at'),
+      ResTarget(FuncCall('to_char', [timeZoneCast(ColumnRef('_server_created_at')),
+        timeZoneFormat]), 'created_at'),
+      ResTarget(FuncCall('to_char', [timeZoneCast(ColumnRef('_server_updated_at')),
+        timeZoneFormat]), 'updated_at'),
+      ResTarget(FuncCall('to_char', [timeZoneCast(ColumnRef('_created_at')),
+        timeZoneFormat]), 'client_created_at'),
+      ResTarget(FuncCall('to_char', [timeZoneCast(ColumnRef('_updated_at')),
+        timeZoneFormat]), 'client_updated_at'),
       ResTarget(ColumnRef('_created_by_id'), 'created_by_id'),
       ResTarget(ColumnRef('_updated_by_id'), 'updated_by_id'),
       ResTarget(TypeCast(TypeName('text'), AConst(StringValue(this.form.id))), 'form_id'),
@@ -497,18 +507,22 @@ export default class Query {
       ResTarget(ColumnRef('_updated_altitude'), 'updated_altitude'),
       ResTarget(ColumnRef('_updated_horizontal_accuracy'), 'updated_horizontal_accuracy'),
       ...recordKeyColumns,
-      ...joinedColumns
+      ...joinedColumns,
     ];
   }
 
-  fromClause({applySort, pageSize, pageIndex, boundingBox, searchFilter}) {
-    const ast = applySort ? this.toRawAST({sort: this.sortClause, pageSize, pageIndex, boundingBox, searchFilter})
-                          : this.toRawAST({boundingBox, searchFilter});
+  fromClause({
+    applySort, pageSize, pageIndex, boundingBox, searchFilter,
+  }) {
+    const ast = applySort ? this.toRawAST({
+      sort: this.sortClause, pageSize, pageIndex, boundingBox, searchFilter,
+    })
+      : this.toRawAST({ boundingBox, searchFilter });
 
     let baseQuery = RangeSubselect(ast, Alias('records'));
 
     if (this.ast) {
-      return [ baseQuery ];
+      return [baseQuery];
     }
 
     // The "subJoinColumns" are joins that need to happen in the inner sub-select from Converter.
@@ -534,7 +548,7 @@ export default class Query {
       baseQuery = Converter.joinClause(baseQuery, this.schema.recordSeriesColumn.join);
     }
 
-    return [ baseQuery ];
+    return [baseQuery];
   }
 
   get sortClause() {
@@ -548,33 +562,33 @@ export default class Query {
 
       if (this.ast) {
         return [
-          SortBy(ColumnRef(sort.column.id, sort.column.source), direction, 0)
+          SortBy(ColumnRef(sort.column.id, sort.column.source), direction, 0),
         ];
       }
 
       return [
         SortBy(ColumnRef(sort.column.columnName, sort.column.source || 'records'), direction, 0),
-        SortBy(ColumnRef('_record_id', 'records'), direction, 0)
+        SortBy(ColumnRef('_record_id', 'records'), direction, 0),
       ];
     });
 
-    return _.flatten(sorts);
+    return sorts.flat();
   }
 
   get systemSortClause() {
     if (this.ast) {
-      return [ SortBy(AConst(IntegerValue(1)), 2, 0) ];
+      return [SortBy(AConst(IntegerValue(1)), 2, 0)];
     }
 
     if (this.repeatableKey) {
-      return [ SortBy(ColumnRef('_updated_at'), 2, 0) ];
+      return [SortBy(ColumnRef('_updated_at'), 2, 0)];
     }
 
-    return [ SortBy(ColumnRef('_server_updated_at'), 2, 0) ];
+    return [SortBy(ColumnRef('_server_updated_at'), 2, 0)];
   }
 
   get outerSortClause() {
-    return [ SortBy(ColumnRef('__row_number'), 1, 0) ];
+    return [SortBy(ColumnRef('__row_number'), 1, 0)];
   }
 
   toHumanDescription() {
@@ -594,7 +608,7 @@ export default class Query {
       parts.push(description);
     }
 
-    if ((description = this.columnSettings.columns.map(o => o.filter).map(o => o.toHumanDescription()))) {
+    if ((description = this.columnSettings.columns.map((o) => o.filter).map((o) => o.toHumanDescription()))) {
       for (const desc of description) {
         if (desc) {
           parts.push(desc);
@@ -603,7 +617,7 @@ export default class Query {
     }
 
     if (this.searchFilter) {
-      parts.push('Search by ' + this.searchFilter);
+      parts.push(`Search by ${this.searchFilter}`);
     }
 
     if ((description = this.dateFilter.toHumanDescription())) {
@@ -626,7 +640,7 @@ export default class Query {
       return;
     }
 
-    const geometryColumns = this.schema.geometryColumns;
+    const { geometryColumns } = this.schema;
 
     if (geometryColumns.length) {
       // For custom SQL, we need to add a column called __geometry at the end that evaluates to the
@@ -635,8 +649,12 @@ export default class Query {
       // query.
       const geometryColumn = geometryColumns[0];
 
-      Converter.duplicateResTargetWithExactName(this, this.ast.SelectStmt.targetList,
-                                                geometryColumn, '__geometry');
+      Converter.duplicateResTargetWithExactName(
+        this,
+        this.ast.SelectStmt.targetList,
+        geometryColumn,
+        '__geometry',
+      );
     }
   }
 }
