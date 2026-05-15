@@ -22,9 +22,7 @@ export default class ColumnSettings {
 
     const columns = schema.columns.slice();
 
-    for (let index = 0; index < columns.length; ++index) {
-      const column = columns[index];
-
+    columns.forEach((column, index) => {
       const existingAttributes = existingSettingsByID[column.id];
 
       const item = new ColumnSettingsItem({ ...existingAttributes, column }, this._schema);
@@ -36,7 +34,7 @@ export default class ColumnSettings {
 
       this._allColumns.push(item);
       this._columnsByID[column.id] = item;
-    }
+    });
 
     if (settings) {
       for (const setting of settings) {
