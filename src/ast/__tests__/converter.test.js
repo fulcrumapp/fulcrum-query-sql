@@ -299,6 +299,9 @@ describe('WhereClause converter', () => {
       };
       const query = new Query(queryOptions);
       query.columnSettings.columnsByID['3bd0'].search = 'test';
+
+      expect(query.hasFilter).toBe(true);
+
       const boolExpr = new Converter().whereClause(query);
       const deparser = new Deparse();
       const sql = deparser.deparse(boolExpr);
