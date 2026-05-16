@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import { StatusValue, Record } from '@fulcrumapp/fulcrum-core';
 import Column from './column.js';
 

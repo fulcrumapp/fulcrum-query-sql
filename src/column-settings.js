@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import ColumnSettingsItem from './column-settings-item.js';
 
 export default class ColumnSettings {

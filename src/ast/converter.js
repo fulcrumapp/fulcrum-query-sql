@@ -132,7 +132,7 @@ export default class Converter {
   }
 
   toHistogramAST(query, {
-    column, bucketSize, type, sort, pageSize, pageIndex, boundingBox, searchFilter,
+    column, bucketSize, type, sort: _sort, pageSize: _pageSize, pageIndex: _pageIndex, boundingBox, searchFilter,
   }) {
     const subLinkColumn = (col, table) => SubLink(4, SelectStmt({
       targetList: [ResTarget(ColumnRef(col))],
@@ -429,7 +429,7 @@ export default class Converter {
     return null;
   }
 
-  targetList(query, sort, boundingBox) {
+  targetList(query, sort, _boundingBox) {
     const list = [
       ResTarget(ColumnRef(AStar(), 'records')),
     ];
@@ -750,7 +750,7 @@ export default class Converter {
   }
 
   escapeLikePercent(value) {
-    return value.replace(/\\/g, '\\\\').replace(/\%/g, '\\%').replace(/_/g, '\\_%');
+    return value.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_%');
   }
 
   searchFilter(query, search) {
@@ -1334,7 +1334,7 @@ export default class Converter {
   IsValidRegExp = (string) => {
     try {
       return !!(new RegExp(string));
-    } catch (ex) {
+    } catch (_ex) {
       return false;
     }
   };

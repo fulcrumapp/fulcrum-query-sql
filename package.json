@@ -9,9 +9,9 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
@@ -21,7 +21,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "prepublishOnly": "yarn run clean && yarn run build",
-    "lint": "eslint src/* src/**/*",
+    "lint": "eslint src",
     "build": "tsdown && tsc --emitDeclarationOnly --noEmit false",
     "clean": "rm -rf dist",
     "typecheck": "tsc -b"
@@ -36,15 +36,15 @@
     "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "@fulcrumapp/fulcrum-core": "^1.5.3",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
-    "eslint": "^10.3.0",
-    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint": "^9.0.0",
     "eslint-plugin-import": "^2.29.0",
+    "globals": "^15.0.0",
     "jest": "^30.0.0",
     "tsdown": "^0.22.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.0.0"
   },
   "dependencies": {
     "@fulcrumapp/pg-query-deparser": "0.0.4",

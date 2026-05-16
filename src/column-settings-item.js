@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import Expression from './expression.js';
 import { OperatorType } from './operator.js';
 import ColumnFilter from './column-filter.js';

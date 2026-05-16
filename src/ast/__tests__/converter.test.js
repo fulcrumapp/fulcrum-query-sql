@@ -11,7 +11,7 @@ import {
   BooleanTest,
   ColumnRef,
 } from '../helpers.js';
-import { availableOperatorsForColumn } from '../../operator.js';
+import { availableOperatorsForColumn, OperatorType } from '../../operator.js';
 
 const Deparse = DeparseModule.default || DeparseModule;
 
@@ -66,7 +66,7 @@ const fullSchemaSchema = new FormSchema(form, rawColumns, {}, { fullSchema: true
 describe('Converter', () => {
   describe('given a non-array', () => {
     it('creates a subquery with a not null test', () => {
-      const expression = new Expression({ field: 'text', operator: 'not_empty' }, schema);
+      const expression = new Expression({ field: 'text', operator: OperatorType.NotEmpty.name }, schema);
 
       const expr = new Converter().NotEmptyConverter(expression);
 
@@ -135,7 +135,7 @@ describe('ConstValue converter', () => {
 
   describe('given media captions', () => {
     it('creates a subquery with array_to_string', () => {
-      const expression = new Expression({ field: 'photos_captions', operator: 'not_empty' }, fullSchemaSchema);
+      const expression = new Expression({ field: 'photos_captions', operator: OperatorType.NotEmpty.name }, fullSchemaSchema);
 
       const expr = new Converter().NotEmptyConverter(expression);
 
@@ -148,7 +148,7 @@ describe('ConstValue converter', () => {
 
     describe('given media field except captions', () => {
       it('creates a subquery with a not null test', () => {
-        const expression = new Expression({ field: 'photos', operator: 'not_empty' }, schema);
+        const expression = new Expression({ field: 'photos', operator: OperatorType.NotEmpty.name }, schema);
 
         const expr = new Converter().NotEmptyConverter(expression);
 
@@ -165,7 +165,7 @@ describe('ConstValue converter', () => {
 describe('Empty converter', () => {
   describe('given a non-array', () => {
     it('creates a subquery with a null test', () => {
-      const expression = new Expression({ field: 'text', operator: 'empty' }, schema);
+      const expression = new Expression({ field: 'text', operator: OperatorType.Empty.name }, schema);
 
       const expr = new Converter().EmptyConverter(expression);
 
@@ -179,7 +179,7 @@ describe('Empty converter', () => {
 
   describe('given media captions', () => {
     it('creates a subquery with array_position', () => {
-      const expression = new Expression({ field: 'photos_captions', operator: 'empty' }, fullSchemaSchema);
+      const expression = new Expression({ field: 'photos_captions', operator: OperatorType.Empty.name }, fullSchemaSchema);
 
       const expr = new Converter().EmptyConverter(expression);
 
@@ -193,7 +193,7 @@ describe('Empty converter', () => {
 
   describe('given media field except captions', () => {
     it('creates a subquery with a null test', () => {
-      const expression = new Expression({ field: 'photos', operator: 'empty' }, schema);
+      const expression = new Expression({ field: 'photos', operator: OperatorType.Empty.name }, schema);
 
       const expr = new Converter().EmptyConverter(expression);
 

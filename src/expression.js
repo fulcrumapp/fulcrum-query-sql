@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import {
   availableOperatorsForColumn, isValueRequired, isDateOperator, OperatorsByValue,
 } from './operator.js';

@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import Expression from './expression.js';
 
 export const ConditionType = {
@@ -84,7 +83,7 @@ export class Condition {
 
     return {
       type: this.type,
-      expressions: expressions
+      expressions
     };
   }
 
@@ -102,7 +101,7 @@ export class Condition {
     return expressions;
   }
 
-  toHumanDescription(topLevel = false) {
+  toHumanDescription(_topLevel = false) {
     if (this.expressions.length === 0) {
       return null;
     }
@@ -125,6 +124,6 @@ export class Condition {
       return `(NOT ${descriptions.join(' AND ')})`;
     }
 
-    return '(' + descriptions.join(' ' + this.type.toUpperCase() + ' ') + ')';
+    return `(${  descriptions.join(` ${  this.type.toUpperCase()  } `)  })`;
   }
 }

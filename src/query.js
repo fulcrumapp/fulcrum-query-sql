@@ -1,5 +1,4 @@
-/* eslint-disable no-underscore-dangle */
-import Deparse from '@fulcrumapp/pg-query-deparser';
+import DeparseModule from '@fulcrumapp/pg-query-deparser';
 import { Condition } from './condition.js';
 import Expression from './expression.js';
 import SortExpressions from './sort-expressions.js';
@@ -23,6 +22,8 @@ import {
   IntegerValue,
   AStar,
 } from './ast/helpers.js';
+
+const Deparse = DeparseModule.default || DeparseModule;
 
 export default class Query {
   constructor(attrs) {
@@ -107,6 +108,7 @@ export default class Query {
            || this.projectFilter.hasFilter
            || this.assignmentFilter.hasFilter
            || this.changesetFilter.hasFilter
+           || this.columnSettings.columns.some((o) => o.hasFilter)
            || this.searchFilter
            || this.dateFilter.isValid
            || this.filter.expressions.find((o) => o.isValid)
@@ -262,7 +264,7 @@ export default class Query {
   }
 
   deparse(ast) {
-    const deparser = new Deparse.default();
+    const deparser = new Deparse();
     return deparser.deparse(ast);
   }
 

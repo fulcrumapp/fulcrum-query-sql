@@ -19,7 +19,7 @@ export function SelectStmt({
 export function StringValue(value) {
   return {
     String: {
-      str: value != null ? value.toString() : '',
+      str: value != null ? value.toString() : null,
     },
   };
 }
