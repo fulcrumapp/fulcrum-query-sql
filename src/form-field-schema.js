@@ -9,9 +9,9 @@ export default class FormFieldSchema {
   addSystemColumn(label, attribute, columnName, type, accessor, join, sql) {
     const column = new SimpleColumn({name: label,
                                      attributeName: attribute,
-                                     columnName: columnName,
-                                     type: type,
-                                     accessor: accessor,
+                                     columnName,
+                                     type,
+                                     accessor,
                                      join,
                                      sql,
                                      index: this._columns.length});
@@ -22,7 +22,7 @@ export default class FormFieldSchema {
   }
 
   addElementColumn(element, part, type) {
-    const columnKey = part ? element.key + '_' + part : element.key;
+    const columnKey = part ? `${element.key  }_${  part}` : element.key;
 
     const rawColumn = this._rawColumnsByKey[columnKey];
 
@@ -89,7 +89,7 @@ export default class FormFieldSchema {
 
   columnForFieldKey(fieldKey, part) {
     if (part) {
-      return this._columnsByKey[fieldKey + '_' + part];
+      return this._columnsByKey[`${fieldKey  }_${  part}`];
     }
 
     return this._columnsByKey[fieldKey];

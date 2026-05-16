@@ -1,10 +1,9 @@
-import { Expression } from './expression.js';
-import _ from 'lodash';
+import Expression from './expression.js';
 
 export const ConditionType = {
   And: 'and',
   Or: 'or',
-  Not: 'not'
+  Not: 'not',
 };
 
 export class Condition {
@@ -49,7 +48,7 @@ export class Condition {
   }
 
   removeCondition(condition) {
-    this._expressions = _.without(this._expressions, condition);
+    this._expressions = this._expressions.filter((c) => c !== condition);
   }
 
   ensureEmptyExpression() {
@@ -72,7 +71,7 @@ export class Condition {
   }
 
   removeExpression(expression) {
-    this._expressions = _.without(this._expressions, expression);
+    this._expressions = this._expressions.filter(e => e !== expression);
   }
 
   toJSON() {
@@ -84,7 +83,7 @@ export class Condition {
 
     return {
       type: this.type,
-      expressions: expressions
+      expressions
     };
   }
 
@@ -102,7 +101,7 @@ export class Condition {
     return expressions;
   }
 
-  toHumanDescription(topLevel = false) {
+  toHumanDescription(_topLevel = false) {
     if (this.expressions.length === 0) {
       return null;
     }
@@ -122,9 +121,9 @@ export class Condition {
     }
 
     if (this.type === 'not') {
-      return '(NOT ' + descriptions.join(' AND ') + ')';
+      return `(NOT ${descriptions.join(' AND ')})`;
     }
 
-    return '(' + descriptions.join(' ' + this.type.toUpperCase() + ' ') + ')';
+    return `(${  descriptions.join(` ${  this.type.toUpperCase()  } `)  })`;
   }
 }

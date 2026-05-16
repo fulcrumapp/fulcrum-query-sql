@@ -61,7 +61,7 @@ export default class FormSchema extends FormFieldSchema {
       if (SYSTEM_COLUMNS.indexOf(column.name) !== -1) {
         this._rawColumnsByKey[column.name] = column;
       } else if (column.field) {
-        const key = column.part ? column.field + '_' + column.part : column.field;
+        const key = column.part ? `${column.field  }_${  column.part}` : column.field;
         this._rawColumnsByKey[key] = column;
       }
     }

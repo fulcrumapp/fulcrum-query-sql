@@ -1,56 +1,77 @@
 import { Form } from '@fulcrumapp/fulcrum-core';
-import Deparse from '@fulcrumapp/pg-query-deparser';
+import DeparseModule from '@fulcrumapp/pg-query-deparser';
 import moment from 'moment-timezone';
-import Converter from '../converter.js';
 import FormSchema from '../../form-schema.js';
-import {
-  ColumnRef,
-  BoolExpr,
-  AExpr,
-  BooleanTest,
-} from '../helpers.js';
+import Expression from '../../expression.js';
 import Query from '../../query.js';
-import { Expression } from '../../expression.js';
-import { availableOperatorsForColumn } from '../../operator.js';
+import Converter from '../converter.js';
+import {
+  AExpr,
+  BoolExpr,
+  BooleanTest,
+  ColumnRef,
+} from '../helpers.js';
+import { availableOperatorsForColumn, OperatorType } from '../../operator.js';
 
-describe('NotEmpty converter', () => {
+const Deparse = DeparseModule.default || DeparseModule;
+
+const form = new Form({
+  elements: [
+    {
+      type: 'TextField',
+      key: 'text',
+      data_name: 'text',
+    },
+    {
+      type: 'PhotoField',
+      key: 'photos',
+      data_name: 'photos',
+    },
+  ],
+});
+
+const rawColumns = [
+  { name: '_record_id', type: 'string' },
+  { name: '_status', type: 'string' },
+  { name: '_latitude', type: 'double' },
+  { name: '_longitude', type: 'double' },
+  { name: '_created_at', type: 'timestamp' },
+  { name: '_updated_at', type: 'timestamp' },
+  { name: '_version', type: 'integer' },
+  { name: '_created_by_id', type: 'string' },
+  { name: '_updated_by_id', type: 'string' },
+  { name: '_server_created_at', type: 'timestamp' },
+  { name: '_server_updated_at', type: 'timestamp' },
+  { name: '_geometry', type: 'geometry' },
+  { name: '_altitude', type: 'double' },
+  { name: '_speed', type: 'double' },
+  { name: '_course', type: 'double' },
+  { name: '_horizontal_accuracy', type: 'double' },
+  { name: '_vertical_accuracy', type: 'double' },
+  { name: '_project_id', type: 'string' },
+  { name: '_assigned_to_id', type: 'string' },
+  { name: '_title', type: 'string' },
+  { name: '_created_duration', type: 'integer' },
+  { name: '_updated_duration', type: 'integer' },
+  { name: '_edited_duration', type: 'integer' },
+  { name: '_record_series_id', type: 'string' },
+  { name: '_gps_device_capture', type: 'boolean' },
+  { field: 'text', type: 'string' },
+  { field: 'photos', type: 'string' },
+];
+
+const schema = new FormSchema(form, rawColumns, {}, { fullSchema: false });
+const fullSchemaSchema = new FormSchema(form, rawColumns, {}, { fullSchema: true });
+
+describe('Converter', () => {
   describe('given a non-array', () => {
     it('creates a subquery with a not null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'TextField',
-            key: '3bd0',
-            label: 'Text',
-            data_name: 'text',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'text',
-            type: 'string',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0', operator: 'is_not_empty' }, schema);
+      const expression = new Expression({ field: 'text', operator: OperatorType.NotEmpty.name }, schema);
 
       const expr = new Converter().NotEmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const deparser = new Deparse();
+      const sql = deparser.deparse(expr);
 
       const expectSql = '"text" IS NOT NULL';
       expect(sql).toEqual(expectSql);
@@ -98,11 +119,11 @@ describe('ConstValue converter', () => {
       };
 
       it('correctly structures a ConstValue with a Float type', () => {
-        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(1753156800));
+        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(moment.utc('2025-07-22').valueOf() / 1000));
       });
 
       it('correctly structures a ConstValue with a Float type when passed a date string with different formatting', () => {
-        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(1753156800));
+        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(moment.utc('07/22/2025', 'MM/DD/YYYY').valueOf() / 1000));
       });
 
       it('correctly structures a ConstValue with a Float type when passed a double value', () => {
@@ -114,96 +135,29 @@ describe('ConstValue converter', () => {
 
   describe('given media captions', () => {
     it('creates a subquery with array_to_string', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0_captions', operator: 'is_not_empty' }, schema);
+      const expression = new Expression({ field: 'photos_captions', operator: OperatorType.NotEmpty.name }, fullSchemaSchema);
 
       const expr = new Converter().NotEmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const deparser = new Deparse();
+      const sql = deparser.deparse(expr);
 
       const expectSql = '("photos_captions" IS NOT NULL AND ((length(array_to_string("photos_captions", \'\'))) > (0)))';
       expect(sql).toEqual(expectSql);
     });
-  });
-  describe('given media field except captions', () => {
-    it('creates a subquery with a not null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
 
-      const expression = new Expression({ field: '3bd0', operator: 'is_not_empty' }, schema);
+    describe('given media field except captions', () => {
+      it('creates a subquery with a not null test', () => {
+        const expression = new Expression({ field: 'photos', operator: OperatorType.NotEmpty.name }, schema);
 
-      const expr = new Converter().NotEmptyConverter(expression);
+        const expr = new Converter().NotEmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+        const deparser = new Deparse();
+        const sql = deparser.deparse(expr);
 
-      const expectSql = '"photos_captions" IS NOT NULL';
-      expect(sql).toEqual(expectSql);
+        const expectSql = '"photos" IS NOT NULL';
+        expect(sql).toEqual(expectSql);
+      });
     });
   });
 });
@@ -211,197 +165,74 @@ describe('ConstValue converter', () => {
 describe('Empty converter', () => {
   describe('given a non-array', () => {
     it('creates a subquery with a null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'TextField',
-            key: '3bd0',
-            label: 'Text',
-            data_name: 'text',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'text',
-            type: 'string',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0', operator: 'is_empty' }, schema);
+      const expression = new Expression({ field: 'text', operator: OperatorType.Empty.name }, schema);
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const deparser = new Deparse();
+      const sql = deparser.deparse(expr);
 
       const expectSql = '"text" IS NULL';
       expect(sql).toEqual(expectSql);
     });
   });
+
   describe('given media captions', () => {
     it('creates a subquery with array_position', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0_captions', operator: 'is_empty' }, schema);
+      const expression = new Expression({ field: 'photos_captions', operator: OperatorType.Empty.name }, fullSchemaSchema);
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const deparser = new Deparse();
+      const sql = deparser.deparse(expr);
 
       const expectSql = '("photos_captions" IS NULL OR ((COALESCE(array_position("photos_captions", NULL), 0)) > (0)))';
       expect(sql).toEqual(expectSql);
     });
   });
+
   describe('given media field except captions', () => {
     it('creates a subquery with a null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0', operator: 'is_empty' }, schema);
+      const expression = new Expression({ field: 'photos', operator: OperatorType.Empty.name }, schema);
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const deparser = new Deparse();
+      const sql = deparser.deparse(expr);
 
-      const expectSql = '"photos_captions" IS NULL';
+      const expectSql = '"photos" IS NULL';
       expect(sql).toEqual(expectSql);
     });
   });
 });
 
 describe('NotIn converter', () => {
-  const formJson = {
-    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-    name: 'TestForm',
-    status_field: {
-      type: 'StatusField',
-      label: 'Status',
-      data_name: 'status',
-    },
-    elements: [
-      {
-        type: 'TextField',
-        key: '3bd0',
-        label: 'Text',
-        data_name: 'text',
-      },
-    ],
-  };
-
-  const rawColumns = {
-    form: [
-      {
-        field: '3bd0',
-        name: 'text',
-        type: 'string',
-      },
-    ],
-    repeatables: {},
-  };
-
-  const schema = new FormSchema(new Form(formJson), rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
   it('includes blank (NULL) values when excluding non-blank values', () => {
-    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: ['A'] }, schema);
+    const expression = new Expression({ field: 'text', operator: 'not_in', value: ['A'] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const sql = new Deparse().deparse(expr);
+    const deparser = new Deparse();
+    const sql = deparser.deparse(expr);
 
     expect(sql).toEqual('("text" IS NULL OR "text" NOT IN (\'A\'))');
   });
 
   it('excludes blank (NULL) values when blank is selected along with other values', () => {
-    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: ['A', null] }, schema);
+    const expression = new Expression({ field: 'text', operator: 'not_in', value: ['A', ''] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const sql = new Deparse().deparse(expr);
+    const deparser = new Deparse();
+    const sql = deparser.deparse(expr);
 
     expect(sql).toEqual('("text" IS NOT NULL AND "text" NOT IN (\'A\'))');
   });
 
   it('excludes only blank (NULL) values when blank is the only selected value', () => {
-    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: [null] }, schema);
+    const expression = new Expression({ field: 'text', operator: 'not_in', value: [''] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const sql = new Deparse().deparse(expr);
+    const deparser = new Deparse();
+    const sql = deparser.deparse(expr);
 
     expect(sql).toEqual('"text" IS NOT NULL');
   });
@@ -468,12 +299,14 @@ describe('WhereClause converter', () => {
       };
       const query = new Query(queryOptions);
       query.columnSettings.columnsByID['3bd0'].search = 'test';
+
+      expect(query.hasFilter).toBe(true);
+
       const boolExpr = new Converter().whereClause(query);
-      const sql = new Deparse().deparse(boolExpr);
+      const deparser = new Deparse();
+      const sql = deparser.deparse(boolExpr);
 
       const expectSql = '(EXISTS (SELECT 1 FROM "ea635699-133f-4844-ae77-f4090fffc7b0" WHERE ("ea635699-133f-4844-ae77-f4090fffc7b0"."_record_id" = ANY (ARRAY["records"."rl"]) AND "ea635699-133f-4844-ae77-f4090fffc7b0"."_title" ILIKE (\'%test%\'))))';
-      console.log("THIS IS SQL", sql);
-      
       expect(sql).toEqual(expectSql);
     });
   });
@@ -492,7 +325,8 @@ describe('JoinClause converter', () => {
 
       const { JoinExpr } = Converter.joinClause(baseQuery, join);
       const { quals: ast } = JoinExpr;
-      const sql = new Deparse().deparse(ast);
+      const deparser = new Deparse();
+      const sql = deparser.deparse(ast);
 
       const expectSql = '(("records"."_record_series_id") = ("record_series"."record_series_id"))';
       expect(sql).toEqual(expectSql);
@@ -514,7 +348,8 @@ describe('JoinClause converter', () => {
 
       const { JoinExpr } = Converter.joinClause(baseQuery, join);
       const { quals: ast } = JoinExpr;
-      const sql = new Deparse().deparse(ast);
+      const deparser = new Deparse();
+      const sql = deparser.deparse(ast);
 
       const expectSql = '((("records"."_record_series_id") = ("record_series"."record_series_id")) AND "record_series"."enabled" IS TRUE)';
       expect(sql).toEqual(expectSql);
@@ -664,7 +499,7 @@ describe('toTilesAST converter', () => {
 
 describe('BinaryConverter', () => {
   const converter = new Converter();
-    
+
   const formJson = {
     id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
     name: 'TestForm',
