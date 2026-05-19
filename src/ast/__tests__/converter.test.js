@@ -96,14 +96,15 @@ describe('ConstValue converter', () => {
           }
         }
       };
-      const expectedCalculatedDateEpoch = moment('2025-07-22').valueOf() / 1000;
+      // 2025-07-22T00:00:00Z — fixed UTC epoch, independent of machine timezone
+      const EPOCH_2025_07_22_UTC = 1753142400;
 
       it('correctly structures a ConstValue with a Float type', () => {
-        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(expectedCalculatedDateEpoch));
+        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });
 
       it('correctly structures a ConstValue with a Float type when passed a date string with different formatting', () => {
-        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(expectedCalculatedDateEpoch));
+        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });
 
       it('correctly structures a ConstValue with a Float type when passed a double value', () => {

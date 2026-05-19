@@ -1241,7 +1241,7 @@ export default class Converter {
 
     if (column.isNumber) {
         if (column.element.isCalculatedElement && column.element.display.isDate && (typeof value === 'string')) {
-          const doubleValue = moment(value).valueOf() / 1000;
+          const doubleValue = moment.utc(value, ['YYYY-MM-DD', 'MM/DD/YYYY'], true).valueOf() / 1000;
           return AConst(FloatValue(doubleValue));
         }
       return AConst(FloatValue(value));
