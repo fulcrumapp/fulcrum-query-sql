@@ -1,6 +1,6 @@
 {
   "name": "@fulcrumapp/query-sql",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Fulcrum Query SQL Utilities",
   "homepage": "http://github.com/fulcrumapp/fulcrum-query-sql",
   "type": "module",
@@ -45,7 +45,7 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "@fulcrumapp/pg-query-deparser": "^0.0.4",
+    "@fulcrumapp/pg-query-deparser": "^1.0.0",
     "array-move": "^4.0.0",
     "lodash": "^4.18.1",
     "moment": "^2.30.1",
