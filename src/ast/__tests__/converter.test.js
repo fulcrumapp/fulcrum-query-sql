@@ -1,5 +1,5 @@
 import { Form } from '@fulcrumapp/fulcrum-core';
-import DeparseModule from '@fulcrumapp/pg-query-deparser';
+import { Deparser } from '@fulcrumapp/pg-query-deparser';
 import moment from 'moment-timezone';
 import FormSchema from '../../form-schema.js';
 import Expression from '../../expression.js';
@@ -12,8 +12,6 @@ import {
   ColumnRef,
 } from '../helpers.js';
 import { availableOperatorsForColumn, OperatorType } from '../../operator.js';
-
-const Deparse = DeparseModule.default || DeparseModule;
 
 const form = new Form({
   elements: [
@@ -70,8 +68,7 @@ describe('Converter', () => {
 
       const expr = new Converter().NotEmptyConverter(expression);
 
-      const deparser = new Deparse();
-      const sql = deparser.deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
       const expectSql = '"text" IS NOT NULL';
       expect(sql).toEqual(expectSql);
@@ -117,13 +114,15 @@ describe('ConstValue converter', () => {
           }
         }
       };
+      // 2025-07-22T00:00:00Z — fixed UTC epoch, independent of machine timezone
+      const EPOCH_2025_07_22_UTC = 1753142400;
 
       it('correctly structures a ConstValue with a Float type', () => {
-        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(moment.utc('2025-07-22').valueOf() / 1000));
+        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });
 
       it('correctly structures a ConstValue with a Float type when passed a date string with different formatting', () => {
-        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(moment.utc('07/22/2025', 'MM/DD/YYYY').valueOf() / 1000));
+        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });
 
       it('correctly structures a ConstValue with a Float type when passed a double value', () => {
@@ -139,8 +138,7 @@ describe('ConstValue converter', () => {
 
       const expr = new Converter().NotEmptyConverter(expression);
 
-      const deparser = new Deparse();
-      const sql = deparser.deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
       const expectSql = '("photos_captions" IS NOT NULL AND ((length(array_to_string("photos_captions", \'\'))) > (0)))';
       expect(sql).toEqual(expectSql);
@@ -152,8 +150,7 @@ describe('ConstValue converter', () => {
 
         const expr = new Converter().NotEmptyConverter(expression);
 
-        const deparser = new Deparse();
-        const sql = deparser.deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
         const expectSql = '"photos" IS NOT NULL';
         expect(sql).toEqual(expectSql);
@@ -169,8 +166,7 @@ describe('Empty converter', () => {
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const deparser = new Deparse();
-      const sql = deparser.deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
       const expectSql = '"text" IS NULL';
       expect(sql).toEqual(expectSql);
@@ -183,8 +179,7 @@ describe('Empty converter', () => {
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const deparser = new Deparse();
-      const sql = deparser.deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
       const expectSql = '("photos_captions" IS NULL OR ((COALESCE(array_position("photos_captions", NULL), 0)) > (0)))';
       expect(sql).toEqual(expectSql);
@@ -197,8 +192,7 @@ describe('Empty converter', () => {
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const deparser = new Deparse();
-      const sql = deparser.deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
       const expectSql = '"photos" IS NULL';
       expect(sql).toEqual(expectSql);
@@ -211,8 +205,7 @@ describe('NotIn converter', () => {
     const expression = new Expression({ field: 'text', operator: 'not_in', value: ['A'] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const deparser = new Deparse();
-    const sql = deparser.deparse(expr);
+    const sql = new Deparser().deparse(expr);
 
     expect(sql).toEqual('("text" IS NULL OR "text" NOT IN (\'A\'))');
   });
@@ -221,8 +214,7 @@ describe('NotIn converter', () => {
     const expression = new Expression({ field: 'text', operator: 'not_in', value: ['A', ''] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const deparser = new Deparse();
-    const sql = deparser.deparse(expr);
+    const sql = new Deparser().deparse(expr);
 
     expect(sql).toEqual('("text" IS NOT NULL AND "text" NOT IN (\'A\'))');
   });
@@ -231,8 +223,7 @@ describe('NotIn converter', () => {
     const expression = new Expression({ field: 'text', operator: 'not_in', value: [''] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const deparser = new Deparse();
-    const sql = deparser.deparse(expr);
+    const sql = new Deparser().deparse(expr);
 
     expect(sql).toEqual('"text" IS NOT NULL');
   });
@@ -303,8 +294,7 @@ describe('WhereClause converter', () => {
       expect(query.hasFilter).toBe(true);
 
       const boolExpr = new Converter().whereClause(query);
-      const deparser = new Deparse();
-      const sql = deparser.deparse(boolExpr);
+      const sql = new Deparser().deparse(boolExpr);
 
       const expectSql = '(EXISTS (SELECT 1 FROM "ea635699-133f-4844-ae77-f4090fffc7b0" WHERE ("ea635699-133f-4844-ae77-f4090fffc7b0"."_record_id" = ANY (ARRAY["records"."rl"]) AND "ea635699-133f-4844-ae77-f4090fffc7b0"."_title" ILIKE (\'%test%\'))))';
       expect(sql).toEqual(expectSql);
@@ -325,8 +315,7 @@ describe('JoinClause converter', () => {
 
       const { JoinExpr } = Converter.joinClause(baseQuery, join);
       const { quals: ast } = JoinExpr;
-      const deparser = new Deparse();
-      const sql = deparser.deparse(ast);
+      const sql = new Deparser().deparse(ast);
 
       const expectSql = '(("records"."_record_series_id") = ("record_series"."record_series_id"))';
       expect(sql).toEqual(expectSql);
@@ -348,8 +337,7 @@ describe('JoinClause converter', () => {
 
       const { JoinExpr } = Converter.joinClause(baseQuery, join);
       const { quals: ast } = JoinExpr;
-      const deparser = new Deparse();
-      const sql = deparser.deparse(ast);
+      const sql = new Deparser().deparse(ast);
 
       const expectSql = '((("records"."_record_series_id") = ("record_series"."record_series_id")) AND "record_series"."enabled" IS TRUE)';
       expect(sql).toEqual(expectSql);

@@ -1,4 +1,4 @@
-import DeparseModule from '@fulcrumapp/pg-query-deparser';
+import { Deparser } from '@fulcrumapp/pg-query-deparser';
 import { Condition } from './condition.js';
 import Expression from './expression.js';
 import SortExpressions from './sort-expressions.js';
@@ -22,8 +22,6 @@ import {
   IntegerValue,
   AStar,
 } from './ast/helpers.js';
-
-const Deparse = DeparseModule.default || DeparseModule;
 
 export default class Query {
   constructor(attrs) {
@@ -264,8 +262,7 @@ export default class Query {
   }
 
   deparse(ast) {
-    const deparser = new Deparse();
-    return deparser.deparse(ast);
+    return new Deparser().deparse(ast);
   }
 
   toSchemaAST(ast, options) {

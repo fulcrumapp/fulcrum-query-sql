@@ -420,12 +420,12 @@
     relative-date "^1.1.3"
     uuid "^9.0.0"
 
-"@fulcrumapp/pg-query-deparser@0.0.4":
-  version "0.0.4"
-  resolved "https://npm.pkg.github.com/download/@fulcrumapp/pg-query-deparser/0.0.4/e9bba0a5b64530312dcebabb0c284345fcaed976#e9bba0a5b64530312dcebabb0c284345fcaed976"
-  integrity sha512-P6TtYJOe1oZ5LXVTpVr4VWawVT6sO832xFv11IY/aFlARr9VwyzivkCTMH6obVb+zdYuproA7R2KGMR+fveBbg==
+"@fulcrumapp/pg-query-deparser@^1.0.0":
+  version "1.0.0"
+  resolved "https://npm.pkg.github.com/download/@fulcrumapp/pg-query-deparser/1.0.0/c8487dc612dbe0040a1234ac67541c504d1570c4#c8487dc612dbe0040a1234ac67541c504d1570c4"
+  integrity sha512-5M6km1ynI/SJMKHNyoWUvwonwgP8btrf2EeSULayOWPC5lzy/16UhBZY/RPqLuLz+81N2GOTnLPSzhMNb8a85w==
   dependencies:
-    lodash "^4.17.21"
+    lodash "^4.18.1"
 
 "@humanfs/core@^0.19.2":
   version "0.19.2"

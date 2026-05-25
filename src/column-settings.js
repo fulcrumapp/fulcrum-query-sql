@@ -60,9 +60,13 @@ export default class ColumnSettings {
   }
 
   move(from, to) {
+    const len = this._columns.length;
+    if (from < 0 || from >= len || to < 0 || to >= len || from === to) {
+      return;
+    }
     const cols = [...this._columns];
-    const [item] = cols.splice(from, 1); // remove the item at `from`
-    cols.splice(to, 0, item); // insert it at `to`
+    const [item] = cols.splice(from, 1);
+    cols.splice(to, 0, item);
     this._columns = cols;
   }
 
