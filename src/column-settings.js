@@ -52,7 +52,7 @@ export default class ColumnSettings {
 
   reset() {
     this._columns = this._allColumns.slice();
-    this._columns.map((o) => o.clear());
+    this._columns.forEach((o) => o.clear());
   }
 
   toJSON() {

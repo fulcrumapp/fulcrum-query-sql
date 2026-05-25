@@ -51,7 +51,7 @@ export default class Expression {
   }
 
   set scalarValue(value) {
-    this._value = value ? [value] : null;
+    this._value = value != null ? [value] : null;
   }
 
   get value1() {
@@ -110,7 +110,7 @@ export default class Expression {
     this._field = column ? column.id : null;
 
     // if the change in the field results in the operator not being valid, clear the operator
-    if (this._operator && this.availableOperators().find((o) => o.name === this._operator) === -1) {
+    if (this._operator && !this.availableOperators().some((o) => o.name === this._operator)) {
       this._operator = null;
     }
   }
