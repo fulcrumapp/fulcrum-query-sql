@@ -82,7 +82,7 @@ export default class Converter {
 
   toTileAST(query, { searchFilter }, maxTileRecords, sorting = {}) {
     let sortClause = null;
-    let targetList = null;
+    let targetList;
 
     if (query.ast) {
       const sort = [SortBy(AConst(IntegerValue(1)), 0, 0)];
@@ -234,7 +234,7 @@ export default class Converter {
   toDistinctValuesAST(query, options = {}) {
     const valueColumn = query.ast ? ColumnRef(options.column.id) : columnRef(options.column);
 
-    let targetList = null;
+    let targetList;
 
     const isLinkedRecord = options.column.element && options.column.element.isRecordLinkElement;
 
@@ -356,7 +356,7 @@ export default class Converter {
   }
 
   histogramWithClause(column, bucketSize, type, query, boundingBox, searchFilter) {
-    let recordsTargetList = null;
+    let recordsTargetList;
 
     if (type === 'date') {
       const datePartArgs = [
@@ -463,7 +463,7 @@ export default class Converter {
   }
 
   fromClause(query, leftJoins = [], exactColumns) {
-    let baseQuery = null;
+    let baseQuery;
 
     if (query.ast) {
       let queryAST = query.ast;

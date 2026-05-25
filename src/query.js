@@ -593,7 +593,7 @@ export default class Query {
   toHumanDescription() {
     const parts = [];
 
-    let description = null;
+    let description;
 
     if ((description = this.statusFilter.toHumanDescription())) {
       parts.push(description);

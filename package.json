@@ -36,20 +36,19 @@
     "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
-    "@eslint/js": "^9.0.0",
-    "@fulcrumapp/fulcrum-core": "^1.5.3",
-    "eslint": "^10.0.0",
-    "eslint-plugin-import": "^2.29.0",
-    "globals": "^15.0.0",
-    "jest": "^30.0.0",
+    "@eslint/js": "^10.0.1",
+    "@fulcrumapp/fulcrum-core": "^1.6.0",
+    "eslint": "^10.4.0",
+    "globals": "^17.6.0",
+    "jest": "^30.4.2",
     "tsdown": "^0.22.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.0.0"
+    "typescript-eslint": "^8.59.4"
   },
   "dependencies": {
     "@fulcrumapp/pg-query-deparser": "^1.0.0",
     "moment": "^2.30.1",
-    "moment-timezone": "^0.6.1"
+    "moment-timezone": "^0.6.2"
   },
   "keywords": [
     "fulcrum"

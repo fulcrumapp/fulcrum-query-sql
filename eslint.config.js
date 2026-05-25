@@ -1,5 +1,4 @@
 import js from '@eslint/js';
-import importPlugin from 'eslint-plugin-import';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
 
@@ -8,9 +7,6 @@ export default [
   ...tseslint.configs.recommended,
   {
     files: ['src/**/*.{js,ts}'],
-    plugins: {
-      import: importPlugin,
-    },
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -43,11 +39,6 @@ export default [
           ignoreRestSiblings: true,
         },
       ],
-
-      // NodeNext + bundler handle resolution; eslint-plugin-import shouldn't
-      // second-guess them.
-      'import/extensions': 'off',
-      'import/no-unresolved': 'off',
 
       // Pragmatic relaxations for this codebase.
       'no-prototype-builtins': 'off',
