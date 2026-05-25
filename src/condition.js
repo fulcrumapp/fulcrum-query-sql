@@ -124,6 +124,8 @@ export class Condition {
       return `(NOT ${descriptions.join(' AND ')})`;
     }
 
-    return `(${  descriptions.join(` ${  this.type.toUpperCase()  } `)  })`;
+    const joiner = ` ${this.type.toUpperCase()} `;
+
+    return `(${descriptions.join(joiner)})`;
   }
 }

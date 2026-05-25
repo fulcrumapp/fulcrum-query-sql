@@ -202,7 +202,7 @@ describe('Empty converter', () => {
 
 describe('NotIn converter', () => {
   it('includes blank (NULL) values when excluding non-blank values', () => {
-    const expression = new Expression({ field: 'text', operator: 'not_in', value: ['A'] }, schema);
+    const expression = new Expression({ field: 'text', operator: OperatorType.NotIn.name, value: ['A'] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
     const sql = new Deparser().deparse(expr);
@@ -211,7 +211,7 @@ describe('NotIn converter', () => {
   });
 
   it('excludes blank (NULL) values when blank is selected along with other values', () => {
-    const expression = new Expression({ field: 'text', operator: 'not_in', value: ['A', ''] }, schema);
+    const expression = new Expression({ field: 'text', operator: OperatorType.NotIn.name, value: ['A', ''] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
     const sql = new Deparser().deparse(expr);
@@ -220,7 +220,7 @@ describe('NotIn converter', () => {
   });
 
   it('excludes only blank (NULL) values when blank is the only selected value', () => {
-    const expression = new Expression({ field: 'text', operator: 'not_in', value: [''] }, schema);
+    const expression = new Expression({ field: 'text', operator: OperatorType.NotIn.name, value: [''] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
     const sql = new Deparser().deparse(expr);
@@ -663,12 +663,12 @@ describe('gps_device_capture column', () => {
     it('returns only empty/not-empty operators for _gps_device_capture (JSONB)', () => {
       const form = new Form(formJson);
       const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-      const col = schema.columns.find(c => c.id === '_gps_device_capture');
-      const ops = availableOperatorsForColumn(col);
+      const gpsCaptureColumn = schema.columns.find((column) => column.id === '_gps_device_capture');
+      const operators = availableOperatorsForColumn(gpsCaptureColumn);
 
-      expect(ops).toHaveLength(2);
-      expect(ops.find(o => o.name === 'is_empty')).toBeDefined();
-      expect(ops.find(o => o.name === 'is_not_empty')).toBeDefined();
+      expect(operators).toHaveLength(2);
+      expect(operators.find((operator) => operator.name === OperatorType.Empty.name)).toBeDefined();
+      expect(operators.find((operator) => operator.name === OperatorType.NotEmpty.name)).toBeDefined();
     });
 
     it('does not include text operators that would fail on JSONB', () => {

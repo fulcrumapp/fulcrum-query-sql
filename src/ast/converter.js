@@ -987,7 +987,7 @@ export default class Converter {
   };
 
   NotEmptyConverter = (expression) => {
-    if (expression.column && expression.column.isArray && expression.column.part === 'captions') {
+    if (expression.column?.isArray && expression.column?.part === 'captions') {
       const nullTest = NullTest(1, columnRef(expression.column));
       const arrayLen = FuncCall('length', [FuncCall('array_to_string', [columnRef(expression.column), AConst(StringValue(''))])]);
       const lenTest = AExpr(0, '>', arrayLen, AConst(IntegerValue(0)));
@@ -999,7 +999,7 @@ export default class Converter {
   };
 
   EmptyConverter = (expression) => {
-    if (expression.column && expression.column.isArray && expression.column.part === 'captions') {
+    if (expression.column?.isArray && expression.column?.part === 'captions') {
       const nullTest = NullTest(0, columnRef(expression.column));
       const arrayPos = CoalesceExpr([FuncCall('array_position', [columnRef(expression.column), StringValue('NULL')]), AConst(IntegerValue(0))]);
       const lenTest = AExpr(0, '>', arrayPos, AConst(IntegerValue(0)));

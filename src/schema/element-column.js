@@ -40,8 +40,10 @@ export default class ElementColumn extends Column {
   }
 
   get columnName() {
-    if (this.rawColumn && this.rawColumn.name != null) {
-      return this.rawColumn.name;
+    const rawColumnName = this.rawColumn?.name;
+
+    if (rawColumnName != null) {
+      return rawColumnName;
     }
 
     if (this.part) {
