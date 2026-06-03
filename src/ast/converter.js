@@ -32,7 +32,7 @@ import { ConditionType } from '../condition.js';
 import { OperatorType, calculateDateRange } from '../operator.js';
 import { AggregateType } from '../aggregate.js';
 
-const MAX_DISTINCT_VALUES = 1000;
+const MAX_DISTINCT_VALUES = 10000;
 const MAX_TILE_RECORDS = 1000;
 
 const columnRef = (column) => {
@@ -296,7 +296,7 @@ export default class Converter {
 
     sortClause.push(SortBy(AConst(IntegerValue(1)), 1, 0));
 
-    const limitCount = this.limitCount(MAX_DISTINCT_VALUES);
+    const limitCount = this.limitCount(options.limit != null ? options.limit : MAX_DISTINCT_VALUES);
 
     return SelectStmt({targetList, fromClause, whereClause, groupClause, sortClause, limitCount});
   }
