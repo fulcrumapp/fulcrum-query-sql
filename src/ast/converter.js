@@ -32,7 +32,7 @@ import { ConditionType } from '../condition.js';
 import { OperatorType, calculateDateRange } from '../operator.js';
 import { AggregateType } from '../aggregate.js';
 
-const MAX_DISTINCT_VALUES = 10000;
+const MAX_DISTINCT_VALUES = 1000;
 const MAX_TILE_RECORDS = 1000;
 
 const columnRef = (column) => {
