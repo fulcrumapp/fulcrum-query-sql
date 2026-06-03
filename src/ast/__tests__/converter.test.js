@@ -903,11 +903,11 @@ describe('toDistinctValuesAST limit', () => {
     query = new Query({ form, schema });
   });
 
-  it('applies the default limit of 10000 when no limit is specified', () => {
+  it('applies the default limit of 1000 when no limit is specified', () => {
     const column = schema.columns.find(c => c.id === '3bd0');
     const sql = query.toDistinctValuesSQL({ column, by: 'frequency' });
 
-    expect(sql).toContain('LIMIT 10000');
+    expect(sql).toContain('LIMIT 1000');
   });
 
   it('applies a custom limit when options.limit is specified', () => {
@@ -924,11 +924,11 @@ describe('toDistinctValuesAST limit', () => {
     expect(sql).toContain('LIMIT 10000');
   });
 
-  it('does not include the old 1000 hard limit', () => {
+  it('applies the default hard limit of 1000', () => {
     const column = schema.columns.find(c => c.id === '3bd0');
     const sql = query.toDistinctValuesSQL({ column, by: 'frequency' });
 
-    expect(sql).not.toContain('LIMIT 1000');
+    expect(sql).toMatch(/\bLIMIT 1000\b/);
   });
 
   it('treats options.limit of 0 as explicit zero (not falling back to default)', () => {
@@ -937,6 +937,6 @@ describe('toDistinctValuesAST limit', () => {
 
     // 0 is falsy but != null, so it uses 0 explicitly rather than falling back to MAX_DISTINCT_VALUES
     expect(sql).toContain('LIMIT 0');
-    expect(sql).not.toContain('LIMIT 10000');
+    expect(sql).not.toContain('LIMIT 1000');
   });
 });
