@@ -862,3 +862,81 @@ describe('gps_device_capture column', () => {
     });
   });
 });
+
+describe('toDistinctValuesAST limit', () => {
+  const formJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    name: 'TestForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'TextField',
+        key: '3bd0',
+        label: 'Text',
+        data_name: 'text',
+      },
+    ],
+  };
+
+  const rawColumns = {
+    form: [
+      {
+        field: '3bd0',
+        name: 'text',
+        type: 'string',
+      },
+    ],
+    repeatables: {},
+  };
+
+  let form;
+  let schema;
+  let query;
+
+  beforeEach(() => {
+    form = new Form(formJson);
+    schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+    query = new Query({ form, schema });
+  });
+
+  it('applies the default limit of 1000 when no limit is specified', () => {
+    const column = schema.columns.find(c => c.id === '3bd0');
+    const sql = query.toDistinctValuesSQL({ column, by: 'frequency' });
+
+    expect(sql).toContain('LIMIT 1000');
+  });
+
+  it('applies a custom limit when options.limit is specified', () => {
+    const column = schema.columns.find(c => c.id === '3bd0');
+    const sql = query.toDistinctValuesSQL({ column, by: 'frequency', limit: 500 });
+
+    expect(sql).toContain('LIMIT 500');
+  });
+
+  it('applies a custom limit of 10000 when options.limit is explicitly 10000', () => {
+    const column = schema.columns.find(c => c.id === '3bd0');
+    const sql = query.toDistinctValuesSQL({ column, by: 'frequency', limit: 10000 });
+
+    expect(sql).toContain('LIMIT 10000');
+  });
+
+  it('applies the default hard limit of 1000', () => {
+    const column = schema.columns.find(c => c.id === '3bd0');
+    const sql = query.toDistinctValuesSQL({ column, by: 'frequency' });
+
+    expect(sql).toMatch(/\bLIMIT 1000\b/);
+  });
+
+  it('treats options.limit of 0 as explicit zero (not falling back to default)', () => {
+    const column = schema.columns.find(c => c.id === '3bd0');
+    const sql = query.toDistinctValuesSQL({ column, by: 'frequency', limit: 0 });
+
+    // 0 is falsy but != null, so it uses 0 explicitly rather than falling back to MAX_DISTINCT_VALUES
+    expect(sql).toContain('LIMIT 0');
+    expect(sql).not.toContain('LIMIT 1000');
+  });
+});

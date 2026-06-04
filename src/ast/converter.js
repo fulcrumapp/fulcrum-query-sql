@@ -296,7 +296,8 @@ export default class Converter {
 
     sortClause.push(SortBy(AConst(IntegerValue(1)), 1, 0));
 
-    const limitCount = this.limitCount(MAX_DISTINCT_VALUES);
+    const limit = options.limit != null ? Math.trunc(+options.limit) : MAX_DISTINCT_VALUES;
+    const limitCount = this.limitCount(Number.isFinite(limit) && limit >= 0 ? limit : MAX_DISTINCT_VALUES);
 
     return SelectStmt({targetList, fromClause, whereClause, groupClause, sortClause, limitCount});
   }
