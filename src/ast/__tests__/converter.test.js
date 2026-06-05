@@ -134,6 +134,33 @@ describe('ConstValue converter', () => {
 
         expect(ast.A_Expr.rexpr).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });
+
+      it('normalizes values for calculated date fields in createExpressionForColumnFilter', () => {
+        const converter = new Converter();
+        const filter = {
+          hasValues: true,
+          value: ['2025-07-22'],
+          column: {
+            name: 'calc_date',
+            columnName: 'calc_date',
+            isArray: false,
+            element: {
+              isCalculatedElement: true,
+              display: {
+                isDate: true,
+              },
+            },
+          },
+        };
+
+        const ast = converter.createExpressionForColumnFilter(filter, { except: null });
+        const sql = new Deparser().deparse(ast);
+        const expectedEpoch = converter.ConvertCalculatedDateToEpochSeconds('2025-07-22');
+
+        expect(sql).toContain('"calc_date" IN');
+        expect(sql).toContain(expectedEpoch.toString());
+        expect(sql).not.toContain('2025-07-22');
+      });
     });
   });
 });
