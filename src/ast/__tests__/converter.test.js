@@ -133,6 +133,39 @@ describe('ConstValue converter', () => {
         expect(new Converter().ConstValue(calculatedColumn, 'July 22, 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });
 
+      it('correctly structures a ConstValue when passed abbreviated month format (Jul 22, 2025)', () => {
+        expect(new Converter().ConstValue(calculatedColumn, 'Jul 22, 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue when passed day-first long format (22 July 2025)', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '22 July 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue when passed day-first abbreviated format (22 Jul 2025)', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '22 Jul 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('returns NaN for a completely unrecognized string', () => {
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds('not-a-date');
+        expect(result).toBeNaN();
+      });
+
+      it('returns NaN for an empty string', () => {
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds('');
+        expect(result).toBeNaN();
+      });
+
+      it('returns NaN for a null value', () => {
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds(null);
+        expect(result).toBeNaN();
+      });
+
+      it('returns NaN for an ambiguous partial date string', () => {
+        // "25/2025" matches no known format token
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds('25/2025');
+        expect(result).toBeNaN();
+      });
+
       it('correctly structures a ConstValue with a Float type when passed an ISO datetime string', () => {
         expect(new Converter().ConstValue(calculatedColumn, '2025-07-22T00:00:00.000Z')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });

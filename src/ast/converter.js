@@ -1342,16 +1342,24 @@ export default class Converter {
         'M/D/YYYY',
         'M-D-YYYY',
         'M/D/YY',
-        'M-D-YY'
+        'M-D-YY',
+        // Long-form and abbreviated month names, e.g. "June 11, 2026" / "Jun 11, 2026"
+        'MMMM D, YYYY',
+        'MMMM DD, YYYY',
+        'MMM D, YYYY',
+        'MMM DD, YYYY',
+        // Day-first variants, e.g. "11 June 2026" / "11 Jun 2026"
+        'D MMMM YYYY',
+        'DD MMMM YYYY',
+        'D MMM YYYY',
+        'DD MMM YYYY',
       ];
 
-      // Prefer strict parsing for known formats, then gracefully fall back to
-      // Moment's broader parser to support free-text date input.
-      let dateValue = moment.utc(value, strictFormats, true);
-
-      if (!dateValue.isValid()) {
-        dateValue = moment.utc(value);
-      }
+      // Strict-only parsing: the format list above covers all common human-readable
+      // date styles. Falling back to moment's loose parser (which uses the JS Date
+      // constructor internally) emits deprecation warnings and behaves inconsistently
+      // across runtimes — any string not matched here is genuinely unparseable.
+      const dateValue = moment.utc(value, strictFormats, true);
 
       if (dateValue.isValid()) {
         return dateValue.valueOf() / 1000;
