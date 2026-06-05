@@ -107,8 +107,32 @@ describe('ConstValue converter', () => {
         expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });
 
+      it('correctly structures a ConstValue with a Float type when passed M-D-YY formatting', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '7-22-25')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue with a Float type when passed free-text month formatting', () => {
+        expect(new Converter().ConstValue(calculatedColumn, 'July 22, 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue with a Float type when passed an ISO datetime string', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22T00:00:00.000Z')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
       it('correctly structures a ConstValue with a Float type when passed a double value', () => {
         expect(new Converter().ConstValue(calculatedColumn, 1753156800.123)).toEqual(expectedValue(1753156800.123));
+      });
+
+      it('normalizes date operator values for calculated date fields in BinaryConverter', () => {
+        const expression = {
+          column: calculatedColumn,
+          scalarValue: '2025-07-22',
+          isDateOperator: true,
+        };
+
+        const ast = new Converter().BinaryConverter(0, '=', expression);
+
+        expect(ast.A_Expr.rexpr).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });
     });
   });

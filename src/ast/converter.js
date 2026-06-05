@@ -648,9 +648,9 @@ export default class Converter {
       if (values.length) {
         if (filter.column.isArray) {
           expression = this.AnyOf(filter.column, values);
-        } else if (filter.column.element && filter.column.element.isCalculatedElement && filter.column.element.display.isDate) {
+        } else if (this.IsCalculatedDateColumn(filter.column)) {
           expression = this.In(filter.column, values.map((value) => {
-            return new Date(value).getTime() / 1000;
+            return this.ConvertCalculatedDateToEpochSeconds(value);
           }));
         } else {
           expression = this.In(filter.column, values);
@@ -1240,10 +1240,10 @@ export default class Converter {
     }
 
     if (column.isNumber) {
-        if (column.element.isCalculatedElement && column.element.display.isDate && (typeof value === 'string')) {
-          const doubleValue = moment.utc(value, ['YYYY-MM-DD', 'MM/DD/YYYY'], true).valueOf() / 1000;
-          return AConst(FloatValue(doubleValue));
-        }
+      if (this.IsCalculatedDateColumn(column)) {
+        return AConst(FloatValue(this.ConvertCalculatedDateToEpochSeconds(value)));
+      }
+
       return AConst(FloatValue(value));
     }
 
@@ -1254,6 +1254,48 @@ export default class Converter {
     const timeZone = (options && options.timeZone) || moment.tz.guess();
 
     return moment.tz(dateString ?? new Date().toISOString(), timeZone);
+  }
+
+  IsCalculatedDateColumn = (column) => {
+    return !!(column?.element?.isCalculatedElement && column?.element?.display?.isDate);
+  }
+
+  ConvertCalculatedDateToEpochSeconds = (value) => {
+    if (typeof value === 'number') {
+      return value;
+    }
+
+    if (value instanceof Date) {
+      return value.getTime() / 1000;
+    }
+
+    if (typeof value === 'string') {
+      const strictFormats = [
+        moment.ISO_8601,
+        'YYYY-MM-DD',
+        'YYYY/MM/DD',
+        'MM/DD/YYYY',
+        'MM-DD-YYYY',
+        'M/D/YYYY',
+        'M-D-YYYY',
+        'M/D/YY',
+        'M-D-YY'
+      ];
+
+      // Prefer strict parsing for known formats, then gracefully fall back to
+      // Moment's broader parser to support free-text date input.
+      let dateValue = moment.utc(value, strictFormats, true);
+
+      if (!dateValue.isValid()) {
+        dateValue = moment.utc(value);
+      }
+
+      if (dateValue.isValid()) {
+        return dateValue.valueOf() / 1000;
+      }
+    }
+
+    return value;
   }
 
   ConvertDateValue = (expression, date) => {
