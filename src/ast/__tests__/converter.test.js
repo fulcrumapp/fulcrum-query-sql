@@ -1,52 +1,70 @@
 import { Form } from '@fulcrumapp/fulcrum-core';
 import { Deparser } from '@fulcrumapp/pg-query-deparser';
 import moment from 'moment-timezone';
-import Converter from '../converter.js';
 import FormSchema from '../../form-schema.js';
-import {
-  ColumnRef,
-  BoolExpr,
-  AExpr,
-  BooleanTest,
-} from '../helpers.js';
+import Expression from '../../expression.js';
 import Query from '../../query.js';
-import { Expression } from '../../expression.js';
-import { availableOperatorsForColumn } from '../../operator.js';
+import Converter from '../converter.js';
+import {
+  AExpr,
+  BoolExpr,
+  BooleanTest,
+  ColumnRef,
+} from '../helpers.js';
+import { availableOperatorsForColumn, OperatorType } from '../../operator.js';
 
-describe('NotEmpty converter', () => {
+const form = new Form({
+  elements: [
+    {
+      type: 'TextField',
+      key: 'text',
+      data_name: 'text',
+    },
+    {
+      type: 'PhotoField',
+      key: 'photos',
+      data_name: 'photos',
+    },
+  ],
+});
+
+const rawColumns = [
+  { name: '_record_id', type: 'string' },
+  { name: '_status', type: 'string' },
+  { name: '_latitude', type: 'double' },
+  { name: '_longitude', type: 'double' },
+  { name: '_created_at', type: 'timestamp' },
+  { name: '_updated_at', type: 'timestamp' },
+  { name: '_version', type: 'integer' },
+  { name: '_created_by_id', type: 'string' },
+  { name: '_updated_by_id', type: 'string' },
+  { name: '_server_created_at', type: 'timestamp' },
+  { name: '_server_updated_at', type: 'timestamp' },
+  { name: '_geometry', type: 'geometry' },
+  { name: '_altitude', type: 'double' },
+  { name: '_speed', type: 'double' },
+  { name: '_course', type: 'double' },
+  { name: '_horizontal_accuracy', type: 'double' },
+  { name: '_vertical_accuracy', type: 'double' },
+  { name: '_project_id', type: 'string' },
+  { name: '_assigned_to_id', type: 'string' },
+  { name: '_title', type: 'string' },
+  { name: '_created_duration', type: 'integer' },
+  { name: '_updated_duration', type: 'integer' },
+  { name: '_edited_duration', type: 'integer' },
+  { name: '_record_series_id', type: 'string' },
+  { name: '_gps_device_capture', type: 'boolean' },
+  { field: 'text', type: 'string' },
+  { field: 'photos', type: 'string' },
+];
+
+const schema = new FormSchema(form, rawColumns, {}, { fullSchema: false });
+const fullSchemaSchema = new FormSchema(form, rawColumns, {}, { fullSchema: true });
+
+describe('Converter', () => {
   describe('given a non-array', () => {
     it('creates a subquery with a not null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'TextField',
-            key: '3bd0',
-            label: 'Text',
-            data_name: 'text',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'text',
-            type: 'string',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0', operator: 'is_not_empty' }, schema);
+      const expression = new Expression({ field: 'text', operator: OperatorType.NotEmpty.name }, schema);
 
       const expr = new Converter().NotEmptyConverter(expression);
 
@@ -116,42 +134,7 @@ describe('ConstValue converter', () => {
 
   describe('given media captions', () => {
     it('creates a subquery with array_to_string', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0_captions', operator: 'is_not_empty' }, schema);
+      const expression = new Expression({ field: 'photos_captions', operator: OperatorType.NotEmpty.name }, fullSchemaSchema);
 
       const expr = new Converter().NotEmptyConverter(expression);
 
@@ -160,52 +143,18 @@ describe('ConstValue converter', () => {
       const expectSql = '("photos_captions" IS NOT NULL AND ((length(array_to_string("photos_captions", \'\'))) > (0)))';
       expect(sql).toEqual(expectSql);
     });
-  });
-  describe('given media field except captions', () => {
-    it('creates a subquery with a not null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
 
-      const expression = new Expression({ field: '3bd0', operator: 'is_not_empty' }, schema);
+    describe('given media field except captions', () => {
+      it('creates a subquery with a not null test', () => {
+        const expression = new Expression({ field: 'photos', operator: OperatorType.NotEmpty.name }, schema);
 
-      const expr = new Converter().NotEmptyConverter(expression);
+        const expr = new Converter().NotEmptyConverter(expression);
 
       const sql = new Deparser().deparse(expr);
 
-      const expectSql = '"photos_captions" IS NOT NULL';
-      expect(sql).toEqual(expectSql);
+        const expectSql = '"photos" IS NOT NULL';
+        expect(sql).toEqual(expectSql);
+      });
     });
   });
 });
@@ -213,37 +162,7 @@ describe('ConstValue converter', () => {
 describe('Empty converter', () => {
   describe('given a non-array', () => {
     it('creates a subquery with a null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'TextField',
-            key: '3bd0',
-            label: 'Text',
-            data_name: 'text',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'text',
-            type: 'string',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0', operator: 'is_empty' }, schema);
+      const expression = new Expression({ field: 'text', operator: OperatorType.Empty.name }, schema);
 
       const expr = new Converter().EmptyConverter(expression);
 
@@ -253,44 +172,10 @@ describe('Empty converter', () => {
       expect(sql).toEqual(expectSql);
     });
   });
+
   describe('given media captions', () => {
     it('creates a subquery with array_position', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0_captions', operator: 'is_empty' }, schema);
+      const expression = new Expression({ field: 'photos_captions', operator: OperatorType.Empty.name }, fullSchemaSchema);
 
       const expr = new Converter().EmptyConverter(expression);
 
@@ -300,89 +185,24 @@ describe('Empty converter', () => {
       expect(sql).toEqual(expectSql);
     });
   });
+
   describe('given media field except captions', () => {
     it('creates a subquery with a null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0', operator: 'is_empty' }, schema);
+      const expression = new Expression({ field: 'photos', operator: OperatorType.Empty.name }, schema);
 
       const expr = new Converter().EmptyConverter(expression);
 
       const sql = new Deparser().deparse(expr);
 
-      const expectSql = '"photos_captions" IS NULL';
+      const expectSql = '"photos" IS NULL';
       expect(sql).toEqual(expectSql);
     });
   });
 });
 
 describe('NotIn converter', () => {
-  const formJson = {
-    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-    name: 'TestForm',
-    status_field: {
-      type: 'StatusField',
-      label: 'Status',
-      data_name: 'status',
-    },
-    elements: [
-      {
-        type: 'TextField',
-        key: '3bd0',
-        label: 'Text',
-        data_name: 'text',
-      },
-    ],
-  };
-
-  const rawColumns = {
-    form: [
-      {
-        field: '3bd0',
-        name: 'text',
-        type: 'string',
-      },
-    ],
-    repeatables: {},
-  };
-
-  const schema = new FormSchema(new Form(formJson), rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
   it('includes blank (NULL) values when excluding non-blank values', () => {
-    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: ['A'] }, schema);
+    const expression = new Expression({ field: 'text', operator: OperatorType.NotIn.name, value: ['A'] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
     const sql = new Deparser().deparse(expr);
@@ -391,7 +211,7 @@ describe('NotIn converter', () => {
   });
 
   it('excludes blank (NULL) values when blank is selected along with other values', () => {
-    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: ['A', null] }, schema);
+    const expression = new Expression({ field: 'text', operator: OperatorType.NotIn.name, value: ['A', ''] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
     const sql = new Deparser().deparse(expr);
@@ -400,7 +220,7 @@ describe('NotIn converter', () => {
   });
 
   it('excludes only blank (NULL) values when blank is the only selected value', () => {
-    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: [null] }, schema);
+    const expression = new Expression({ field: 'text', operator: OperatorType.NotIn.name, value: [''] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
     const sql = new Deparser().deparse(expr);
@@ -470,12 +290,13 @@ describe('WhereClause converter', () => {
       };
       const query = new Query(queryOptions);
       query.columnSettings.columnsByID['3bd0'].search = 'test';
+
+      expect(query.hasFilter).toBe(true);
+
       const boolExpr = new Converter().whereClause(query);
       const sql = new Deparser().deparse(boolExpr);
 
       const expectSql = '(EXISTS (SELECT 1 FROM "ea635699-133f-4844-ae77-f4090fffc7b0" WHERE ("ea635699-133f-4844-ae77-f4090fffc7b0"."_record_id" = ANY (ARRAY["records"."rl"]) AND "ea635699-133f-4844-ae77-f4090fffc7b0"."_title" ILIKE (\'%test%\'))))';
-      console.log("THIS IS SQL", sql);
-      
       expect(sql).toEqual(expectSql);
     });
   });
@@ -666,7 +487,7 @@ describe('toTilesAST converter', () => {
 
 describe('BinaryConverter', () => {
   const converter = new Converter();
-    
+
   const formJson = {
     id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
     name: 'TestForm',
@@ -842,12 +663,12 @@ describe('gps_device_capture column', () => {
     it('returns only empty/not-empty operators for _gps_device_capture (JSONB)', () => {
       const form = new Form(formJson);
       const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-      const col = schema.columns.find(c => c.id === '_gps_device_capture');
-      const ops = availableOperatorsForColumn(col);
+      const gpsCaptureColumn = schema.columns.find((column) => column.id === '_gps_device_capture');
+      const operators = availableOperatorsForColumn(gpsCaptureColumn);
 
-      expect(ops).toHaveLength(2);
-      expect(ops.find(o => o.name === 'is_empty')).toBeDefined();
-      expect(ops.find(o => o.name === 'is_not_empty')).toBeDefined();
+      expect(operators).toHaveLength(2);
+      expect(operators.find((operator) => operator.name === OperatorType.Empty.name)).toBeDefined();
+      expect(operators.find((operator) => operator.name === OperatorType.NotEmpty.name)).toBeDefined();
     });
 
     it('does not include text operators that would fail on JSONB', () => {

@@ -1,9 +1,9 @@
-import _ from 'lodash';
-
-import { availableOperatorsForColumn, isValueRequired, isDateOperator, OperatorsByValue } from './operator.js';
+import {
+  availableOperatorsForColumn, isValueRequired, isDateOperator, OperatorsByValue,
+} from './operator.js';
 import QueryOptions from './query-options.js';
 
-export class Expression {
+export default class Expression {
   constructor(attrs, schema) {
     attrs = attrs || {};
 
@@ -51,11 +51,11 @@ export class Expression {
   }
 
   set scalarValue(value) {
-    this._value = value ? [ value ] : null;
+    this._value = value != null ? [value] : null;
   }
 
   get value1() {
-    return this.value && this.value[0];
+    return this.value?.[0];
   }
 
   set value1(value) {
@@ -63,7 +63,7 @@ export class Expression {
       this._value = [];
     }
 
-    this._value = [ value, this.value[1] ];
+    this._value = [value, this.value[1]];
 
     this.clearRangeValuesIfNull();
   }
@@ -77,7 +77,7 @@ export class Expression {
       this._value = [];
     }
 
-    this._value = [ this.value[0], value ];
+    this._value = [this.value[0], value];
 
     this.clearRangeValuesIfNull();
   }
@@ -110,7 +110,7 @@ export class Expression {
     this._field = column ? column.id : null;
 
     // if the change in the field results in the operator not being valid, clear the operator
-    if (this._operator && this.availableOperators().find(o => o.name === this._operator) === -1) {
+    if (this._operator && !this.availableOperators().some((o) => o.name === this._operator)) {
       this._operator = null;
     }
   }
@@ -147,7 +147,7 @@ export class Expression {
       return false;
     }
 
-    return this.value.map(JSON.stringify).indexOf(JSON.stringify(value)) > -1;
+    return this.value.map((v) => JSON.stringify(v)).indexOf(JSON.stringify(value)) > -1;
   }
 
   toJSON() {
@@ -158,7 +158,7 @@ export class Expression {
     return {
       field: this._field,
       operator: this._operator,
-      value: this._value
+      value: this._value,
     };
   }
 
@@ -167,9 +167,9 @@ export class Expression {
       return false;
     }
 
-    return this.field === other.field &&
-           this.operator === other.operator &&
-           JSON.stringify(this.value) === JSON.stringify(other.value);
+    return this.field === other.field
+           && this.operator === other.operator
+           && JSON.stringify(this.value) === JSON.stringify(other.value);
   }
 
   availableOperators() {
@@ -185,7 +185,7 @@ export class Expression {
       this._value = [];
     }
 
-    this._value = [ date && date.startOf('day').format('YYYY-MM-DD HH:mm:ss'), this.value[1] ];
+    this._value = [date && date.startOf('day').format('YYYY-MM-DD HH:mm:ss'), this.value[1]];
 
     this.clearRangeValuesIfNull();
   }
@@ -199,7 +199,7 @@ export class Expression {
       this._value = [];
     }
 
-    this._value = [ this.value[0], date && date.endOf('day').format('YYYY-MM-DD HH:mm:ss') ];
+    this._value = [this.value[0], date && date.endOf('day').format('YYYY-MM-DD HH:mm:ss')];
 
     this.clearRangeValuesIfNull();
   }
@@ -219,14 +219,14 @@ export class Expression {
     }
   }
 
-  labelForValue(value, {separator} = {}) {
-    const column = this.column;
+  labelForValue(value, { separator } = {}) {
+    const { column } = this;
 
     if (!column) {
       return value;
     }
 
-    const element = this.column.element;
+    const { element } = this.column;
 
     if (element) {
       if (element.isStatusElement) {
@@ -245,7 +245,7 @@ export class Expression {
     }
 
     return Array.isArray(value) ? value.join(separator != null ? separator : ', ')
-                                : value && value.toString();
+      : value && value.toString();
   }
 
   toHumanDescription() {
@@ -255,14 +255,14 @@ export class Expression {
 
     const parts = [
       this.column ? this.column.name : this.columnName,
-      OperatorsByValue[this.operator].label
+      OperatorsByValue[this.operator].label,
     ];
 
     if (this.supportsValue) {
       if (this.value.length === 1) {
         parts.push(this.value.join(', '));
       } else {
-        parts.push('[' + this.value.join(', ') + ']');
+        parts.push(`[${this.value.join(', ')}]`);
       }
     }
 
