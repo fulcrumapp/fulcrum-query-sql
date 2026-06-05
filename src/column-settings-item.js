@@ -1,4 +1,4 @@
-import { Expression } from './expression.js';
+import Expression from './expression.js';
 import { OperatorType } from './operator.js';
 import ColumnFilter from './column-filter.js';
 import ColumnSummary from './column-summary.js';
@@ -9,28 +9,32 @@ export default class ColumnSettingsItem {
     this._hidden = !!attrs.hidden;
     this._column = attrs.column;
     this._search = attrs.search || '';
-    this._filter = new ColumnFilter({...attrs.filter, field: attrs.column.id}, this._schema);
-    this._expression = new Expression({...attrs.expression, field: attrs.column.id}, schema);
-    this._range = new Expression({...attrs.range,
-                                  operator: attrs.column.isDate ? OperatorType.DateBetween.name
-                                                                : OperatorType.Between.name,
-                                  field: attrs.column.id}, schema);
-    this._summary = new ColumnSummary({...attrs.summary, field: attrs.column.id}, this._schema);
+    this._filter = new ColumnFilter({ ...attrs.filter, field: attrs.column.id }, this._schema);
+    this._expression = new Expression({ ...attrs.expression, field: attrs.column.id }, schema);
+    this._range = new Expression({
+      ...attrs.range,
+      operator: attrs.column.isDate ? OperatorType.DateBetween.name
+        : OperatorType.Between.name,
+      field: attrs.column.id,
+    }, schema);
+    this._summary = new ColumnSummary({ ...attrs.summary, field: attrs.column.id }, this._schema);
   }
 
   clear() {
     this._search = '';
-    this._filter = new ColumnFilter({field: this.column.id}, this._schema);
-    this._expression = new Expression({field: this.column.id}, this._schema);
-    this._range = new Expression({operator: this.column.isDate ? OperatorType.DateBetween.name
-                                                               : OperatorType.Between.name,
-                                  field: this.column.id}, this._schema);
+    this._filter = new ColumnFilter({ field: this.column.id }, this._schema);
+    this._expression = new Expression({ field: this.column.id }, this._schema);
+    this._range = new Expression({
+      operator: this.column.isDate ? OperatorType.DateBetween.name
+        : OperatorType.Between.name,
+      field: this.column.id,
+    }, this._schema);
   }
 
   toJSON() {
     const json = {
       hidden: this.isHidden,
-      column: this.column.toJSON()
+      column: this.column.toJSON(),
     };
 
     if (this.search) {

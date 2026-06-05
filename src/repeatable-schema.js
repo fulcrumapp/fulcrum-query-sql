@@ -1,4 +1,10 @@
 import FormFieldSchema from './form-field-schema.js';
+import {
+  AExpr,
+  BoolExpr,
+  BooleanTest,
+  ColumnRef,
+} from './ast/helpers.js';
 
 const SYSTEM_COLUMNS = [
   '_child_record_id',
@@ -54,7 +60,7 @@ export default class RepeatableSchema extends FormFieldSchema {
       if (SYSTEM_COLUMNS.indexOf(column.name) !== -1) {
         this._rawColumnsByKey[column.name] = column;
       } else if (column.field) {
-        const key = column.part ? column.field + '_' + column.part : column.field;
+        const key = column.part ? `${column.field}_${column.part}` : column.field;
         this._rawColumnsByKey[key] = column;
       }
     }
@@ -171,7 +177,7 @@ export default class RepeatableSchema extends FormFieldSchema {
   }
 
   get tableName() {
-    return this.formSchema.tableName + '_' + this.repeatable.dataName;
+    return `${this.formSchema.tableName}_${this.repeatable.dataName}`;
   }
 
   get tableNameWithoutPrefix() {
