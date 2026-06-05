@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 export default class ColumnFilter {
   constructor(attrs, schema) {
     this._field = attrs.field;
@@ -74,7 +72,7 @@ export default class ColumnFilter {
     }
 
     if (this.containsValue(value)) {
-      this._value = _.without(this.value, value);
+      this._value = this._value.filter((v) => v !== value);
     } else {
       this._value.push(value);
     }
@@ -95,7 +93,7 @@ export default class ColumnFilter {
 
     return {
       field: this._field,
-      value: this._value
+      value: this._value,
     };
   }
 
@@ -107,7 +105,7 @@ export default class ColumnFilter {
     return [
       this.column ? this.column.name : this.field,
       'one of',
-      '[' + this.value.join(', ') + ']'
+      `[${this.value.join(', ')}]`,
     ].join(' ');
   }
 }
