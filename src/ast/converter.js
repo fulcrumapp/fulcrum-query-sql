@@ -1321,7 +1321,7 @@ export default class Converter {
 
   IsCalculatedDateColumn = (column) => {
     return !!(column?.element?.isCalculatedElement && column?.element?.display?.isDate);
-  }
+  };
 
   ConvertCalculatedDateToEpochSeconds = (value) => {
     if (typeof value === 'number') {
@@ -1359,7 +1359,7 @@ export default class Converter {
     }
 
     return Number.NaN;
-  }
+  };
 
   ConvertDateValue = (expression, date) => {
     if (date) {
