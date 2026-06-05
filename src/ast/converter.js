@@ -1295,7 +1295,7 @@ export default class Converter {
       }
     }
 
-    return value;
+    return Number.NaN;
   }
 
   ConvertDateValue = (expression, date) => {
