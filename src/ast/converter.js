@@ -694,8 +694,10 @@ export default class Converter {
       if (values.length) {
         if (filter.column.isArray) {
           expression = this.AnyOf(filter.column, values);
-        } else if (filter.column.element && filter.column.element.isCalculatedElement && filter.column.element.display.isDate) {
-          expression = this.In(filter.column, values.map((value) => new Date(value).getTime() / 1000));
+        } else if (this.IsCalculatedDateColumn(filter.column)) {
+          expression = this.In(filter.column, values.map((value) => {
+            return this.ConvertCalculatedDateToEpochSeconds(value);
+          }));
         } else {
           expression = this.In(filter.column, values);
         }
@@ -1301,10 +1303,10 @@ export default class Converter {
     }
 
     if (column.isNumber) {
-      if (column.element.isCalculatedElement && column.element.display.isDate && (typeof value === 'string')) {
-        const doubleValue = moment.utc(value, ['YYYY-MM-DD', 'MM/DD/YYYY'], true).valueOf() / 1000;
-        return AConst(FloatValue(doubleValue));
+      if (this.IsCalculatedDateColumn(column)) {
+        return AConst(FloatValue(this.ConvertCalculatedDateToEpochSeconds(value)));
       }
+
       return AConst(FloatValue(value));
     }
 
@@ -1315,6 +1317,56 @@ export default class Converter {
     const timeZone = (options && options.timeZone) || moment.tz.guess();
 
     return moment.tz(dateString ?? new Date().toISOString(), timeZone);
+  };
+
+  IsCalculatedDateColumn = (column) => {
+    return !!(column?.element?.isCalculatedElement && column?.element?.display?.isDate);
+  };
+
+  ConvertCalculatedDateToEpochSeconds = (value) => {
+    if (typeof value === 'number') {
+      return value;
+    }
+
+    if (value instanceof Date) {
+      return value.getTime() / 1000;
+    }
+
+    if (typeof value === 'string') {
+      const strictFormats = [
+        moment.ISO_8601,
+        'YYYY-MM-DD',
+        'YYYY/MM/DD',
+        'MM/DD/YYYY',
+        'MM-DD-YYYY',
+        'M/D/YYYY',
+        'M-D-YYYY',
+        'M/D/YY',
+        'M-D-YY',
+        // Long-form and abbreviated month names, e.g. "June 11, 2026" / "Jun 11, 2026"
+        'MMMM D, YYYY',
+        'MMMM DD, YYYY',
+        'MMM D, YYYY',
+        'MMM DD, YYYY',
+        // Day-first variants, e.g. "11 June 2026" / "11 Jun 2026"
+        'D MMMM YYYY',
+        'DD MMMM YYYY',
+        'D MMM YYYY',
+        'DD MMM YYYY',
+      ];
+
+      // Strict-only parsing: the format list above covers all common human-readable
+      // date styles. Falling back to moment's loose parser (which uses the JS Date
+      // constructor internally) emits deprecation warnings and behaves inconsistently
+      // across runtimes — any string not matched here is genuinely unparseable.
+      const dateValue = moment.utc(value, strictFormats, true);
+
+      if (dateValue.isValid()) {
+        return dateValue.valueOf() / 1000;
+      }
+    }
+
+    return Number.NaN;
   };
 
   ConvertDateValue = (expression, date) => {

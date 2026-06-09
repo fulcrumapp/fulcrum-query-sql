@@ -125,8 +125,92 @@ describe('ConstValue converter', () => {
         expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });
 
+      it('correctly structures a ConstValue with a Float type when passed M-D-YY formatting', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '7-22-25')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue with a Float type when passed free-text month formatting', () => {
+        expect(new Converter().ConstValue(calculatedColumn, 'July 22, 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue when passed abbreviated month format (Jul 22, 2025)', () => {
+        expect(new Converter().ConstValue(calculatedColumn, 'Jul 22, 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue when passed day-first long format (22 July 2025)', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '22 July 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue when passed day-first abbreviated format (22 Jul 2025)', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '22 Jul 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('returns NaN for a completely unrecognized string', () => {
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds('not-a-date');
+        expect(result).toBeNaN();
+      });
+
+      it('returns NaN for an empty string', () => {
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds('');
+        expect(result).toBeNaN();
+      });
+
+      it('returns NaN for a null value', () => {
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds(null);
+        expect(result).toBeNaN();
+      });
+
+      it('returns NaN for an ambiguous partial date string', () => {
+        // "25/2025" matches no known format token
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds('25/2025');
+        expect(result).toBeNaN();
+      });
+
+      it('correctly structures a ConstValue with a Float type when passed an ISO datetime string', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22T00:00:00.000Z')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
       it('correctly structures a ConstValue with a Float type when passed a double value', () => {
         expect(new Converter().ConstValue(calculatedColumn, 1753156800.123)).toEqual(expectedValue(1753156800.123));
+      });
+
+      it('normalizes date operator values for calculated date fields in BinaryConverter', () => {
+        const expression = {
+          column: calculatedColumn,
+          scalarValue: '2025-07-22',
+          isDateOperator: true,
+        };
+
+        const ast = new Converter().BinaryConverter(0, '=', expression);
+
+        expect(ast.A_Expr.rexpr).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('normalizes values for calculated date fields in createExpressionForColumnFilter', () => {
+        const converter = new Converter();
+        const filter = {
+          hasValues: true,
+          value: ['2025-07-22'],
+          column: {
+            name: 'calc_date',
+            columnName: 'calc_date',
+            isArray: false,
+            element: {
+              isCalculatedElement: true,
+              display: {
+                isDate: true,
+              },
+            },
+          },
+        };
+
+        const ast = converter.createExpressionForColumnFilter(filter, { except: null });
+        const sql = new Deparser().deparse(ast);
+        const expectedEpoch = converter.ConvertCalculatedDateToEpochSeconds('2025-07-22');
+
+        expect(sql).toContain('"calc_date" IN');
+        expect(sql).toContain(expectedEpoch.toString());
+        expect(sql).not.toContain('2025-07-22');
       });
     });
   });
