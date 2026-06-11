@@ -1,56 +1,74 @@
 import { Form } from '@fulcrumapp/fulcrum-core';
-import Deparse from '@fulcrumapp/pg-query-deparser';
+import { Deparser } from '@fulcrumapp/pg-query-deparser';
 import moment from 'moment-timezone';
-import Converter from '../converter.js';
 import FormSchema from '../../form-schema.js';
-import {
-  ColumnRef,
-  BoolExpr,
-  AExpr,
-  BooleanTest,
-} from '../helpers.js';
+import Expression from '../../expression.js';
 import Query from '../../query.js';
-import { Expression } from '../../expression.js';
-import { availableOperatorsForColumn } from '../../operator.js';
+import Converter from '../converter.js';
+import {
+  AExpr,
+  BoolExpr,
+  BooleanTest,
+  ColumnRef,
+} from '../helpers.js';
+import { availableOperatorsForColumn, OperatorType } from '../../operator.js';
 
-describe('NotEmpty converter', () => {
+const form = new Form({
+  elements: [
+    {
+      type: 'TextField',
+      key: 'text',
+      data_name: 'text',
+    },
+    {
+      type: 'PhotoField',
+      key: 'photos',
+      data_name: 'photos',
+    },
+  ],
+});
+
+const rawColumns = [
+  { name: '_record_id', type: 'string' },
+  { name: '_status', type: 'string' },
+  { name: '_latitude', type: 'double' },
+  { name: '_longitude', type: 'double' },
+  { name: '_created_at', type: 'timestamp' },
+  { name: '_updated_at', type: 'timestamp' },
+  { name: '_version', type: 'integer' },
+  { name: '_created_by_id', type: 'string' },
+  { name: '_updated_by_id', type: 'string' },
+  { name: '_server_created_at', type: 'timestamp' },
+  { name: '_server_updated_at', type: 'timestamp' },
+  { name: '_geometry', type: 'geometry' },
+  { name: '_altitude', type: 'double' },
+  { name: '_speed', type: 'double' },
+  { name: '_course', type: 'double' },
+  { name: '_horizontal_accuracy', type: 'double' },
+  { name: '_vertical_accuracy', type: 'double' },
+  { name: '_project_id', type: 'string' },
+  { name: '_assigned_to_id', type: 'string' },
+  { name: '_title', type: 'string' },
+  { name: '_created_duration', type: 'integer' },
+  { name: '_updated_duration', type: 'integer' },
+  { name: '_edited_duration', type: 'integer' },
+  { name: '_record_series_id', type: 'string' },
+  { name: '_gps_device_capture', type: 'boolean' },
+  { field: 'text', type: 'string' },
+  { field: 'photos', type: 'string' },
+];
+
+const schema = new FormSchema(form, rawColumns, {}, { fullSchema: false });
+const fullSchemaSchema = new FormSchema(form, rawColumns, {}, { fullSchema: true });
+
+describe('Converter', () => {
   describe('given a non-array', () => {
     it('creates a subquery with a not null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'TextField',
-            key: '3bd0',
-            label: 'Text',
-            data_name: 'text',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'text',
-            type: 'string',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0', operator: 'is_not_empty' }, schema);
+      const expression = new Expression({ field: 'text', operator: OperatorType.NotEmpty.name }, schema);
 
       const expr = new Converter().NotEmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
       const expectSql = '"text" IS NOT NULL';
       expect(sql).toEqual(expectSql);
@@ -96,17 +114,103 @@ describe('ConstValue converter', () => {
           }
         }
       };
+      // 2025-07-22T00:00:00Z — fixed UTC epoch, independent of machine timezone
+      const EPOCH_2025_07_22_UTC = 1753142400;
 
       it('correctly structures a ConstValue with a Float type', () => {
-        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(1753156800));
+        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });
 
       it('correctly structures a ConstValue with a Float type when passed a date string with different formatting', () => {
-        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(1753156800));
+        expect(new Converter().ConstValue(calculatedColumn, '07/22/2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue with a Float type when passed M-D-YY formatting', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '7-22-25')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue with a Float type when passed free-text month formatting', () => {
+        expect(new Converter().ConstValue(calculatedColumn, 'July 22, 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue when passed abbreviated month format (Jul 22, 2025)', () => {
+        expect(new Converter().ConstValue(calculatedColumn, 'Jul 22, 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue when passed day-first long format (22 July 2025)', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '22 July 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('correctly structures a ConstValue when passed day-first abbreviated format (22 Jul 2025)', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '22 Jul 2025')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('returns NaN for a completely unrecognized string', () => {
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds('not-a-date');
+        expect(result).toBeNaN();
+      });
+
+      it('returns NaN for an empty string', () => {
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds('');
+        expect(result).toBeNaN();
+      });
+
+      it('returns NaN for a null value', () => {
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds(null);
+        expect(result).toBeNaN();
+      });
+
+      it('returns NaN for an ambiguous partial date string', () => {
+        // "25/2025" matches no known format token
+        const result = new Converter().ConvertCalculatedDateToEpochSeconds('25/2025');
+        expect(result).toBeNaN();
+      });
+
+      it('correctly structures a ConstValue with a Float type when passed an ISO datetime string', () => {
+        expect(new Converter().ConstValue(calculatedColumn, '2025-07-22T00:00:00.000Z')).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
       });
 
       it('correctly structures a ConstValue with a Float type when passed a double value', () => {
         expect(new Converter().ConstValue(calculatedColumn, 1753156800.123)).toEqual(expectedValue(1753156800.123));
+      });
+
+      it('normalizes date operator values for calculated date fields in BinaryConverter', () => {
+        const expression = {
+          column: calculatedColumn,
+          scalarValue: '2025-07-22',
+          isDateOperator: true,
+        };
+
+        const ast = new Converter().BinaryConverter(0, '=', expression);
+
+        expect(ast.A_Expr.rexpr).toEqual(expectedValue(EPOCH_2025_07_22_UTC));
+      });
+
+      it('normalizes values for calculated date fields in createExpressionForColumnFilter', () => {
+        const converter = new Converter();
+        const filter = {
+          hasValues: true,
+          value: ['2025-07-22'],
+          column: {
+            name: 'calc_date',
+            columnName: 'calc_date',
+            isArray: false,
+            element: {
+              isCalculatedElement: true,
+              display: {
+                isDate: true,
+              },
+            },
+          },
+        };
+
+        const ast = converter.createExpressionForColumnFilter(filter, { except: null });
+        const sql = new Deparser().deparse(ast);
+        const expectedEpoch = converter.ConvertCalculatedDateToEpochSeconds('2025-07-22');
+
+        expect(sql).toContain('"calc_date" IN');
+        expect(sql).toContain(expectedEpoch.toString());
+        expect(sql).not.toContain('2025-07-22');
       });
     });
   });
@@ -114,96 +218,27 @@ describe('ConstValue converter', () => {
 
   describe('given media captions', () => {
     it('creates a subquery with array_to_string', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0_captions', operator: 'is_not_empty' }, schema);
+      const expression = new Expression({ field: 'photos_captions', operator: OperatorType.NotEmpty.name }, fullSchemaSchema);
 
       const expr = new Converter().NotEmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
       const expectSql = '("photos_captions" IS NOT NULL AND ((length(array_to_string("photos_captions", \'\'))) > (0)))';
       expect(sql).toEqual(expectSql);
     });
-  });
-  describe('given media field except captions', () => {
-    it('creates a subquery with a not null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
 
-      const expression = new Expression({ field: '3bd0', operator: 'is_not_empty' }, schema);
+    describe('given media field except captions', () => {
+      it('creates a subquery with a not null test', () => {
+        const expression = new Expression({ field: 'photos', operator: OperatorType.NotEmpty.name }, schema);
 
-      const expr = new Converter().NotEmptyConverter(expression);
+        const expr = new Converter().NotEmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
-      const expectSql = '"photos_captions" IS NOT NULL';
-      expect(sql).toEqual(expectSql);
+        const expectSql = '"photos" IS NOT NULL';
+        expect(sql).toEqual(expectSql);
+      });
     });
   });
 });
@@ -211,197 +246,68 @@ describe('ConstValue converter', () => {
 describe('Empty converter', () => {
   describe('given a non-array', () => {
     it('creates a subquery with a null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'TextField',
-            key: '3bd0',
-            label: 'Text',
-            data_name: 'text',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'text',
-            type: 'string',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0', operator: 'is_empty' }, schema);
+      const expression = new Expression({ field: 'text', operator: OperatorType.Empty.name }, schema);
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
       const expectSql = '"text" IS NULL';
       expect(sql).toEqual(expectSql);
     });
   });
+
   describe('given media captions', () => {
     it('creates a subquery with array_position', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0_captions', operator: 'is_empty' }, schema);
+      const expression = new Expression({ field: 'photos_captions', operator: OperatorType.Empty.name }, fullSchemaSchema);
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
       const expectSql = '("photos_captions" IS NULL OR ((COALESCE(array_position("photos_captions", NULL), 0)) > (0)))';
       expect(sql).toEqual(expectSql);
     });
   });
+
   describe('given media field except captions', () => {
     it('creates a subquery with a null test', () => {
-      const formJson = {
-        id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-        name: 'TestForm',
-        status_field: {
-          type: 'StatusField',
-          label: 'Status',
-          data_name: 'status',
-        },
-        elements: [
-          {
-            type: 'PhotoField',
-            key: '3bd0',
-            label: 'Photos',
-            data_name: 'photos',
-          },
-        ],
-      };
-      const rawColumns = {
-        form: [
-          {
-            field: '3bd0',
-            name: 'photos',
-            type: 'array',
-          },
-          {
-            field: '3bd0',
-            name: 'photos_captions',
-            type: 'array',
-          },
-        ],
-        repeatables: {},
-      };
-      const form = new Form(formJson);
-      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
-      const expression = new Expression({ field: '3bd0', operator: 'is_empty' }, schema);
+      const expression = new Expression({ field: 'photos', operator: OperatorType.Empty.name }, schema);
 
       const expr = new Converter().EmptyConverter(expression);
 
-      const sql = new Deparse().deparse(expr);
+      const sql = new Deparser().deparse(expr);
 
-      const expectSql = '"photos_captions" IS NULL';
+      const expectSql = '"photos" IS NULL';
       expect(sql).toEqual(expectSql);
     });
   });
 });
 
 describe('NotIn converter', () => {
-  const formJson = {
-    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
-    name: 'TestForm',
-    status_field: {
-      type: 'StatusField',
-      label: 'Status',
-      data_name: 'status',
-    },
-    elements: [
-      {
-        type: 'TextField',
-        key: '3bd0',
-        label: 'Text',
-        data_name: 'text',
-      },
-    ],
-  };
-
-  const rawColumns = {
-    form: [
-      {
-        field: '3bd0',
-        name: 'text',
-        type: 'string',
-      },
-    ],
-    repeatables: {},
-  };
-
-  const schema = new FormSchema(new Form(formJson), rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-
   it('includes blank (NULL) values when excluding non-blank values', () => {
-    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: ['A'] }, schema);
+    const expression = new Expression({ field: 'text', operator: OperatorType.NotIn.name, value: ['A'] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const sql = new Deparse().deparse(expr);
+    const sql = new Deparser().deparse(expr);
 
     expect(sql).toEqual('("text" IS NULL OR "text" NOT IN (\'A\'))');
   });
 
   it('excludes blank (NULL) values when blank is selected along with other values', () => {
-    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: ['A', null] }, schema);
+    const expression = new Expression({ field: 'text', operator: OperatorType.NotIn.name, value: ['A', ''] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const sql = new Deparse().deparse(expr);
+    const sql = new Deparser().deparse(expr);
 
     expect(sql).toEqual('("text" IS NOT NULL AND "text" NOT IN (\'A\'))');
   });
 
   it('excludes only blank (NULL) values when blank is the only selected value', () => {
-    const expression = new Expression({ field: '3bd0', operator: 'not_in', value: [null] }, schema);
+    const expression = new Expression({ field: 'text', operator: OperatorType.NotIn.name, value: [''] }, schema);
 
     const expr = new Converter().NotInConverter(expression);
-    const sql = new Deparse().deparse(expr);
+    const sql = new Deparser().deparse(expr);
 
     expect(sql).toEqual('"text" IS NOT NULL');
   });
@@ -468,12 +374,13 @@ describe('WhereClause converter', () => {
       };
       const query = new Query(queryOptions);
       query.columnSettings.columnsByID['3bd0'].search = 'test';
+
+      expect(query.hasFilter).toBe(true);
+
       const boolExpr = new Converter().whereClause(query);
-      const sql = new Deparse().deparse(boolExpr);
+      const sql = new Deparser().deparse(boolExpr);
 
       const expectSql = '(EXISTS (SELECT 1 FROM "ea635699-133f-4844-ae77-f4090fffc7b0" WHERE ("ea635699-133f-4844-ae77-f4090fffc7b0"."_record_id" = ANY (ARRAY["records"."rl"]) AND "ea635699-133f-4844-ae77-f4090fffc7b0"."_title" ILIKE (\'%test%\'))))';
-      console.log("THIS IS SQL", sql);
-      
       expect(sql).toEqual(expectSql);
     });
   });
@@ -492,7 +399,7 @@ describe('JoinClause converter', () => {
 
       const { JoinExpr } = Converter.joinClause(baseQuery, join);
       const { quals: ast } = JoinExpr;
-      const sql = new Deparse().deparse(ast);
+      const sql = new Deparser().deparse(ast);
 
       const expectSql = '(("records"."_record_series_id") = ("record_series"."record_series_id"))';
       expect(sql).toEqual(expectSql);
@@ -514,7 +421,7 @@ describe('JoinClause converter', () => {
 
       const { JoinExpr } = Converter.joinClause(baseQuery, join);
       const { quals: ast } = JoinExpr;
-      const sql = new Deparse().deparse(ast);
+      const sql = new Deparser().deparse(ast);
 
       const expectSql = '((("records"."_record_series_id") = ("record_series"."record_series_id")) AND "record_series"."enabled" IS TRUE)';
       expect(sql).toEqual(expectSql);
@@ -664,7 +571,7 @@ describe('toTilesAST converter', () => {
 
 describe('BinaryConverter', () => {
   const converter = new Converter();
-    
+
   const formJson = {
     id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
     name: 'TestForm',
@@ -840,12 +747,12 @@ describe('gps_device_capture column', () => {
     it('returns only empty/not-empty operators for _gps_device_capture (JSONB)', () => {
       const form = new Form(formJson);
       const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
-      const col = schema.columns.find(c => c.id === '_gps_device_capture');
-      const ops = availableOperatorsForColumn(col);
+      const gpsCaptureColumn = schema.columns.find((column) => column.id === '_gps_device_capture');
+      const operators = availableOperatorsForColumn(gpsCaptureColumn);
 
-      expect(ops).toHaveLength(2);
-      expect(ops.find(o => o.name === 'is_empty')).toBeDefined();
-      expect(ops.find(o => o.name === 'is_not_empty')).toBeDefined();
+      expect(operators).toHaveLength(2);
+      expect(operators.find((operator) => operator.name === OperatorType.Empty.name)).toBeDefined();
+      expect(operators.find((operator) => operator.name === OperatorType.NotEmpty.name)).toBeDefined();
     });
 
     it('does not include text operators that would fail on JSONB', () => {
@@ -858,5 +765,83 @@ describe('gps_device_capture column', () => {
       expect(ops.find(o => o.name === 'text_match')).toBeUndefined();
       expect(ops.find(o => o.name === 'in')).toBeUndefined();
     });
+  });
+});
+
+describe('toDistinctValuesAST limit', () => {
+  const formJson = {
+    id: '7a62278f-4eb8-480c-8f0c-34fc79d28bee',
+    name: 'TestForm',
+    status_field: {
+      type: 'StatusField',
+      label: 'Status',
+      data_name: 'status',
+    },
+    elements: [
+      {
+        type: 'TextField',
+        key: '3bd0',
+        label: 'Text',
+        data_name: 'text',
+      },
+    ],
+  };
+
+  const rawColumns = {
+    form: [
+      {
+        field: '3bd0',
+        name: 'text',
+        type: 'string',
+      },
+    ],
+    repeatables: {},
+  };
+
+  let form;
+  let schema;
+  let query;
+
+  beforeEach(() => {
+    form = new Form(formJson);
+    schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+    query = new Query({ form, schema });
+  });
+
+  it('applies the default limit of 1000 when no limit is specified', () => {
+    const column = schema.columns.find(c => c.id === '3bd0');
+    const sql = query.toDistinctValuesSQL({ column, by: 'frequency' });
+
+    expect(sql).toContain('LIMIT 1000');
+  });
+
+  it('applies a custom limit when options.limit is specified', () => {
+    const column = schema.columns.find(c => c.id === '3bd0');
+    const sql = query.toDistinctValuesSQL({ column, by: 'frequency', limit: 500 });
+
+    expect(sql).toContain('LIMIT 500');
+  });
+
+  it('applies a custom limit of 10000 when options.limit is explicitly 10000', () => {
+    const column = schema.columns.find(c => c.id === '3bd0');
+    const sql = query.toDistinctValuesSQL({ column, by: 'frequency', limit: 10000 });
+
+    expect(sql).toContain('LIMIT 10000');
+  });
+
+  it('applies the default hard limit of 1000', () => {
+    const column = schema.columns.find(c => c.id === '3bd0');
+    const sql = query.toDistinctValuesSQL({ column, by: 'frequency' });
+
+    expect(sql).toMatch(/\bLIMIT 1000\b/);
+  });
+
+  it('treats options.limit of 0 as explicit zero (not falling back to default)', () => {
+    const column = schema.columns.find(c => c.id === '3bd0');
+    const sql = query.toDistinctValuesSQL({ column, by: 'frequency', limit: 0 });
+
+    // 0 is falsy but != null, so it uses 0 explicitly rather than falling back to MAX_DISTINCT_VALUES
+    expect(sql).toContain('LIMIT 0');
+    expect(sql).not.toContain('LIMIT 1000');
   });
 });

@@ -1,4 +1,3 @@
-import arrayMove from 'array-move';
 import ColumnSettingsItem from './column-settings-item.js';
 
 export default class ColumnSettings {
@@ -22,21 +21,19 @@ export default class ColumnSettings {
 
     const columns = schema.columns.slice();
 
-    for (let index = 0; index < columns.length; ++index) {
-      const column = columns[index];
-
+    columns.forEach((column, index) => {
       const existingAttributes = existingSettingsByID[column.id];
 
-      const item = new ColumnSettingsItem({...existingAttributes, column}, this._schema);
+      const item = new ColumnSettingsItem({ ...existingAttributes, column }, this._schema);
 
       if (existingAttributes == null) {
         item.hidden = true;
-        newColumns.push({column: item, index});
+        newColumns.push({ column: item, index });
       }
 
       this._allColumns.push(item);
       this._columnsByID[column.id] = item;
-    }
+    });
 
     if (settings) {
       for (const setting of settings) {
@@ -55,23 +52,30 @@ export default class ColumnSettings {
 
   reset() {
     this._columns = this._allColumns.slice();
-    this._columns.map(o => o.clear());
+    this._columns.forEach((o) => o.clear());
   }
 
   toJSON() {
-    return this.columns.map(o => o.toJSON());
+    return this.columns.map((o) => o.toJSON());
   }
 
   move(from, to) {
-    this._columns = arrayMove(this._columns, from, to);
+    const len = this._columns.length;
+    if (from < 0 || from >= len || to < 0 || to >= len || from === to) {
+      return;
+    }
+    const cols = [...this._columns];
+    const [item] = cols.splice(from, 1);
+    cols.splice(to, 0, item);
+    this._columns = cols;
   }
 
   get enabledColumns() {
-    return this.enabledColumnSettings.map(c => c.column);
+    return this.enabledColumnSettings.map((c) => c.column);
   }
 
   get enabledColumnSettings() {
-    return this.columns.filter(c => c.isVisible);
+    return this.columns.filter((c) => c.isVisible);
   }
 
   get columns() {
