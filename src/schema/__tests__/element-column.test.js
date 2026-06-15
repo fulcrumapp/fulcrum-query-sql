@@ -1,5 +1,8 @@
-import { Record, StatusValue } from '@fulcrumapp/fulcrum-core';
+import * as fulcrumCoreNamespace from '@fulcrumapp/fulcrum-core';
 import ElementColumn from '../element-column.js';
+
+const fulcrumCore = fulcrumCoreNamespace.default ?? fulcrumCoreNamespace;
+const { Record, StatusValue } = fulcrumCore;
 
 describe('ElementColumn status handling', () => {
   const statusElement = {
