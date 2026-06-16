@@ -1,5 +1,8 @@
-import { StatusValue, Record } from '@fulcrumapp/fulcrum-core';
+import * as fulcrumCoreNamespace from '@fulcrumapp/fulcrum-core';
 import Column from './column.js';
+
+const fulcrumCore = fulcrumCoreNamespace.default ?? fulcrumCoreNamespace;
+const { StatusValue, Record } = fulcrumCore;
 
 export default class ElementColumn extends Column {
   constructor({
