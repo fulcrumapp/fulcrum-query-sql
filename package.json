@@ -39,7 +39,7 @@
     "@eslint/js": "^10.0.1",
     "@fulcrumapp/fulcrum-core": "^1.6.2",
     "eslint": "^10.5.0",
-    "globals": "^17.6.0",
+    "globals": "^17.7.0",
     "jest": "^30.4.2",
     "tsdown": "^0.22.3",
     "typescript": "^6.0.3",
