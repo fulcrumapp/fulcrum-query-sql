@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@fulcrumapp/fulcrum-core": "^1.6.0",
+    "@fulcrumapp/fulcrum-core": "^1.6.2",
     "eslint": "^10.5.0",
     "globals": "^17.6.0",
     "jest": "^30.4.2",
