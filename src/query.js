@@ -389,6 +389,11 @@ export default class Query {
         joinedColumns.push(ResTarget(ColumnRef(`${alias}.name`), alias));
       }
     }
+
+    const gpsDeviceCaptureColumns = this.schema.findColumnByID('_gps_device_capture')
+      ? [ResTarget(ColumnRef('_gps_device_capture'), 'gps_device_capture')]
+      : [];
+
     if (this.schema.recordSeriesColumn) {
       const { alias } = this.schema.recordSeriesColumn.join;
 
@@ -490,7 +495,7 @@ export default class Query {
       ResTarget(ColumnRef('_course'), 'course'),
       ResTarget(ColumnRef('_horizontal_accuracy'), 'horizontal_accuracy'),
       ResTarget(ColumnRef('_vertical_accuracy'), 'vertical_accuracy'),
-      ResTarget(ColumnRef('_gps_device_capture'), 'gps_device_capture'),
+      ...gpsDeviceCaptureColumns,
       ResTarget(ColumnRef('_edited_duration'), 'edited_duration'),
       ResTarget(ColumnRef('_updated_duration'), 'updated_duration'),
       ResTarget(ColumnRef('_created_duration'), 'created_duration'),
