@@ -390,7 +390,7 @@ export default class Query {
       }
     }
 
-    const gpsDeviceCaptureColumns = this.schema.findColumnByID('_gps_device_capture')
+    const gpsDeviceCaptureColumns = this.schema.hasRawColumn('_gps_device_capture')
       ? [ResTarget(ColumnRef('_gps_device_capture'), 'gps_device_capture')]
       : [];
 

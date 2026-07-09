@@ -85,10 +85,6 @@ export default class FormSchema extends FormFieldSchema {
     return Object.values(this._rawColumns).some((item) => item.name === '_record_key');
   }
 
-  hasRawColumn(columnName) {
-    return Object.hasOwn(this._rawColumnsByKey, columnName);
-  }
-
   get hasRecordSeriesID() { // TODO: Remove once all forms have been upgraded to v4
     return Object.keys(this._rawColumnsByKey).includes('_record_series_id');
   }

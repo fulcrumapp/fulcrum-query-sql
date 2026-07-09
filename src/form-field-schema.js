@@ -87,6 +87,10 @@ export default class FormFieldSchema {
     return this.columns.find(e => e.id === id);
   }
 
+  hasRawColumn(columnName) {
+    return Object.hasOwn(this._rawColumnsByKey || {}, columnName);
+  }
+
   columnForFieldKey(fieldKey, part) {
     if (part) {
       return this._columnsByKey[`${fieldKey}_${part}`];
