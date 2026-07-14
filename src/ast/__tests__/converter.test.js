@@ -712,6 +712,11 @@ describe('gps_device_capture column', () => {
     repeatables: {},
   };
 
+  const rawColumnsWithoutGPSDeviceCapture = {
+    form: rawColumns.form.filter((column) => column.name !== '_gps_device_capture'),
+    repeatables: {},
+  };
+
   describe('FormSchema', () => {
     it('includes _gps_device_capture in fullSchema columns', () => {
       const form = new Form(formJson);
@@ -740,6 +745,20 @@ describe('gps_device_capture column', () => {
       const sql = query.toSQL({ applySort: false });
 
       expect(sql).toContain('"_gps_device_capture" AS "gps_device_capture"');
+    });
+
+    it('does not include gps_device_capture in the SQL target list when rawColumns omits it', () => {
+      const form = new Form(formJson);
+      const schema = new FormSchema(
+        form,
+        rawColumnsWithoutGPSDeviceCapture.form,
+        rawColumnsWithoutGPSDeviceCapture.repeatables,
+        { fullSchema: true },
+      );
+      const query = new Query({ form, schema, full: true });
+      const sql = query.toSQL({ applySort: false });
+
+      expect(sql).not.toContain('"_gps_device_capture" AS "gps_device_capture"');
     });
   });
 
