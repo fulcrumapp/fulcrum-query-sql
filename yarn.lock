@@ -2746,10 +2746,10 @@ mixmatch@^0.0.4:
   resolved "https://registry.yarnpkg.com/mixmatch/-/mixmatch-0.0.4.tgz#cc889c6879ca3f607103b64802c729d39f9bcd78"
   integrity sha512-obE48+qDU8rHL5CZ1sG4pGtebIhsbrw+8hS4bmSKzUFnb5B3uQx+5/8wXWUk1fdF528OaNkQx1G9HZKg40rsjA==
 
-moment-timezone@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.6.2.tgz#a704cca03ee502f0df6edd42efcdcc61ee03190e"
-  integrity sha512-lDsQv8FoGdBUdf0+TjGsq2orxKuXdwFlQ6Zw6TX3xIcTwTfEpCLyKqvEauvCHJ8iu3KBV8+uPhlv70YsNGdUBQ==
+moment-timezone@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.6.3.tgz#e386bad3116567a44477653ad6543b071bc153b7"
+  integrity sha512-pVEPA/HCFHHbwJ130ywnzYuZpkEGcP6Daa/OwNebpA18MybeFHmQilAGGovXgWijQ8vQtmud9jZrziUBgsykfg==
   dependencies:
     moment "^2.29.4"
 
