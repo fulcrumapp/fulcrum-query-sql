@@ -192,10 +192,21 @@ export default class Converter {
     const seriesFunctionCall = FuncCall('generate_series', seriesFunctionArgs);
     const seriesFunction = RangeFunction([[seriesFunctionCall]], Alias('series'));
 
+    const upperBoundSubquery = SubLink(4, SelectStmt({
+      targetList: [ResTarget(CoalesceExpr([
+        FuncCall('nullif', [
+          ColumnRef('max_value'),
+          ColumnRef('min_value'),
+        ]),
+        AExpr(0, '+', ColumnRef('min_value'), AConst(IntegerValue(1))),
+      ]))],
+      fromClause: [RangeVar('__stats')],
+    }));
+
     const bucketWidthFunctionCallArgs = [
       TypeCast(TypeName([StringValue('pg_catalog'), StringValue('float8')]), ColumnRef('value')),
       SubLink(4, SelectStmt({ targetList: [ResTarget(ColumnRef('min_value'))], fromClause: [RangeVar('__stats')] })),
-      SubLink(4, SelectStmt({ targetList: [ResTarget(ColumnRef('max_value'))], fromClause: [RangeVar('__stats')] })),
+      upperBoundSubquery,
       SubLink(4, SelectStmt({ targetList: [ResTarget(ColumnRef('buckets'))], fromClause: [RangeVar('__stats')] })),
     ];
 
