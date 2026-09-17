@@ -35,6 +35,10 @@ export default class Column {
     return this.type === 'geometry';
   }
 
+  get isJSONB() {
+    return this.type === 'jsonb';
+  }
+
   get supportsRanges() {
     return this.isNumber || this.isDate;
   }

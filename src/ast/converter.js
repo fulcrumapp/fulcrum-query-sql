@@ -563,7 +563,7 @@ export default class Converter {
               ]),
             }),
           ));
-        } else if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber) {
+        } else if (item.column.isArray || item.column.isDate || item.column.isTime || item.column.isNumber || item.column.isJSONB) {
           systemParts.push(AExpr(
             8,
             '~~*',

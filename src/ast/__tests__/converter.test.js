@@ -726,6 +726,7 @@ describe('gps_device_capture column', () => {
       expect(col).toBeDefined();
       expect(col.name).toBe('GPS Device Capture');
       expect(col.attributeName).toBe('gpsDeviceCapture');
+      expect(col.isJSONB).toBe(true);
     });
 
     it('does not include _gps_device_capture when fullSchema is false', () => {
@@ -759,6 +760,31 @@ describe('gps_device_capture column', () => {
       const sql = query.toSQL({ applySort: false });
 
       expect(sql).not.toContain('"_gps_device_capture" AS "gps_device_capture"');
+    });
+  });
+
+  describe('header search', () => {
+    it('casts gps_device_capture JSONB values to text', () => {
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+      const query = new Query({ form, schema, full: true });
+      query.columnSettings.columnsByID._gps_device_capture.search = 'trimble';
+
+      const sql = new Deparser().deparse(new Converter().whereClause(query));
+
+      expect(sql).toContain('"_gps_device_capture"::text ILIKE (\'%trimble%\')');
+    });
+
+    it('does not cast ordinary string header searches', () => {
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+      const query = new Query({ form, schema, full: true });
+      query.columnSettings.columnsByID.f001.search = 'trimble';
+
+      const sql = new Deparser().deparse(new Converter().whereClause(query));
+
+      expect(sql).toContain('"name" ILIKE (\'%trimble%\')');
+      expect(sql).not.toContain('"name"::text');
     });
   });
 
