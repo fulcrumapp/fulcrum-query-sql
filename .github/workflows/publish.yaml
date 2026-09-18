@@ -13,6 +13,8 @@ jobs:
   publish:
     name: 📦 Publish to GitHub Packages
     runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ github.token }}
     steps:
       - name: ⬇️ Checkout Repository
         uses: actions/checkout@v7
@@ -26,8 +28,6 @@ jobs:
 
       - name: 📥 Install Dependencies
         run: yarn install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🔎 Type Check
         run: yarn run typecheck
