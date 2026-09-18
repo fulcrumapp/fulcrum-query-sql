@@ -22,7 +22,7 @@ jobs:
       - name: ⎔ Setup Node
         uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://npm.pkg.github.com
           scope: "@fulcrumapp"
 
@@ -47,5 +47,3 @@ jobs:
 
       - name: 🚀 Publish
         run: yarn publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
