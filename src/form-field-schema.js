@@ -21,6 +21,14 @@ export default class FormFieldSchema {
     return column;
   }
 
+  addGpsDeviceCaptureColumn() {
+    if (!this.hasRawColumn('_gps_device_capture')) {
+      return null;
+    }
+
+    return this.addSystemColumn('GPS Device Capture', 'gpsDeviceCapture', '_gps_device_capture', 'jsonb');
+  }
+
   addElementColumn(element, part, type) {
     const columnKey = part ? `${element.key}_${part}` : element.key;
 
