@@ -786,6 +786,50 @@ describe('gps_device_capture column', () => {
       expect(sql).toContain('"name" ILIKE (\'%trimble%\')');
       expect(sql).not.toContain('"name"::text');
     });
+
+    it('casts JSONB text_contain expressions to text in distinct-values SQL', () => {
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+      const query = new Query({ form, schema, full: true });
+      const column = schema.columns.find((item) => item.id === '_gps_device_capture');
+      const expression = query.columnSettings.columnsByID._gps_device_capture.expression;
+      expression.operator = OperatorType.TextContain.name;
+      expression.scalarValue = 'trimble';
+
+      const sql = query.toDistinctValuesSQL({ column });
+
+      expect(sql).toContain('"_gps_device_capture"::text ILIKE (\'%trimble%\')');
+      expect(sql).not.toMatch(/"_gps_device_capture"\s+ILIKE/);
+    });
+
+    it('does not cast ordinary text_contain expressions in distinct-values SQL', () => {
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+      const query = new Query({ form, schema, full: true });
+      const column = schema.columns.find((item) => item.id === 'f001');
+      const expression = query.columnSettings.columnsByID.f001.expression;
+      expression.operator = OperatorType.TextContain.name;
+      expression.scalarValue = 'trimble';
+
+      const sql = query.toDistinctValuesSQL({ column });
+
+      expect(sql).toContain('"name" ILIKE (\'%trimble%\')');
+      expect(sql).not.toContain('"name"::text');
+    });
+
+    it('casts JSONB text_contain expressions to text in regular query SQL', () => {
+      const form = new Form(formJson);
+      const schema = new FormSchema(form, rawColumns.form, rawColumns.repeatables, { fullSchema: true });
+      const query = new Query({ form, schema, full: true });
+      const expression = query.columnSettings.columnsByID._gps_device_capture.expression;
+      expression.operator = OperatorType.TextContain.name;
+      expression.scalarValue = 'trimble';
+
+      const sql = query.toSQL({ applySort: false });
+
+      expect(sql).toContain('"_gps_device_capture"::text ILIKE (\'%trimble%\')');
+      expect(sql).not.toMatch(/"_gps_device_capture"\s+ILIKE/);
+    });
   });
 
   describe('operators', () => {
