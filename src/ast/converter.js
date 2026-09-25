@@ -1377,7 +1377,7 @@ export default class Converter {
   };
 
   ConvertToText = (column) => {
-    if (column.isDate || column.isTime || column.isArray) {
+    if (column.isDate || column.isTime || column.isArray || column.isJSONB) {
       return TypeCast(TypeName('text'), columnRef(column));
     }
 
