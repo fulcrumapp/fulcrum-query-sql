@@ -43,7 +43,7 @@
     "jest": "^30.5.1",
     "tsdown": "^0.22.14",
     "typescript": "^7.0.2",
-    "typescript-eslint": "^8.70.0"
+    "typescript-eslint": "^8.70.1"
   },
   "dependencies": {
     "@fulcrumapp/pg-query-deparser": "^1.0.0",
