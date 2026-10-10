@@ -48,7 +48,7 @@
   "dependencies": {
     "@fulcrumapp/pg-query-deparser": "^1.0.0",
     "moment": "^2.31.0",
-    "moment-timezone": "^0.6.4"
+    "moment-timezone": "^0.6.5"
   },
   "keywords": [
     "fulcrum"
