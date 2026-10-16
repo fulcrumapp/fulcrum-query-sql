@@ -25,6 +25,7 @@ const SYSTEM_COLUMNS = [
   '_server_updated_at',
   '_geometry',
   '_changeset_id',
+  '_gps_device_capture',
   '_title',
   '_created_latitude',
   '_created_longitude',
@@ -167,6 +168,8 @@ export default class RepeatableSchema extends FormFieldSchema {
       this.addSystemColumn('Longitude', 'longitude', '_longitude', 'double');
 
       this.addSystemColumn('Changeset', 'changesetID', '_changeset_id', 'string');
+
+      this.gpsDeviceCaptureColumn = this.addGpsDeviceCaptureColumn();
 
       this.addSystemColumn('Created Duration', 'createdDuration', '_created_duration', 'integer');
       this.addSystemColumn('Updated Duration', 'updatedDuration', '_updated_duration', 'integer');
