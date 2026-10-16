@@ -2,7 +2,7 @@
 
 ## Context
 
-See `proposal.md` for motivation and `specs/repeatable-gps-device-capture/spec.md` for the behavior contract. Form schemas already expose GPS device capture through a shared helper that checks for `_gps_device_capture` in raw columns and creates a JSONB system column. Repeatable schemas currently do not call that helper. The shared query path projects the column when a schema exposes it. `fulcrum-core` `^1.6.2` provides the GPS capture column in raw schemas.
+See `proposal.md` for motivation and `specs/repeatable-gps-device-capture/spec.md` for the behavior contract. Form schemas already expose GPS device capture through a shared helper that checks for `_gps_device_capture` in raw columns and creates a JSONB system column. Repeatable schemas currently do not call that helper. Query target-list construction has separate parent-record and repeatable branches; only the parent-record branch currently includes the GPS capture projection. `fulcrum-core` `^1.6.2` provides the GPS capture column in raw schemas.
 
 ## Goals / Non-Goals
 
@@ -19,7 +19,7 @@ See `proposal.md` for motivation and `specs/repeatable-gps-device-capture/spec.m
 
 - Use the existing raw-column-aware GPS capture helper from repeatable schema setup, within the full-schema path. This keeps the label, accessor, and JSONB type consistent with record-level behavior; duplicating column construction would risk divergence.
 - Raise the `@fulcrumapp/fulcrum-core` peer minimum to `^1.6.2`. The development dependency already resolves to 1.6.2, while the current peer range permits older versions that do not supply this raw column.
-- Reuse the generic query projection driven by the schema's GPS capture column. No repeatable-specific SQL projection logic is needed, and a missing raw column continues to omit the projection.
+- Add the schema-driven GPS capture projection to the repeatable query target list as well as the existing parent-record list. Keeping the projection conditional on the schema column avoids referencing it when older raw schemas omit it.
 
 ## Risks / Trade-offs
 
