@@ -451,7 +451,7 @@ export default class Query {
         ResTarget(ColumnRef('_geometry'), 'geometry'),
         ResTarget(ColumnRef('_latitude'), 'latitude'),
         ResTarget(ColumnRef('_longitude'), 'longitude'),
-        ...gpsDeviceCaptureColumns,
+        ...(gpsDeviceCaptureColumns ?? []),
         ResTarget(ColumnRef('_edited_duration'), 'edited_duration'),
         ResTarget(ColumnRef('_updated_duration'), 'updated_duration'),
         ResTarget(ColumnRef('_created_duration'), 'created_duration'),
