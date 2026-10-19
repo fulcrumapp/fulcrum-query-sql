@@ -717,6 +717,44 @@ describe('gps_device_capture column', () => {
     repeatables: {},
   };
 
+  const repeatableFormJson = {
+    ...formJson,
+    elements: [
+      ...formJson.elements,
+      {
+        type: 'Repeatable',
+        key: 'r001',
+        label: 'Items',
+        data_name: 'items',
+        elements: [
+          {
+            type: 'TextField',
+            key: 'f002',
+            label: 'Child Name',
+            data_name: 'child_name',
+          },
+        ],
+      },
+    ],
+  };
+
+  const repeatableRawColumns = {
+    form: rawColumns.form,
+    repeatables: {
+      r001: [
+        { field: 'f002', name: 'child_name', type: 'string' },
+        { name: '_gps_device_capture', type: 'string' },
+      ],
+    },
+  };
+
+  const repeatableRawColumnsWithoutGPSDeviceCapture = {
+    form: repeatableRawColumns.form,
+    repeatables: {
+      r001: repeatableRawColumns.repeatables.r001.filter((column) => column.name !== '_gps_device_capture'),
+    },
+  };
+
   describe('FormSchema', () => {
     it('includes _gps_device_capture in fullSchema columns', () => {
       const form = new Form(formJson);
@@ -735,6 +773,93 @@ describe('gps_device_capture column', () => {
       const col = schema.columns.find(c => c.id === '_gps_device_capture');
 
       expect(col).toBeUndefined();
+    });
+  });
+
+  describe('RepeatableSchema', () => {
+    it('includes _gps_device_capture in fullSchema columns when the raw column is available', () => {
+      const form = new Form(repeatableFormJson);
+      const schema = new FormSchema(
+        form,
+        repeatableRawColumns.form,
+        repeatableRawColumns.repeatables,
+        { fullSchema: true },
+      );
+      const repeatableSchema = schema.repeatableSchemasByKey.r001;
+      const col = repeatableSchema.columns.find((column) => column.id === '_gps_device_capture');
+
+      expect(col).toBeDefined();
+      expect(col.name).toBe('GPS Device Capture');
+      expect(col.attributeName).toBe('gpsDeviceCapture');
+      expect(col.isJSONB).toBe(true);
+    });
+
+    it('does not include _gps_device_capture when the raw column is unavailable', () => {
+      const form = new Form(repeatableFormJson);
+      const schema = new FormSchema(
+        form,
+        repeatableRawColumnsWithoutGPSDeviceCapture.form,
+        repeatableRawColumnsWithoutGPSDeviceCapture.repeatables,
+        { fullSchema: true },
+      );
+      const repeatableSchema = schema.repeatableSchemasByKey.r001;
+      const col = repeatableSchema.columns.find((column) => column.id === '_gps_device_capture');
+
+      expect(col).toBeUndefined();
+    });
+
+    it('does not include _gps_device_capture when fullSchema is false', () => {
+      const form = new Form(repeatableFormJson);
+      const schema = new FormSchema(
+        form,
+        repeatableRawColumns.form,
+        repeatableRawColumns.repeatables,
+        { fullSchema: false },
+      );
+      const repeatableSchema = schema.repeatableSchemasByKey.r001;
+      const col = repeatableSchema.columns.find((column) => column.id === '_gps_device_capture');
+
+      expect(col).toBeUndefined();
+    });
+  });
+
+  describe('Repeatable Query targetList', () => {
+    it('includes gps_device_capture when the repeatable raw column is available', () => {
+      const form = new Form(repeatableFormJson);
+      const schema = new FormSchema(
+        form,
+        repeatableRawColumns.form,
+        repeatableRawColumns.repeatables,
+        { fullSchema: true },
+      );
+      const query = new Query({
+        form,
+        schema: schema.repeatableSchemasByKey.r001,
+        repeatableKey: 'r001',
+        full: true,
+      });
+      const sql = query.toSQL({ applySort: false });
+
+      expect(sql).toContain('"_gps_device_capture" AS "gps_device_capture"');
+    });
+
+    it('does not include gps_device_capture when the repeatable raw column is unavailable', () => {
+      const form = new Form(repeatableFormJson);
+      const schema = new FormSchema(
+        form,
+        repeatableRawColumnsWithoutGPSDeviceCapture.form,
+        repeatableRawColumnsWithoutGPSDeviceCapture.repeatables,
+        { fullSchema: true },
+      );
+      const query = new Query({
+        form,
+        schema: schema.repeatableSchemasByKey.r001,
+        repeatableKey: 'r001',
+        full: true,
+      });
+      const sql = query.toSQL({ applySort: false });
+
+      expect(sql).not.toContain('"_gps_device_capture" AS "gps_device_capture"');
     });
   });
 
