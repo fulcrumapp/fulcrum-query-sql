@@ -9,18 +9,25 @@ yarn build
 ```
 
 ### Publishing
-Reach out to your local engineering manager for this step.
+To publish a release to GitHub Packages:
 
-- `yarn clean && yarn build`
-- Bump package.json version
-- Merge to `main`
-- Checkout `main`, `git pull`
-- `git tag -a vx.x.x -m "x.x.x"` (use actual tag number of next release)
-- `git push origin --tags`
-- Create a release for the tag in github
-- Move .npmrc off to fulcrum.npmrc and `npm login` (Credentials in 1password)
-- `npm publish`
-- Move fulcrum.npmrc back to .npmrc to reset back to your own configurations
+1. Merge the changes to release into `main`.
+2. Update your local `main` and create an annotated tag for the next version:
+
+   ```sh
+   git switch main
+   git pull --ff-only origin main
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   ```
+
+   Replace `X.Y.Z` with the release's semantic version. The tag must start with `v`.
+3. Push the tag to trigger the Publish workflow:
+
+   ```sh
+   git push origin vX.Y.Z
+   ```
+
+The workflow sets the package version from the tag (removing the leading `v`), installs dependencies, runs the type check and tests, builds the package, and publishes it to GitHub Packages. No manual package version bump, GitHub release, or `npm publish` is needed. Check the Publish workflow run to confirm the release completed.
 
 ### Debugging
 
@@ -75,4 +82,3 @@ or
 ```
 USER=<YOUR NAMESPACE> skaffold dev --cache-artifacts=false
 ```
-
