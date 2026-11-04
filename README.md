@@ -9,25 +9,20 @@ yarn build
 ```
 
 ### Publishing
-To publish a release to GitHub Packages:
+Pull requests, merge queue entries and main changes run CI on GitHub-hosted
+runners. After main validation succeeds, a GitHub App commits the next version
+to `package.json` and creates its matching SemVer tag. Do not edit the root
+package version manually. Tag creation starts the GitHub Packages publishing
+workflow; this repository does not publish to npmjs.org.
 
-1. Merge the changes to release into `main`.
-2. Update your local `main` and create an annotated tag for the next version:
+As in the previous CI workflow, lint failures are reported but do not block
+the release. Type checking, building, and tests must succeed.
 
-   ```sh
-   git switch main
-   git pull --ff-only origin main
-   git tag -a vX.Y.Z -m "vX.Y.Z"
-   ```
-
-   Replace `X.Y.Z` with the release's semantic version. The tag must start with `v`.
-3. Push the tag to trigger the Publish workflow:
-
-   ```sh
-   git push origin vX.Y.Z
-   ```
-
-The workflow sets the package version from the tag (removing the leading `v`), installs dependencies, runs the type check and tests, builds the package, and publishes it to GitHub Packages. No manual package version bump, GitHub release, or `npm publish` is needed. Check the Publish workflow run to confirm the release completed.
+Before enabling releases, configure fork-run approval, required CI checks,
+GitHub Packages access, and the release App's branch and tag protection
+bypasses. Disable the old Tekton publisher at cutover. If publishing fails,
+rerun the tag workflow against the same tag; it verifies the release commit and
+the package version before publishing.
 
 ### Debugging
 
