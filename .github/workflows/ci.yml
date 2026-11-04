@@ -97,9 +97,23 @@ jobs:
       - name: Test
         run: yarn test
 
+  build-and-test:
+    if: always() && (github.event_name != 'pull_request' || !github.event.pull_request.draft)
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require CI to succeed
+        env:
+          CI_RESULT: ${{ needs.ci.result }}
+        run: |
+          if [ "$CI_RESULT" != success ]; then
+            echo "::error::CI did not succeed: $CI_RESULT"
+            exit 1
+          fi
+
   tag:
     name: Create npm release tag
-    needs: ci
+    needs: build-and-test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     concurrency:
