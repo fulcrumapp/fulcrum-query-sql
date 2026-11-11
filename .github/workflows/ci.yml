@@ -33,8 +33,6 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
-          registry-url: https://npm.pkg.github.com
-          scope: '@fulcrumapp'
 
       - name: Enable Yarn classic
         run: corepack enable && corepack prepare yarn@1.22.22 --activate
@@ -75,7 +73,13 @@ jobs:
         run: node --test .github/tests/*.cjs
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --production=false --ignore-scripts --non-interactive
+        run: |
+          NPM_CONFIG_USERCONFIG="$(mktemp "$RUNNER_TEMP/npm-install-XXXXXX.npmrc")"
+          export NPM_CONFIG_USERCONFIG
+          trap 'rm -f "$NPM_CONFIG_USERCONFIG"' EXIT
+          printf '%s\n' '@fulcrumapp:registry=https://npm.pkg.github.com/' \
+            '//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' > "$NPM_CONFIG_USERCONFIG"
+          yarn install --frozen-lockfile --production=false --ignore-scripts --non-interactive
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
 
