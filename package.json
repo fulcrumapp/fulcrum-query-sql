@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@fulcrumapp/fulcrum-core": "^1.6.12",
+    "@fulcrumapp/fulcrum-core": "^1.6.13",
     "eslint": "^10.14.0",
     "globals": "^17.14.0",
     "jest": "^30.5.2",
@@ -54,7 +54,7 @@
     "fulcrum"
   ],
   "peerDependencies": {
-    "@fulcrumapp/fulcrum-core": "^1.6.12",
+    "@fulcrumapp/fulcrum-core": "^1.6.13",
     "moment": "^2.31.0",
     "moment-timezone": "^0.6.1"
   }
