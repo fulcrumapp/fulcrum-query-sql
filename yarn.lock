@@ -430,10 +430,10 @@
     "@eslint/core" "^1.2.1"
     levn "^0.4.1"
 
-"@fulcrumapp/fulcrum-core@^1.6.13":
-  version "1.6.13"
-  resolved "https://registry.yarnpkg.com/@fulcrumapp/fulcrum-core/-/fulcrum-core-1.6.13.tgz#74c0d92785d988796a4784156de7c8549868f49d"
-  integrity sha512-al8rCwFX4cgR3YhGWzs5WsdtDQheg+mMjSkyanDjvHDWi3QS4PgVKh4X7HNegOxDsTIusfoRfqF8ANPSjnyjsQ==
+"@fulcrumapp/fulcrum-core@^1.6.15":
+  version "1.6.15"
+  resolved "https://registry.yarnpkg.com/@fulcrumapp/fulcrum-core/-/fulcrum-core-1.6.15.tgz#c4aa959b64db8f94ba25b4d65442f86b1f906e2b"
+  integrity sha512-CSaDB4YkVsk/F2a+wvY2Jt/MtIPiSIFSYTQowIOydhGJcax7A8E9Zs3rx8EcVcvbOrZom6+9AysyNJ9fUyPS4w==
   dependencies:
     async "^3.2.4"
     lodash "^4.18.1"
